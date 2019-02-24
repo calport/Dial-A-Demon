@@ -209,7 +209,7 @@ public class TextInputManager : MonoSingleton<TextInputManager>
     {
         
         GameObject newPlayerBox = Instantiate(Resources.Load<GameObject>("Prefabs/MessageBubble_Player"), chatManager.transform);
-        content = RearrangeText(content);
+        //content = RearrangeText(content);
         newPlayerBox.GetComponentInChildren<Text>().text = content;
         
         newPlayerBox.transform.position = new Vector2(transform.position.x,transform.position.y +20 );
@@ -220,7 +220,7 @@ public class TextInputManager : MonoSingleton<TextInputManager>
     private void DemonTalks(string content)
     {      
         GameObject newDemonBox = Instantiate(Resources.Load<GameObject>("Prefabs/MessageBubble_Demon"), chatManager.transform);
-        content = RearrangeText(content);
+        //content = RearrangeText(content);
         newDemonBox.GetComponentInChildren<Text>().text = content;
         //bubbles.Add(newDemonBox,);
         chatManager.GetComponent<Transform>().position = new Vector2(transform.position.x,moveBubbleAmount);
