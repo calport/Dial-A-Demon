@@ -166,7 +166,7 @@ namespace Yarn.Unity.Example {
 
             // Now remove the delegate so that the loop in RunOptions will exit
             SetSelectedOption = null; 
-        }l
+        }
 
         /// Run an internal command.
         public override IEnumerator RunCommand (Yarn.Command command)
