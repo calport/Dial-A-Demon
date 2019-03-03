@@ -25,11 +25,14 @@ public class ManageState : MonoBehaviour
     public GameObject textingScreen;
     public GameObject phoneDial;
     
+    //how do I reference more easily the gameobject attached to this script
+    
     
     //Main Menu Buttons
-    private Button goToTexting;
-    private Button goToDial;
-    private Button backButton;
+    public Button goToTexting;
+    public Button goToDial;
+    public Button backButtonChat;
+    public Button backButtonDial;
     
     // Start is called before the first frame update
     void Start()
@@ -43,18 +46,19 @@ public class ManageState : MonoBehaviour
         currentState = GameState.MainMenu;
         
         //Texting Button
-        goToTexting = GameObject.Find("GoToTexting").GetComponent<Button>();
+        //goToTexting = GameObject.Find("GoToTexting").GetComponent<Button>();
         goToTexting.onClick.AddListener(ToTexting);
         
         //Phone Call Button
-        goToDial = GameObject.Find("GoToDial").GetComponent<Button>();
+        //goToDial = GameObject.Find("GoToDial").GetComponent<Button>();
         goToDial.onClick.AddListener(GoToDial);
 
         //Setting Button
         
         //Back Buttons
-        backButton = GameObject.Find("BackButton").GetComponent<Button>();
-        backButton.onClick.AddListener(ToMainMenu);
+        //backButton = GameObject.Find("BackButton").GetComponent<Button>();
+        backButtonChat.onClick.AddListener(ToMainMenu);
+        backButtonDial.onClick.AddListener(ToMainMenu);
 
     }
 
@@ -88,6 +92,7 @@ public class ManageState : MonoBehaviour
             case GameState.PhoneDial:
                 mainMenu.SetActive(false);
                 phoneDial.SetActive(true);
+                this.gameObject.AddComponent<Calling666>();
                 break;
             case GameState.PhoneRinging:
                 break;
