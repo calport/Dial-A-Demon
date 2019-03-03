@@ -23,18 +23,22 @@ public class ManageState : MonoBehaviour
     
     public GameObject mainMenu;
     public GameObject textingScreen;
-    public GameObject phoneDial; 
+    public GameObject phoneDial;
+    
     
     //Main Menu Buttons
     private Button goToTexting;
-    private Button goToDial; 
+    private Button goToDial;
+    private Button backButton;
     
     // Start is called before the first frame update
     void Start()
     {
         //mainMenu = GameObject.Find("MainMenu_UI");
-        //textingScreen = GameObject.Find("Keyboard");
+        //textingScreen = GameObject.Find("Keyboard_UI");
         //phoneDial = GameObject.Find("PhoneDial");
+        
+        
         
         currentState = GameState.MainMenu;
         
@@ -47,6 +51,10 @@ public class ManageState : MonoBehaviour
         goToDial.onClick.AddListener(GoToDial);
 
         //Setting Button
+        
+        //Back Buttons
+        backButton = GameObject.Find("BackButton").GetComponent<Button>();
+        backButton.onClick.AddListener(ToMainMenu);
 
     }
 
@@ -61,7 +69,9 @@ public class ManageState : MonoBehaviour
         switch (currentState)
         {
             case GameState.MainMenu:
-                
+                textingScreen.SetActive(false);
+                phoneDial.SetActive(false);
+                mainMenu.SetActive(true);
                 break;
             case GameState.ProtectionCircle:
                 break;
@@ -94,5 +104,10 @@ public class ManageState : MonoBehaviour
     void GoToDial()
     {
         currentState = GameState.PhoneDial;
+    }
+
+    void ToMainMenu()
+    {
+        currentState = GameState.MainMenu;
     }
 }
