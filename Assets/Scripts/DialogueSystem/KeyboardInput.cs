@@ -59,6 +59,8 @@ public class KeyboardInput : MonoBehaviour, IPointerEnterHandler, IPointerExitHa
     public void OnPointerEnter(PointerEventData pointerEventData)
     {
         _pointerIn = true;
+        //vibration
+        Handheld.Vibrate();
     }
 
     //Detect when Cursor leaves the GameObject
