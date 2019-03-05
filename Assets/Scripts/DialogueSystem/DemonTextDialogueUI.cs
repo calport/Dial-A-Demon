@@ -81,7 +81,7 @@ namespace Yarn.Unity.Example {
             foreach (var optionString in optionsCollection.options)
             {
                 string _firstLetter = optionString;
-                _firstLetter = _firstLetter.Substring(1, 1).ToUpper();
+                _firstLetter = _firstLetter.Substring(0, 1).ToUpper();
                 KeyboardInput key = keyboardArray[_firstLetter];
               
                 key.content = optionString;
