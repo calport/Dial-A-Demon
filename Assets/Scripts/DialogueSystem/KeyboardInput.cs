@@ -6,7 +6,7 @@ using UnityEngine.UI;
 using UnityEngine.EventSystems;
 using Yarn.Unity.Example;
 
-public class KeyboardInput : MonoBehaviour
+public class KeyboardInput : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
 {
     //the number of the options of this keyboard
     public int choiceNumber = 0;
@@ -14,7 +14,8 @@ public class KeyboardInput : MonoBehaviour
     public string keyCode = String.Empty;
     public string content;
     //private TextInput _textInput;
-    
+
+    private bool _pointerIn;
     void Awake()
     {
         
@@ -26,14 +27,15 @@ public class KeyboardInput : MonoBehaviour
     void Update()
     {
         //change the textbox input when the keyboard is touched 
-        if (content != String.Empty && Input.touchCount ==1)
+        if (content != String.Empty && Input.touchCount ==1 && _pointerIn)
         {
              Touch touch = Input.GetTouch(0);
-             if (touch.phase == TouchPhase.Stationary )
+             if (touch.phase == TouchPhase.Stationary)
              {
                  if (DemonTextDialogueUI.Instance.textBox.text != content)
                  {
                      DemonTextDialogueUI.Instance.TextBoxStateChange(DemonTextDialogueUI.TextBoxState.SelectWords, content, choiceNumber);
+                     Debug.Log(content);
                  }
 
                  if (touch.pressure > 1.5f)
@@ -52,6 +54,17 @@ public class KeyboardInput : MonoBehaviour
                  }*/
              }
         }      
+    }
+    
+    public void OnPointerEnter(PointerEventData pointerEventData)
+    {
+        _pointerIn = true;
+    }
+
+    //Detect when Cursor leaves the GameObject
+    public void OnPointerExit(PointerEventData pointerEventData)
+    {
+        _pointerIn = false;
     }
 
 }
