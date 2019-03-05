@@ -12,6 +12,7 @@ public enum GameState
     Texting,
     Contract,
     PhoneDial,
+    PhoneDialing,
     PhoneRinging,
     Party
     
@@ -33,6 +34,14 @@ public class ManageState : MonoBehaviour
     public Button goToDial;
     public Button backButtonChat;
     public Button backButtonDial;
+    
+    //calling buttons 
+    private Button numberButton;
+    private Button callButton;
+    
+    //Textbox
+    //private TextBox dialTextBox;
+    private Text dialText;
     
     // Start is called before the first frame update
     void Start()
@@ -59,6 +68,8 @@ public class ManageState : MonoBehaviour
         //backButton = GameObject.Find("BackButton").GetComponent<Button>();
         backButtonChat.onClick.AddListener(ToMainMenu);
         backButtonDial.onClick.AddListener(ToMainMenu);
+        
+       
 
     }
 
@@ -76,6 +87,7 @@ public class ManageState : MonoBehaviour
                 textingScreen.SetActive(false);
                 phoneDial.SetActive(false);
                 mainMenu.SetActive(true);
+                
                 break;
             case GameState.ProtectionCircle:
                 break;
@@ -92,7 +104,16 @@ public class ManageState : MonoBehaviour
             case GameState.PhoneDial:
                 mainMenu.SetActive(false);
                 phoneDial.SetActive(true);
-                this.gameObject.AddComponent<Calling666>();
+                numberButton = GameObject.Find("666_button").GetComponent<Button>();
+                numberButton.GetComponentsInChildren<Button>();
+                numberButton.onClick.AddListener(Dial6);
+        
+                //textbox
+                dialText = GameObject.Find("DialText").GetComponent<Text>();
+               
+                
+                break;
+            case GameState.PhoneDialing:
                 break;
             case GameState.PhoneRinging:
                 break;
@@ -114,5 +135,10 @@ public class ManageState : MonoBehaviour
     void ToMainMenu()
     {
         currentState = GameState.MainMenu;
+    }
+
+    void Dial6()
+    {
+        dialText.text = "666";
     }
 }
