@@ -137,7 +137,7 @@ namespace Yarn.Unity.Example {
                 //reset all the keyboard to null
                 foreach (var key in keyboardArray.Values)
                 {
-                    key.content = null;
+                    key.content = string.Empty;
                 }
                 
                 Debug.Log("keyboardclean");

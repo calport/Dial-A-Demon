@@ -32,7 +32,8 @@ public class KeyboardInput : MonoBehaviour, IPointerEnterHandler, IPointerExitHa
              Touch touch = Input.GetTouch(0);
              if (touch.phase == TouchPhase.Stationary)
              {
-                 if (DemonTextDialogueUI.Instance.textBox.text != content)
+                 //the first choice of UI system
+                 /*if (DemonTextDialogueUI.Instance.textBox.text != content)
                  {
                      DemonTextDialogueUI.Instance.TextBoxStateChange(DemonTextDialogueUI.TextBoxState.SelectWords, content, choiceNumber);
                      Debug.Log(content);
@@ -40,11 +41,11 @@ public class KeyboardInput : MonoBehaviour, IPointerEnterHandler, IPointerExitHa
 
                  if (touch.pressure > 1.5f)
                  {
-                     //TODO 
-                     //vibration
                      DemonTextDialogueUI.Instance.TextBoxStateChange(DemonTextDialogueUI.TextBoxState.ChosenWords, content, choiceNumber );
-                 }
+                 }*/
                  
+                 //the second choice
+                 DemonTextDialogueUI.Instance.TextBoxStateChange(DemonTextDialogueUI.TextBoxState.ChosenWords, content, choiceNumber );
              }
              else
              {
@@ -59,8 +60,11 @@ public class KeyboardInput : MonoBehaviour, IPointerEnterHandler, IPointerExitHa
     public void OnPointerEnter(PointerEventData pointerEventData)
     {
         _pointerIn = true;
-        //vibration
-        Handheld.Vibrate();
+        if (content != String.Empty)
+        {
+            //vibration
+            Handheld.Vibrate();
+        }
     }
 
     //Detect when Cursor leaves the GameObject
