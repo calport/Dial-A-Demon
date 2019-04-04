@@ -6,7 +6,7 @@ using UnityEngine.UI;
 using UnityEngine.EventSystems;
 using Yarn.Unity.Example;
 
-public class KeyboardInput : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
+public class KeyboardInput : MonoBehaviour
 {
     //the number of the options of this keyboard
     public int choiceNumber = 0;
@@ -14,7 +14,7 @@ public class KeyboardInput : MonoBehaviour, IPointerEnterHandler, IPointerExitHa
     public string keyCode = String.Empty;
     public string content;
     //private TextInput _textInput;
-
+    public GameObject Pointer;
     private bool _pointerIn;
     void Awake()
     {
@@ -55,17 +55,21 @@ public class KeyboardInput : MonoBehaviour, IPointerEnterHandler, IPointerExitHa
              }
         }      
     }
-    
-    public void OnPointerEnter(PointerEventData pointerEventData)
+
+    private void OnTriggerEnter(Collider other)
     {
-        _pointerIn = true;
+        if (other.gameObject == Pointer)
+        {
+            _pointerIn = true;
+        }
     }
 
-    //Detect when Cursor leaves the GameObject
-    public void OnPointerExit(PointerEventData pointerEventData)
+    private void OnTriggerExit(Collider other)
     {
-        _pointerIn = false;
+        if (other.gameObject == Pointer)
+        {
+            _pointerIn = false;
+        }
     }
-
 }
 
