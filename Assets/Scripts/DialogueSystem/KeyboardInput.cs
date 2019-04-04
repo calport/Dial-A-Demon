@@ -27,10 +27,28 @@ public class KeyboardInput : MonoBehaviour
     void Update()
     {
         //change the textbox input when the keyboard is touched 
-        if (content != String.Empty && Input.touchCount ==1 && _pointerIn)
+        if (content != String.Empty && Input.touchCount ==1)
         {
              Touch touch = Input.GetTouch(0);
-             if (touch.phase == TouchPhase.Stationary)
+             
+             if (DemonTextDialogueUI.Instance.textBox.text != content)
+             {
+                 if (_pointerIn)
+                 {
+                     //vibration
+                     //TODO
+                     DemonTextDialogueUI.Instance.TextBoxStateChange(DemonTextDialogueUI.TextBoxState.ChosenWords,
+                         content, choiceNumber);
+                     Debug.Log(content);
+                 }
+                 else
+                 {
+                     DemonTextDialogueUI.Instance.TextBoxStateChange(DemonTextDialogueUI.TextBoxState.NoWords,
+                         content, choiceNumber);
+                 }
+             }
+
+             /*if (touch.phase == TouchPhase.Stationary)
              {
                  if (DemonTextDialogueUI.Instance.textBox.text != content)
                  {
@@ -48,27 +66,27 @@ public class KeyboardInput : MonoBehaviour
              }
              else
              {
-                 /*if (TextInputManager.Instance.boxState == TextInputManager.TextBoxState.SelectWords)
+                 if (TextInputManager.Instance.boxState == TextInputManager.TextBoxState.SelectWords)
                  {
                      TextInputManager.Instance.TextBoxStateChange(TextInputManager.TextBoxState.NoWords, content);
-                 }*/
-             }
+                 }
+             }*/
         }      
     }
 
-    private void OnTriggerEnter(Collider other)
-    {
+    void OnTriggerEnter2D(Collider2D other) {
         if (other.gameObject == Pointer)
         {
             _pointerIn = true;
+            Debug.Log("Find pointer");
         }
     }
-
-    private void OnTriggerExit(Collider other)
+    private void OnTriggerExit2D(Collider2D other)
     {
         if (other.gameObject == Pointer)
         {
             _pointerIn = false;
+            Debug.Log("Find pointer");
         }
     }
 }

@@ -23,6 +23,10 @@ public class MoveWithMouse : MonoBehaviour, IPointerEnterHandler, IPointerExitHa
             _prePos = _touch.position;
         }
 
+        if (Input.touchCount == 0)
+        {
+            _pointerIn = false;
+        }
     }
 
     void ChangePos(Touch touch)
