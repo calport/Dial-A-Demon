@@ -6,15 +6,15 @@ using UnityEngine.UI;
 using UnityEngine.EventSystems;
 using Yarn.Unity.Example;
 
-public class KeyboardInput : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
+public class KeyboardInput : MonoBehaviour
 {
     //the number of the options of this keyboard
     public int choiceNumber = 0;
     // this need to be capitals
     public string keyCode = String.Empty;
-    public string content;
+    public string content = String.Empty;
     //private TextInput _textInput;
-
+    public GameObject Pointer;
     private bool _pointerIn;
     void Awake()
     {
@@ -27,10 +27,27 @@ public class KeyboardInput : MonoBehaviour, IPointerEnterHandler, IPointerExitHa
     void Update()
     {
         //change the textbox input when the keyboard is touched 
-        if (content != String.Empty && Input.touchCount ==1 && _pointerIn)
+        if (string.Compare(String.Empty,content)!=0)
         {
-             Touch touch = Input.GetTouch(0);
-             if (touch.phase == TouchPhase.Stationary)
+             //Touch touch = Input.GetTouch(0);
+             if (string.Compare(content,DemonTextDialogueUI.Instance.textBox.text)!=0)
+             {
+                 if (_pointerIn)
+                 {
+                     //vibration
+                     //TODO
+                     DemonTextDialogueUI.Instance.TextBoxStateChange(DemonTextDialogueUI.TextBoxState.ChosenWords,
+                         content, choiceNumber);
+                     Debug.Log(content);
+                 }
+                 else
+                 {
+                     DemonTextDialogueUI.Instance.TextBoxStateChange(DemonTextDialogueUI.TextBoxState.NoWords,
+                         content, choiceNumber);
+                 }
+             }
+
+             /*if (touch.phase == TouchPhase.Stationary)
              {
                  if (DemonTextDialogueUI.Instance.textBox.text != content)
                  {
@@ -48,24 +65,28 @@ public class KeyboardInput : MonoBehaviour, IPointerEnterHandler, IPointerExitHa
              }
              else
              {
-                 /*if (TextInputManager.Instance.boxState == TextInputManager.TextBoxState.SelectWords)
+                 if (TextInputManager.Instance.boxState == TextInputManager.TextBoxState.SelectWords)
                  {
                      TextInputManager.Instance.TextBoxStateChange(TextInputManager.TextBoxState.NoWords, content);
-                 }*/
-             }
+                 }
+             }*/
         }      
     }
-    
-    public void OnPointerEnter(PointerEventData pointerEventData)
-    {
-        _pointerIn = true;
-    }
 
-    //Detect when Cursor leaves the GameObject
-    public void OnPointerExit(PointerEventData pointerEventData)
-    {
-        _pointerIn = false;
+    void OnTriggerEnter2D(Collider2D other) {
+        if (other.gameObject == Pointer)
+        {
+            _pointerIn = true;
+            Debug.Log("Find pointer");
+        }
     }
-
+    private void OnTriggerExit2D(Collider2D other)
+    {
+        if (other.gameObject == Pointer)
+        {
+            _pointerIn = false;
+            Debug.Log("Find pointer");
+        }
+    }
 }
 

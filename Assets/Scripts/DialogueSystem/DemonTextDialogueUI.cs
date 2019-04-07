@@ -132,12 +132,12 @@ namespace Yarn.Unity.Example {
                 OptionsCollectionLength = 0;
                 
                 // clear the text box
-                TextBoxStateChange(TextBoxState.NoWords, " ", 50);
+                TextBoxStateChange(TextBoxState.NoWords, String.Empty, 50);
                                 
                 //reset all the keyboard to null
                 foreach (var key in keyboardArray.Values)
                 {
-                    key.content = null;
+                    key.content = String.Empty;
                 }
                 
                 Debug.Log("keyboardclean");
