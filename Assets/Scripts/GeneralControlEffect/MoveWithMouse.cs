@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
-public class MoveWithMouse : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
+public class MoveWithMouse : MonoBehaviour, IDragHandler
 {
     private Touch _touch;
     private bool _pointerIn;
@@ -14,8 +14,24 @@ public class MoveWithMouse : MonoBehaviour, IPointerEnterHandler, IPointerExitHa
     }
     // Update is called once per frame
     private Vector2 _prePos;
-    void Update()
+
+    public void OnBeginDrag(PointerEventData data)
     {
+        if (Input.touchCount != 0) _prePos = Input.GetTouch(0).position;
+    }
+
+    public void OnDrag(PointerEventData data)
+    {
+        if (Input.touchCount != 0)
+        {
+            _touch = Input.GetTouch(0);
+            ChangePos(_touch);
+            _prePos = _touch.position;
+        }
+    }
+    /*void Update()
+    {
+        Debug.Log(_pointerIn);
         if (Input.touchCount != 0 && _pointerIn)
         {
             _touch = Input.GetTouch(0);
@@ -27,7 +43,7 @@ public class MoveWithMouse : MonoBehaviour, IPointerEnterHandler, IPointerExitHa
         {
             _pointerIn = false;
         }
-    }
+    }*/
 
     void ChangePos(Touch touch)
     {
@@ -35,7 +51,7 @@ public class MoveWithMouse : MonoBehaviour, IPointerEnterHandler, IPointerExitHa
         transform.position += new Vector3(posChange.x, posChange.y, 0);                         
     }
     
-    public void OnPointerEnter(PointerEventData pointerEventData)
+    /*public void OnPointerEnter(PointerEventData pointerEventData)
     {
         //initialize the touch position
         if (Input.touchCount != 0) _prePos = Input.GetTouch(0).position;
@@ -46,5 +62,5 @@ public class MoveWithMouse : MonoBehaviour, IPointerEnterHandler, IPointerExitHa
     public void OnPointerExit(PointerEventData pointerEventData)
     {
         _pointerIn = false;
-    }
+    }*/
 }

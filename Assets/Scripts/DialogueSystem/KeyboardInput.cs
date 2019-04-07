@@ -12,7 +12,7 @@ public class KeyboardInput : MonoBehaviour
     public int choiceNumber = 0;
     // this need to be capitals
     public string keyCode = String.Empty;
-    public string content;
+    public string content = String.Empty;
     //private TextInput _textInput;
     public GameObject Pointer;
     private bool _pointerIn;
@@ -27,11 +27,10 @@ public class KeyboardInput : MonoBehaviour
     void Update()
     {
         //change the textbox input when the keyboard is touched 
-        if (content != String.Empty && Input.touchCount ==1)
+        if (string.Compare(String.Empty,content)!=0)
         {
-             Touch touch = Input.GetTouch(0);
-             
-             if (DemonTextDialogueUI.Instance.textBox.text != content)
+             //Touch touch = Input.GetTouch(0);
+             if (string.Compare(content,DemonTextDialogueUI.Instance.textBox.text)!=0)
              {
                  if (_pointerIn)
                  {
