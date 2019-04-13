@@ -11,6 +11,12 @@ public class PlotManager
     //Calendar system
     public List<Plot> TotalTask { get; private set; }
     private DateTime _startTime;
+
+    public DateTime StartTime
+    {
+        get { return _startTime; }
+    }
+
     private int _plotNumber = 0;
     public int PlotNumber
     {
@@ -24,7 +30,7 @@ public class PlotManager
 
     private void ArrangeCalendar()
     {
-        TotalTask = TotalTask.OrderBy(o => o.Day).ThenBy(o => o.Hour).ThenBy(o => o.Minute).ToList();
+        TotalTask = TotalTask.OrderBy(o => o.PlotStartTime.Day).ThenBy(o => o.PlotStartTime.Hour).ThenBy(o => o.PlotStartTime.Minute).ToList();
     }
     
 
@@ -76,9 +82,7 @@ public class PlotManager
             _startTime = System.DateTime.Now;
             foreach (var plot in TotalTask)
             {
-                plot.plotStartTime = _startTime.AddDays(plot.Day);
-                plot.plotStartTime = _startTime.AddHours(plot.Hour);
-                plot.plotStartTime = _startTime.AddMinutes(plot.Minute);
+                plot.InitTime();
             }
             //not really need this if the order was set in the beginning, but if the register becomes dynamic, the system should be careful with the insert plot
             //because the aiming time is not updated all the time, and there is no use of the arrange calendar function

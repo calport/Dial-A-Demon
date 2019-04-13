@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
-using NUnit.Framework;
 using UnityEngine;
 using UnityEngine.Experimental.PlayerLoop;
 using Yarn.Unity;
@@ -13,12 +12,25 @@ public abstract class Plot
     protected int Day;
     protected int Hour;
     protected int Minute;
-    protected DateTime plotStartTime;
-    
+    //the actual final run time for this plot
+    protected DateTime _plotStartTime;
+
+    public DateTime PlotStartTime
+    {
+        get { return _plotStartTime; }
+    }
+
     protected bool _plotFinished = false;
     public void PlotFinishedStateChange(bool state)
     {
         _plotFinished = state;
+    }
+
+    public void InitTime()
+    {
+        _plotStartTime = Services.plotManager.StartTime.AddDays(Day);
+        _plotStartTime = Services.plotManager.StartTime.AddHours(Hour);
+        _plotStartTime = Services.plotManager.StartTime.AddMinutes(Minute);
     }
     //This will appear in every subclass so object can set time when they are created
     /*
@@ -46,7 +58,7 @@ public abstract class Plot
     public virtual bool IsAbleToStart()
     {
         var dt = System.DateTime.Now;
-        var timeSpan = dt - plotStartTime;
+        var timeSpan = dt - _plotStartTime;
         return timeSpan.TotalSeconds > 0;
     }
 
@@ -60,7 +72,7 @@ public abstract class Plot
     public void ShrinkTime()
     {
         var dt = DateTime.Now;
-        plotStartTime = dt.AddSeconds(10f);
+        _plotStartTime = dt.AddSeconds(10f);
     }
     
     public virtual void NewPlotNote(){}
@@ -124,7 +136,7 @@ public class TextPlot : Plot
     public void ShrinkTime()
     {
         var dt = DateTime.Now;
-        plotStartTime = dt.AddSeconds(10f);
+        _plotStartTime = dt.AddSeconds(10f);
     }
     
     public virtual void NewPlotNote(){}
