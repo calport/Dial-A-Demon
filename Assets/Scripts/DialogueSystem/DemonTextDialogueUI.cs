@@ -32,7 +32,6 @@ namespace Yarn.Unity.Example {
                 return instance;
             }
         }
-       
         
         // path of the massage bubble prefabs
         private string _demonTextBox;
@@ -168,6 +167,7 @@ namespace Yarn.Unity.Example {
         }
         public override IEnumerator DialogueComplete()
         {
+            controlPlot.PlotFinishedStateChange(true);
             Debug.Log ("Complete!");
             yield break;
         }

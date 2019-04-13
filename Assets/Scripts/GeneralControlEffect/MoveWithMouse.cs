@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
-public class MoveWithMouse : MonoBehaviour, IDragHandler
+public class MoveWithMouse : MonoBehaviour, IDragHandler, IBeginDragHandler, IEndDragHandler, IPointerUpHandler
 {
     private Touch _touch;
     private bool _pointerIn;
@@ -17,8 +17,10 @@ public class MoveWithMouse : MonoBehaviour, IDragHandler
 
     public void OnBeginDrag(PointerEventData data)
     {
-        if (Input.touchCount != 0) _prePos = Input.GetTouch(0).position;
+        data.pointerDrag = null;
+       //if (Input.touchCount != 0) _prePos = Input.GetTouch(0).position;
     }
+    
 
     public void OnDrag(PointerEventData data)
     {
@@ -28,6 +30,18 @@ public class MoveWithMouse : MonoBehaviour, IDragHandler
             ChangePos(_touch);
             _prePos = _touch.position;
         }
+    }
+    
+    public void OnEndDrag(PointerEventData data)
+    {
+        data.pointerDrag = null;
+        Debug.Log("Drag end");
+    }
+
+    public void OnPointerUp(PointerEventData data)
+    {
+        data.pointerDrag = null;
+        Debug.Log("Drag end");
     }
     /*void Update()
     {
