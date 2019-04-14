@@ -32,7 +32,6 @@ namespace Yarn.Unity.Example {
                 return instance;
             }
         }
-       
         
         // path of the massage bubble prefabs
         private string _demonTextBox;
@@ -67,13 +66,30 @@ namespace Yarn.Unity.Example {
 
         public override IEnumerator RunLine(Yarn.Line line)
         {
-            GameObject newPlayerBox = Instantiate(Resources.Load<GameObject>(_demonTextBox), content.transform);
-            yield return new WaitForEndOfFrame();        
-            vertScrollbar.verticalNormalizedPosition = 0f;
-            newPlayerBox.GetComponentInChildren<TextMeshProUGUI>().text = line.text;
-            yield return new WaitForSeconds(1.0f);
+            //the dot dot dot effect
+            yield return StartCoroutine(TypingDot());
+            
+            //creat the real dialogue
+            GameObject newDemonBox = Instantiate(Resources.Load<GameObject>(_demonTextBox), content.transform);
+            newDemonBox.GetComponentInChildren<TextMeshProUGUI>().text = line.text;
+            //wait to scroll make the dialogue roll automatically
+            StartCoroutine(waitToScroll());       
+            
+            //yield return new WaitForSeconds(1.0f);
         }
 
+        IEnumerator TypingDot()
+        {   
+            yield return new WaitForSeconds(0.5f);
+            GameObject newDemonBox = Instantiate(Resources.Load<GameObject>(_demonTextBox), content.transform);
+            newDemonBox.GetComponentInChildren<TextMeshProUGUI>().text = "...";
+            StartCoroutine(waitToScroll());
+            yield return new WaitForSeconds(2f);
+            Destroy(newDemonBox);
+            yield return new WaitForSeconds(0.2f);
+            StartCoroutine(waitToScroll());
+        }
+        
         public override IEnumerator RunOptions(Yarn.Options optionsCollection, Yarn.OptionChooser optionChooser)
         {
             //send all the options to the aiming keyboard
@@ -118,7 +134,6 @@ namespace Yarn.Unity.Example {
                 // show text
                 GameObject newPlayerBox = Instantiate(Resources.Load<GameObject>(_playerTextBox), content.transform);
                 StartCoroutine(waitToScroll());       
-                vertScrollbar.verticalNormalizedPosition = 0f;
                 newPlayerBox.GetComponentInChildren<TextMeshProUGUI>().text = textBox.text;
                 
                 // Call the delegate to tell the dialogue system that we've
@@ -168,6 +183,7 @@ namespace Yarn.Unity.Example {
         }
         public override IEnumerator DialogueComplete()
         {
+            controlPlot.PlotFinishedStateChange(true);
             Debug.Log ("Complete!");
             yield break;
         }

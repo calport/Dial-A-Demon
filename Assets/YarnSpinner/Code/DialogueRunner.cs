@@ -428,6 +428,9 @@ namespace Yarn.Unity
     /// Scripts that can act as the UI for the conversation should subclass this
     public abstract class DialogueUIBehaviour : MonoBehaviour
     {
+        //register the recent plot which is now using this DialogRunner;
+        public Plot controlPlot = null;
+        
         /// A conversation has started.
         public virtual IEnumerator DialogueStarted() {
             // Default implementation does nothing.

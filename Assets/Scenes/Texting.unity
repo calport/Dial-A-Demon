@@ -169,6 +169,7 @@ MonoBehaviour:
   keyCode: B
   content: 
   Pointer: {fileID: 866035550}
+  _pointerIn: 0
 --- !u!114 &11541075
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -454,6 +455,7 @@ MonoBehaviour:
   keyCode: T
   content: 
   Pointer: {fileID: 866035550}
+  _pointerIn: 0
 --- !u!114 &48475417
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -637,6 +639,7 @@ MonoBehaviour:
   keyCode: S
   content: 
   Pointer: {fileID: 866035550}
+  _pointerIn: 0
 --- !u!114 &67100540
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -820,6 +823,7 @@ MonoBehaviour:
   keyCode: O
   content: 
   Pointer: {fileID: 866035550}
+  _pointerIn: 0
 --- !u!114 &70194947
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1030,6 +1034,7 @@ MonoBehaviour:
   keyCode: X
   content: 
   Pointer: {fileID: 866035550}
+  _pointerIn: 0
 --- !u!114 &103154423
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1213,6 +1218,7 @@ MonoBehaviour:
   keyCode: R
   content: 
   Pointer: {fileID: 866035550}
+  _pointerIn: 0
 --- !u!114 &136065034
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1432,8 +1438,8 @@ RectTransform:
   - {fileID: 1833595472}
   - {fileID: 535380468}
   - {fileID: 187950626}
+  - {fileID: 2061484186}
   - {fileID: 463352565}
-  - {fileID: 663496266}
   m_Father: {fileID: 0}
   m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -1499,6 +1505,7 @@ MonoBehaviour:
   keyCode: D
   content: 
   Pointer: {fileID: 866035550}
+  _pointerIn: 0
 --- !u!114 &157193503
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1682,6 +1689,7 @@ MonoBehaviour:
   keyCode: Q
   content: 
   Pointer: {fileID: 866035550}
+  _pointerIn: 0
 --- !u!114 &176650992
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2264,6 +2272,7 @@ MonoBehaviour:
   keyCode: U
   content: 
   Pointer: {fileID: 866035550}
+  _pointerIn: 0
 --- !u!114 &330379162
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2834,7 +2843,7 @@ RectTransform:
   m_LocalScale: {x: 0.6041705, y: 2.9896002, z: 1.0741}
   m_Children: []
   m_Father: {fileID: 146383565}
-  m_RootOrder: 3
+  m_RootOrder: 4
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
@@ -3204,7 +3213,6 @@ GameObject:
   - component: {fileID: 663496266}
   - component: {fileID: 663496269}
   - component: {fileID: 663496268}
-  - component: {fileID: 663496267}
   m_Layer: 5
   m_Name: Pointer
   m_TagString: Untagged
@@ -3221,29 +3229,16 @@ RectTransform:
   m_GameObject: {fileID: 663496265}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1.713204, y: 1.713204, z: 1.713204}
-  m_Children:
-  - {fileID: 866035551}
-  m_Father: {fileID: 146383565}
-  m_RootOrder: 4
+  m_LocalScale: {x: 1.0735722, y: 2.6675496, z: 0}
+  m_Children: []
+  m_Father: {fileID: 2061484186}
+  m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -234, y: -383}
+  m_AnchoredPosition: {x: 1.4314295, y: 98}
   m_SizeDelta: {x: 100, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
---- !u!114 &663496267
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 663496265}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c602617ad0d34704ba72561b5ff63760, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!114 &663496268
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4042,6 +4037,7 @@ MonoBehaviour:
   keyCode: P
   content: 
   Pointer: {fileID: 866035550}
+  _pointerIn: 0
 --- !u!114 &823068559
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4225,6 +4221,7 @@ MonoBehaviour:
   keyCode: G
   content: 
   Pointer: {fileID: 866035550}
+  _pointerIn: 0
 --- !u!114 &846095131
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4377,16 +4374,16 @@ RectTransform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 866035550}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 0.46902, y: 0.46902, z: 0.46902}
+  m_LocalScale: {x: 0.5035268, y: 1.2511342, z: 0}
   m_Children: []
-  m_Father: {fileID: 663496266}
+  m_Father: {fileID: 2061484186}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: 7.8}
+  m_AnchoredPosition: {x: 1.4314295, y: 98.00006}
   m_SizeDelta: {x: 100, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!58 &866035553
@@ -4404,7 +4401,7 @@ CircleCollider2D:
   m_UsedByComposite: 0
   m_Offset: {x: 0, y: 0}
   serializedVersion: 2
-  m_Radius: 20
+  m_Radius: 0.001
 --- !u!114 &866035554
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -5180,6 +5177,7 @@ MonoBehaviour:
   keyCode: J
   content: 
   Pointer: {fileID: 866035550}
+  _pointerIn: 0
 --- !u!114 &1092404749
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -5390,6 +5388,7 @@ MonoBehaviour:
   keyCode: V
   content: 
   Pointer: {fileID: 866035550}
+  _pointerIn: 0
 --- !u!114 &1102308060
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -5573,6 +5572,7 @@ MonoBehaviour:
   keyCode: M
   content: 
   Pointer: {fileID: 866035550}
+  _pointerIn: 0
 --- !u!114 &1105663132
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -5756,6 +5756,7 @@ MonoBehaviour:
   keyCode: F
   content: 
   Pointer: {fileID: 866035550}
+  _pointerIn: 0
 --- !u!114 &1209425528
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -5966,6 +5967,7 @@ MonoBehaviour:
   keyCode: Y
   content: 
   Pointer: {fileID: 866035550}
+  _pointerIn: 0
 --- !u!114 &1274256337
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -6176,6 +6178,7 @@ MonoBehaviour:
   keyCode: Z
   content: 
   Pointer: {fileID: 866035550}
+  _pointerIn: 0
 --- !u!114 &1386274512
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -6359,6 +6362,7 @@ MonoBehaviour:
   keyCode: N
   content: 
   Pointer: {fileID: 866035550}
+  _pointerIn: 0
 --- !u!114 &1438978623
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -6652,6 +6656,7 @@ MonoBehaviour:
   keyCode: K
   content: 
   Pointer: {fileID: 866035550}
+  _pointerIn: 0
 --- !u!114 &1632729085
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -7128,6 +7133,7 @@ MonoBehaviour:
   keyCode: I
   content: 
   Pointer: {fileID: 866035550}
+  _pointerIn: 0
 --- !u!114 &1827228259
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -7390,7 +7396,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 0}
-  m_AnchoredPosition: {x: -0.000098228455, y: 4952.0005}
+  m_AnchoredPosition: {x: -0.000098228455, y: 4952}
   m_SizeDelta: {x: 0, y: 400}
   m_Pivot: {x: 0, y: 1}
 --- !u!114 &1839210070
@@ -7642,6 +7648,7 @@ MonoBehaviour:
   keyCode: A
   content: 
   Pointer: {fileID: 866035550}
+  _pointerIn: 0
 --- !u!1 &2048141479
 GameObject:
   m_ObjectHideFlags: 0
@@ -7816,6 +7823,7 @@ MonoBehaviour:
   keyCode: L
   content: 
   Pointer: {fileID: 866035550}
+  _pointerIn: 0
 --- !u!114 &2048863196
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -7999,6 +8007,7 @@ MonoBehaviour:
   keyCode: H
   content: 
   Pointer: {fileID: 866035550}
+  _pointerIn: 0
 --- !u!114 &2054090645
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -8141,6 +8150,96 @@ MonoBehaviour:
   keyCode: E
   content: 
   Pointer: {fileID: 866035550}
+  _pointerIn: 0
+--- !u!1 &2061484185
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2061484186}
+  - component: {fileID: 2061484189}
+  - component: {fileID: 2061484188}
+  - component: {fileID: 2061484187}
+  m_Layer: 5
+  m_Name: Pointer
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!224 &2061484186
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2061484185}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1.5566256, y: 0.6264739, z: 1.1966548}
+  m_Children:
+  - {fileID: 866035551}
+  - {fileID: 663496266}
+  m_Father: {fileID: 146383565}
+  m_RootOrder: 3
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0.5, y: 0.5}
+  m_AnchorMax: {x: 0.5, y: 0.5}
+  m_AnchoredPosition: {x: -0.22827, y: -321.34}
+  m_SizeDelta: {x: 100, y: 100}
+  m_Pivot: {x: 0.5, y: 0.5}
+--- !u!114 &2061484187
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2061484185}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9ae7e2d16409fe54895cd051052e7f32, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &2061484188
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2061484185}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: -765806418, guid: f70555f144d8491a825f0804e09c671c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Material: {fileID: 0}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_RaycastTarget: 1
+  m_OnCullStateChanged:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: UnityEngine.UI.MaskableGraphic+CullStateChangedEvent, UnityEngine.UI,
+      Version=1.0.0.0, Culture=neutral, PublicKeyToken=null
+  m_Sprite: {fileID: 21300000, guid: 2cfd3e3bed6aae94ebe979c9b3f001a3, type: 3}
+  m_Type: 0
+  m_PreserveAspect: 0
+  m_FillCenter: 1
+  m_FillMethod: 4
+  m_FillAmount: 1
+  m_FillClockwise: 1
+  m_FillOrigin: 0
+  m_UseSpriteMesh: 0
+--- !u!222 &2061484189
+CanvasRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2061484185}
+  m_CullTransparentMesh: 0
 --- !u!1 &2066864352
 GameObject:
   m_ObjectHideFlags: 0
@@ -8198,6 +8297,7 @@ MonoBehaviour:
   keyCode: W
   content: 
   Pointer: {fileID: 866035550}
+  _pointerIn: 0
 --- !u!114 &2066864355
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -8692,6 +8792,7 @@ MonoBehaviour:
   keyCode: C
   content: 
   Pointer: {fileID: 866035550}
+  _pointerIn: 0
 --- !u!114 &2132616417
 MonoBehaviour:
   m_ObjectHideFlags: 0
