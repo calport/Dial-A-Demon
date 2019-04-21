@@ -36,7 +36,7 @@ public class KeyboardInput : MonoBehaviour
                     DemonTextDialogueUI.Instance.TextBoxStateChange(DemonTextDialogueUI.TextBoxState.ChosenWords,
                         content, choiceNumber);
                     Handheld.Vibrate();
-                    iPhoneUtils.Vibrate();
+                    Handheld.Vibrate();
                 }
             }
 

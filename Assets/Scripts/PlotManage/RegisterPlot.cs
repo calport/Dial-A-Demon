@@ -9,5 +9,4 @@ public class RegisterPlot
     //the control of which branch ppl will end up with will be defined in plots themselves
     public static void RegisterAllPlot(){}
     
-    
 }
