@@ -45,27 +45,18 @@ public class ManageState : MonoBehaviour
     
     // Start is called before the first frame update
     void Start()
-    {
-        //mainMenu = GameObject.Find("MainMenu_UI");
-        //textingScreen = GameObject.Find("Keyboard_UI");
-        //phoneDial = GameObject.Find("PhoneDial");
-        
-        
-        
+    {     
         currentState = GameState.MainMenu;
         
         //Texting Button
-        //goToTexting = GameObject.Find("GoToTexting").GetComponent<Button>();
         goToTexting.onClick.AddListener(ToTexting);
         
         //Phone Call Button
-        //goToDial = GameObject.Find("GoToDial").GetComponent<Button>();
         goToDial.onClick.AddListener(GoToDial);
 
         //Setting Button
         
         //Back Buttons
-        //backButton = GameObject.Find("BackButton").GetComponent<Button>();
         backButtonChat.onClick.AddListener(ToMainMenu);
         backButtonDial.onClick.AddListener(ToMainMenu);
         
