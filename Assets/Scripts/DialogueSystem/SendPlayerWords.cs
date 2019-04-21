@@ -6,14 +6,15 @@ using UnityEngine.UI;
 
 public class SendPlayerWords : MonoBehaviour
 {
+   
     private void Start()
-    {
+    {       
         TextInputManager.Instance.sendButton = this.gameObject.GetComponent<Button>();
         GetComponent<Button>().interactable = false;
     }
 
     public void SendWords()
-    {
+    {       
         TextInputManager.Instance.SendWords();
     }
 }
