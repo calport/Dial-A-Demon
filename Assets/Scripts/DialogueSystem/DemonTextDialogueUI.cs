@@ -55,11 +55,16 @@ namespace Yarn.Unity.Example {
         /// the user selected
         private Yarn.OptionChooser SetSelectedOption;
 
+        public AudioSource demonAudio;
+
         private int OptionsCollectionLength;
         private void Awake()
         {
             _demonTextBox = "Prefabs/MessageBubble_Demon";
             _playerTextBox = "Prefabs/MessageBubble_Player";
+            
+            //finding demon texting audio
+            demonAudio = GameObject.Find("DemonTexted").GetComponent<AudioSource>();
         }
 
 
@@ -72,6 +77,11 @@ namespace Yarn.Unity.Example {
             //creat the real dialogue
             GameObject newDemonBox = Instantiate(Resources.Load<GameObject>(_demonTextBox), content.transform);
             newDemonBox.GetComponentInChildren<TextMeshProUGUI>().text = line.text;
+            
+            //create audio whenever the demon sends a message
+            Debug.Log("demon is speaking");
+            demonAudio.Play();
+            
             //wait to scroll make the dialogue roll automatically
             StartCoroutine(waitToScroll());       
             
