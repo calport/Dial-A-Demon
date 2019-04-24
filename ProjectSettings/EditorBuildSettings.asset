@@ -8,4 +8,7 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/Texting.unity
     guid: 35eceeae875d0ed428ab496afa0bfac9
+  - enabled: 1
+    path: Assets/Scenes/Menu.unity
+    guid: d939e880fb5bb8f47b869ac3baa3d23b
   m_configObjects: {}
