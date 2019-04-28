@@ -19,6 +19,7 @@ public class Game : MonoBehaviour
         //some logic problem here that doesnt consider the save situation
         //TODO
         Services.plotManager.Init();
+        Services.buttonRegisted = ButtonRegister.Instance;
         Services.gameStates = new GameStates();
         Services.gameStates.Init();
     }

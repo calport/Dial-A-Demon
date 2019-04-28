@@ -7,4 +7,5 @@ public class Services
     public static GameSettings gameSettings;
     public static PlotManager plotManager;
     public static GameStates gameStates;
+    public static ButtonRegister buttonRegisted;
 }
