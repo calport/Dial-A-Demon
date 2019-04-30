@@ -1,6 +1,8 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
+
 
 
 public class UnlockingPhone : MonoBehaviour
@@ -121,7 +123,8 @@ public class UnlockingPhone : MonoBehaviour
     IEnumerator CorrectFade()
     {
         yield return new WaitForSeconds(2);
-        gameObject.SetActive(false);
+        SceneManager.LoadScene("Texting");
+        //gameObject.SetActive(false);
     }
 
     private void OnEnable()
