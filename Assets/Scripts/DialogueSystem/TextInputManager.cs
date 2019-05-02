@@ -117,7 +117,7 @@ public class TextInputManager : MonoSingleton<TextInputManager>
         }
         else
         {
-            Debug.Log("end the talk");
+            Debug.Log("end the talk"); 
         }
         
     }
