@@ -8,6 +8,8 @@ using UnityEngine.SceneManagement;
 public class UnlockingPhone : MonoBehaviour
 {
     public GameObject Unlock1, Unlock2, Unlock3;
+    public GameObject hint, instructions;
+    public GameObject MicrophoneSummon; 
     private int guess;
     private int correct;
     
@@ -111,10 +113,19 @@ public class UnlockingPhone : MonoBehaviour
     IEnumerator ScreenShake()
     {
         yield return new WaitForSeconds(1);
-        shakeDuration = 2.0f; 
+        //make the screenshake and a vibration play 
+        shakeDuration = 2.0f;
+        Handheld.Vibrate(); 
+        //set all unlocks back to false 
         Unlock1.SetActive(false);
         Unlock2.SetActive(false);
         Unlock3.SetActive(false);
+        
+        //make the hint display
+        instructions.SetActive(false);
+        hint.SetActive(true);
+        
+        
         guess = 0;
         correct = 0; 
 
@@ -122,9 +133,12 @@ public class UnlockingPhone : MonoBehaviour
 
     IEnumerator CorrectFade()
     {
-        yield return new WaitForSeconds(2);
-        SceneManager.LoadScene("Texting");
-        //gameObject.SetActive(false);
+        yield return new WaitForSeconds(1);
+        Microphone.Start(null,true,10,44100);
+        gameObject.SetActive(false);
+        MicrophoneSummon.SetActive(true);
+        //SceneManager.LoadScene("Texting");
+       
     }
 
     private void OnEnable()

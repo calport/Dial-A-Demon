@@ -7,7 +7,7 @@ public class MicrophoneTest : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        Microphone.Start(null,true,10,44100);
+        //Microphone.Start(null,true,10,44100);
 
     }
 
