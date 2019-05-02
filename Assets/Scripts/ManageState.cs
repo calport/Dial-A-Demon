@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.SceneManagement;
 
 public enum GameState
 {
@@ -25,6 +26,7 @@ public class ManageState : MonoBehaviour
     public GameObject mainMenu;
     public GameObject textingScreen;
     public GameObject phoneDial;
+    //public GameObject settingSelect;
     
     //how do I reference more easily the gameobject attached to this script
     
@@ -32,6 +34,7 @@ public class ManageState : MonoBehaviour
     //Main Menu Buttons
     public Button goToTexting;
     public Button goToDial;
+    public Button settingsButton;
     public Button backButtonChat;
     public Button backButtonDial;
     
@@ -83,6 +86,7 @@ public class ManageState : MonoBehaviour
             case GameState.ProtectionCircle:
                 break;
             case GameState.GameSettings:
+                SceneManager.LoadScene("Menu");
                 break;
             case GameState.OpeningRitual:
                 break;
@@ -131,5 +135,15 @@ public class ManageState : MonoBehaviour
     void Dial6()
     {
         dialText.text = "666";
+    }
+
+    public void GoToSettings()
+    {
+        currentState = GameState.GameSettings;
+    }
+
+    public void backToMain()
+    {
+        SceneManager.LoadScene("Texting");
     }
 }

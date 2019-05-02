@@ -16,6 +16,9 @@ public class KeyboardInput : MonoBehaviour
     //private TextInput _textInput;
     public GameObject Pointer;
     public bool _pointerIn;
+    
+    //Sound that plays over a "choice"
+    public AudioSource optionSound;
 
     void Awake()
     {
@@ -37,6 +40,9 @@ public class KeyboardInput : MonoBehaviour
                         content, choiceNumber);
                     Handheld.Vibrate();
                     Handheld.Vibrate();
+                    //testing sound
+                    optionSound.Play();
+
                 }
             }
 

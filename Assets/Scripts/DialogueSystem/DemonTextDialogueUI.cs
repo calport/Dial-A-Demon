@@ -36,6 +36,7 @@ namespace Yarn.Unity.Example {
         // path of the massage bubble prefabs
         private string _demonTextBox;
         private string _playerTextBox;
+        private string _demonContract;
         
         //A dictionary saves all the keyboard informations
         public Dictionary<string, KeyboardInput> keyboardArray = new Dictionary<string, KeyboardInput>();
@@ -55,11 +56,17 @@ namespace Yarn.Unity.Example {
         /// the user selected
         private Yarn.OptionChooser SetSelectedOption;
 
+        public AudioSource demonAudio;
+
         private int OptionsCollectionLength;
         private void Awake()
         {
             _demonTextBox = "Prefabs/MessageBubble_Demon";
             _playerTextBox = "Prefabs/MessageBubble_Player";
+            _demonContract = "Prefabs/pdfAttachment";
+            
+            //finding demon texting audio
+            demonAudio = GameObject.Find("DemonTexted").GetComponent<AudioSource>();
         }
 
 
@@ -72,6 +79,11 @@ namespace Yarn.Unity.Example {
             //creat the real dialogue
             GameObject newDemonBox = Instantiate(Resources.Load<GameObject>(_demonTextBox), content.transform);
             newDemonBox.GetComponentInChildren<TextMeshProUGUI>().text = line.text;
+            
+            //create audio whenever the demon sends a message
+            Debug.Log("demon is speaking");
+            demonAudio.Play();
+            
             //wait to scroll make the dialogue roll automatically
             StartCoroutine(waitToScroll());       
             
@@ -183,7 +195,8 @@ namespace Yarn.Unity.Example {
         }
         public override IEnumerator DialogueComplete()
         {
-            controlPlot.PlotFinishedStateChange(true);
+            GameObject newDemonContract = Instantiate(Resources.Load<GameObject>(_demonContract), content.transform);
+            //controlPlot.PlotFinishedStateChange(true);
             Debug.Log ("Complete!");
             yield break;
         }
