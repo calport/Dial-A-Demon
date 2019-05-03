@@ -21,6 +21,9 @@ public class GameSettings
         //if there has save file, read it.
         //otherwise create one and save all the initial settings
     }
-    
-    public void Clear(){}
+
+    public void Clear()
+    {
+        Debug.Log("Game Setting is destroyed");
+    }
 }

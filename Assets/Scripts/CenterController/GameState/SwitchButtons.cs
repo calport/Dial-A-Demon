@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class ButtonRegister : MonoSingleton<ButtonRegister>
+public class ButtonRegister : ScriptableObject
 {
     public List<Button> ToTextingPage;
     public List<Button> ToPhoneCallPage;
