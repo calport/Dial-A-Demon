@@ -68,7 +68,7 @@ public class Game : MonoBehaviour
             Services.gameStates.Init();
         }
     
-    void ReInit()
+    public void ReInit()
     {
         //update the reference info in specific info files
         Debug.Log(FindObjectOfType<ReferenceInfo>());
@@ -76,7 +76,7 @@ public class Game : MonoBehaviour
         Debug.Log(Services.referenceInfo.ToMainMenuPage[0]);
         
         //update the reference info in all the system managers
-        Services.gameStates.ReInitWhenSceneLoad();
+        //Services.gameStates.ReInitWhenSceneLoad();
     }
 
     void Clear()

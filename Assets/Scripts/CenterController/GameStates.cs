@@ -91,6 +91,7 @@ public class GameStates
     {
         public override void OnEnter()
         {
+            
             //remember to change
             if (SceneManager.GetActiveScene().buildIndex != Services.referenceInfo.GetSceneWithName("Main"))
             {
@@ -100,17 +101,24 @@ public class GameStates
             }
             else
             {
+                GameObject mainmenu;
+                Services.referenceInfo.BigPage.TryGetValue("MainMenu", out mainmenu);
+                mainmenu.SetActive(true);
+                
                 GameObject Page;
-                Context.pageDic.TryGetValue("MenuPage", out Page);
+                Services.referenceInfo.MenuPage.TryGetValue("MenuPage", out Page);
                 Context.CanvasOn(Page.GetComponent<CanvasGroup>());
             }
         }
         
         public override void OnExit()
         {
+            GameObject mainmenu;
+            Services.referenceInfo.BigPage.TryGetValue("MainMenu", out mainmenu);
+            mainmenu.SetActive(false);
+                
             GameObject Page;
-            Context.pageDic.TryGetValue("MenuPage", out Page);
-            
+            Services.referenceInfo.MenuPage.TryGetValue("MenuPage", out Page);
             Context.CanvasOff(Page.GetComponent<CanvasGroup>());
         }
         
@@ -124,26 +132,44 @@ public class GameStates
             TransitionToPreviousState();
         }
     }
+    
     public class DialPage : GameStatesList
     {
+        
         public override void OnEnter()
         {
-            GameObject Page;
-            Context.pageDic.TryGetValue("DialPage", out Page);
             
-            Debug.Assert(Page.GetComponent<CanvasGroup>());
-            Context.CanvasOn(Page.GetComponent<CanvasGroup>());
+            //remember to change
+            if (SceneManager.GetActiveScene().buildIndex != Services.referenceInfo.GetSceneWithName("Main"))
+            {
+                
+                SceneManager.LoadSceneAsync(Services.referenceInfo.GetSceneWithName("Main"));
+                TransitionTo<SceneChanging>();
+            }
+            else
+            {
+                GameObject mainmenu;
+                Services.referenceInfo.BigPage.TryGetValue("MainMenu", out mainmenu);
+                mainmenu.SetActive(true);
+                Debug.Log("seet true");
+                
+                GameObject Page;
+                Services.referenceInfo.MenuPage.TryGetValue("DialPage", out Page);
+                Context.CanvasOn(Page.GetComponent<CanvasGroup>());
+            }
         }
         
         public override void OnExit()
         {
+            GameObject mainmenu;
+            Services.referenceInfo.BigPage.TryGetValue("MainMenu", out mainmenu);
+            mainmenu.SetActive(false);
+                
             GameObject Page;
-            Context.pageDic.TryGetValue("DialPage", out Page);
-            
-            Debug.Assert(Page.GetComponent<CanvasGroup>());
+            Services.referenceInfo.MenuPage.TryGetValue("DialPage", out Page);
             Context.CanvasOff(Page.GetComponent<CanvasGroup>());
         }
-        
+       
         public override void OnSceneChanged(){}
     }
     
@@ -153,19 +179,34 @@ public class GameStates
     {
         public override void OnEnter()
         {
-            GameObject Page;
-            Context.pageDic.TryGetValue("TextPage", out Page);
             
-            Debug.Assert(Page.GetComponent<CanvasGroup>());
-            Context.CanvasOn(Page.GetComponent<CanvasGroup>());
+            //remember to change
+            if (SceneManager.GetActiveScene().buildIndex != Services.referenceInfo.GetSceneWithName("Main"))
+            {
+                
+                SceneManager.LoadSceneAsync(Services.referenceInfo.GetSceneWithName("Main"));
+                TransitionTo<SceneChanging>();
+            }
+            else
+            {
+                GameObject mainmenu;
+                Services.referenceInfo.BigPage.TryGetValue("MainMenu", out mainmenu);
+                mainmenu.SetActive(true);
+                
+                GameObject Page;
+                Services.referenceInfo.MenuPage.TryGetValue("TextPage", out Page);
+                Context.CanvasOn(Page.GetComponent<CanvasGroup>());
+            }
         }
         
         public override void OnExit()
         {
+            GameObject mainmenu;
+            Services.referenceInfo.BigPage.TryGetValue("MainMenu", out mainmenu);
+            mainmenu.SetActive(false);
+                
             GameObject Page;
-            Context.pageDic.TryGetValue("TextPage", out Page);
-            
-            Debug.Assert(Page.GetComponent<CanvasGroup>());
+            Services.referenceInfo.MenuPage.TryGetValue("TextPage", out Page);
             Context.CanvasOff(Page.GetComponent<CanvasGroup>());
         }
         
@@ -174,24 +215,39 @@ public class GameStates
 
     public class FinalRitualPage : GameStatesList
     {
+        
         public override void OnEnter()
         {
-            GameObject Page;
-            Context.pageDic.TryGetValue("FinalRitualPage", out Page);
             
-            Debug.Assert(Page.GetComponent<CanvasGroup>());
-            Context.CanvasOn(Page.GetComponent<CanvasGroup>());
+            //remember to change
+            if (SceneManager.GetActiveScene().buildIndex != Services.referenceInfo.GetSceneWithName("Main"))
+            {
+                
+                SceneManager.LoadSceneAsync(Services.referenceInfo.GetSceneWithName("Main"));
+                TransitionTo<SceneChanging>();
+            }
+            else
+            {
+                GameObject mainmenu;
+                Services.referenceInfo.BigPage.TryGetValue("MainMenu", out mainmenu);
+                mainmenu.SetActive(true);
+                
+                GameObject Page;
+                Services.referenceInfo.MenuPage.TryGetValue("FinalRitualPage", out Page);
+                Context.CanvasOn(Page.GetComponent<CanvasGroup>());
+            }
         }
         
         public override void OnExit()
         {
+            GameObject mainmenu;
+            Services.referenceInfo.BigPage.TryGetValue("MainMenu", out mainmenu);
+            mainmenu.SetActive(false);
+                
             GameObject Page;
-            Context.pageDic.TryGetValue("FinalRitualPage", out Page);
-            
-            Debug.Assert(Page.GetComponent<CanvasGroup>());
+            Services.referenceInfo.MenuPage.TryGetValue("FinalRitualPage", out Page);
             Context.CanvasOff(Page.GetComponent<CanvasGroup>());
         }
-        
         public override void OnSceneChanged(){}
     }
 
@@ -199,19 +255,29 @@ public class GameStates
     {
         public override void OnEnter()
         {
-            if (SceneManager.GetActiveScene().buildIndex != Services.referenceInfo.GetSceneWithName("Setting"))
+            
+            //remember to change
+            if (SceneManager.GetActiveScene().buildIndex != Services.referenceInfo.GetSceneWithName("Main"))
             {
                 
-                SceneManager.LoadSceneAsync(Services.referenceInfo.GetSceneWithName("Setting"));
+                SceneManager.LoadSceneAsync(Services.referenceInfo.GetSceneWithName("Main"));
                 TransitionTo<SceneChanging>();
+            }
+            else
+            {
+                GameObject setting;
+                Services.referenceInfo.BigPage.TryGetValue("Setting", out setting);
+                setting.SetActive(true);
             }
         }
         
         public override void OnExit()
         {
-            
+            GameObject setting;
+            Services.referenceInfo.BigPage.TryGetValue("Setting", out setting);
+            setting.SetActive(false);
         }
-        
+
         public override void OnSceneChanged(){}
     }
     
@@ -219,17 +285,14 @@ public class GameStates
     {
         public override void OnEnter()
         {
+            
+            //remember to change
             if (SceneManager.GetActiveScene().buildIndex != Services.referenceInfo.GetSceneWithName("OpeningRitual"))
             {
-
+                
                 SceneManager.LoadSceneAsync(Services.referenceInfo.GetSceneWithName("OpeningRitual"));
                 TransitionTo<SceneChanging>();
             }
-        }
-
-        public override void OnExit()
-        {
-           
         }
         
         public override void OnSceneChanged(){}
@@ -270,7 +333,6 @@ public class GameStates
     {
    
         if (SceneManager.GetActiveScene().buildIndex == Services.referenceInfo.GetSceneWithName("Main")) {_fsm.TransitionTo<MenuPage>(); return;}
-        if (SceneManager.GetActiveScene().buildIndex == Services.referenceInfo.GetSceneWithName("Setting")) {_fsm.TransitionTo<SettingPage>(); return;}
         if (SceneManager.GetActiveScene().buildIndex == Services.referenceInfo.GetSceneWithName("OpeningRitual")){_fsm.TransitionTo<OpeningRitualPage>(); return;}
         
         _fsm.TransitionTo<OpeningRitualPage>();
