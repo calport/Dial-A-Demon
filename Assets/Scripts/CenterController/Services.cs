@@ -10,6 +10,7 @@ public class Services
     public static GameSettings gameSettings;
     public static PlotManager plotManager;
     public static GameStates gameStates;
+    public static EventManager eventManager;
 
     #endregion
 
@@ -18,5 +19,9 @@ public class Services
     public static ReferenceInfo referenceInfo;
 
     #endregion
+
+    #region Library reference
+
     
+    #endregion
 }

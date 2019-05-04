@@ -22,6 +22,8 @@ public class FSM<TContext>
     // We keep track of the state machine's current state and expose it through a public
     // property in case someone needs to query it.
     public State CurrentState { get; private set; }
+    
+    public State PreviousState { get; private set; }
 
     // We don't want to change the current state in the middle of an update, so when a transition is called
     private State _pendingState;
@@ -51,12 +53,21 @@ public class FSM<TContext>
         _pendingState = GetOrCreateState<TState>();
     }
 
+    public void TransitionToPreviousState()
+    {
+        if (PreviousState != null)
+        {
+            _pendingState = PreviousState;
+        }
+    }
+
     // Actually transition to any pending state
     private void PerformPendingTransition()
     {
         if (_pendingState != null)
         {
             if (CurrentState != null) CurrentState.OnExit();
+            PreviousState = CurrentState;
             CurrentState = _pendingState;
             CurrentState.OnEnter();
             _pendingState = null;
@@ -103,6 +114,11 @@ public class FSM<TContext>
         protected void TransitionTo<TState>() where TState : State
         {
             Parent.TransitionTo<TState>();
+        }
+
+        protected void TransitionToPreviousState()
+        {
+            Parent.TransitionToPreviousState();
         }
 
         // NOTE: These methods are all public because if they were protected or private the FSM couldn't

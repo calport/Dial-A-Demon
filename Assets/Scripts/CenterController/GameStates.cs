@@ -66,14 +66,22 @@ public class GameStates
     public void Update()
     {
         _fsm.Update();
+        if (SceneManager.GetActiveScene().isLoaded)
+        {
+            ((GameStatesList) _fsm.CurrentState).OnSceneChanged();
+        }
     }
-   
+
     public void Clear(){}
 
     #endregion
 
     #region States switch situation
-    public class GameStatesList : FSM<GameStates>.State{}
+
+    public class GameStatesList : FSM<GameStates>.State
+    {
+        public virtual void OnSceneChanged(){}
+    }
 
     #endregion
 
@@ -84,13 +92,18 @@ public class GameStates
         public override void OnEnter()
         {
             //remember to change
-            if (SceneManager.GetActiveScene().buildIndex != Services.referenceInfo.GetSceneWithName("Main")) SceneManager.LoadScene(Services.referenceInfo.GetSceneWithName("Main"));
-            
-            GameObject Page;
-            Context.pageDic.TryGetValue("MenuPage", out Page);
-            
-            Debug.Assert(Page.GetComponent<CanvasGroup>());
-            Context.CanvasOn(Page.GetComponent<CanvasGroup>());
+            if (SceneManager.GetActiveScene().buildIndex != Services.referenceInfo.GetSceneWithName("Main"))
+            {
+                
+                SceneManager.LoadSceneAsync(Services.referenceInfo.GetSceneWithName("Main"));
+                TransitionTo<SceneChanging>();
+            }
+            else
+            {
+                GameObject Page;
+                Context.pageDic.TryGetValue("MenuPage", out Page);
+                Context.CanvasOn(Page.GetComponent<CanvasGroup>());
+            }
         }
         
         public override void OnExit()
@@ -98,11 +111,19 @@ public class GameStates
             GameObject Page;
             Context.pageDic.TryGetValue("MenuPage", out Page);
             
-            Debug.Assert(Page.GetComponent<CanvasGroup>());
             Context.CanvasOff(Page.GetComponent<CanvasGroup>());
         }
+        
+        public override void OnSceneChanged(){}
     }
 
+    public class SceneChanging : GameStatesList
+    {
+        public override void OnSceneChanged()
+        {
+            TransitionToPreviousState();
+        }
+    }
     public class DialPage : GameStatesList
     {
         public override void OnEnter()
@@ -122,6 +143,8 @@ public class GameStates
             Debug.Assert(Page.GetComponent<CanvasGroup>());
             Context.CanvasOff(Page.GetComponent<CanvasGroup>());
         }
+        
+        public override void OnSceneChanged(){}
     }
     
     public class PhoneCallPage : GameStatesList{}
@@ -145,6 +168,8 @@ public class GameStates
             Debug.Assert(Page.GetComponent<CanvasGroup>());
             Context.CanvasOff(Page.GetComponent<CanvasGroup>());
         }
+        
+        public override void OnSceneChanged(){}
     }
 
     public class FinalRitualPage : GameStatesList
@@ -166,32 +191,48 @@ public class GameStates
             Debug.Assert(Page.GetComponent<CanvasGroup>());
             Context.CanvasOff(Page.GetComponent<CanvasGroup>());
         }
+        
+        public override void OnSceneChanged(){}
     }
 
     public class SettingPage : GameStatesList
     {
         public override void OnEnter()
         {
-            if (SceneManager.GetActiveScene().buildIndex != Services.referenceInfo.GetSceneWithName("Setting")) SceneManager.LoadScene(Services.referenceInfo.GetSceneWithName("Setting"));
+            if (SceneManager.GetActiveScene().buildIndex != Services.referenceInfo.GetSceneWithName("Setting"))
+            {
+                
+                SceneManager.LoadSceneAsync(Services.referenceInfo.GetSceneWithName("Setting"));
+                TransitionTo<SceneChanging>();
+            }
         }
         
         public override void OnExit()
         {
             
         }
+        
+        public override void OnSceneChanged(){}
     }
     
     public class OpeningRitualPage : GameStatesList
     {
         public override void OnEnter()
         {
-            if (SceneManager.GetActiveScene().buildIndex != Services.referenceInfo.GetSceneWithName("OpeningRitual")) SceneManager.LoadScene(Services.referenceInfo.GetSceneWithName("OpeningRitual"));
+            if (SceneManager.GetActiveScene().buildIndex != Services.referenceInfo.GetSceneWithName("OpeningRitual"))
+            {
+
+                SceneManager.LoadSceneAsync(Services.referenceInfo.GetSceneWithName("OpeningRitual"));
+                TransitionTo<SceneChanging>();
+            }
         }
-        
+
         public override void OnExit()
         {
            
         }
+        
+        public override void OnSceneChanged(){}
     }
 
     #endregion
@@ -200,11 +241,11 @@ public class GameStates
 
     void RegistePage()
     {
-        pageDic.Add("MenuPage",GameObject.Find("MenuPage"));
-        pageDic.Add("TextPage", GameObject.Find("TextingPage"));
-        pageDic.Add("DialPage",GameObject.Find("DialPage"));
-        pageDic.Add("DemonCallingPage",GameObject.Find("DemonCallingPage"));
-        pageDic.Add("FinalRitualPage",GameObject.Find("FinalRitualPage"));
+        if(GameObject.Find("MenuPage") && !pageDic.ContainsKey("MenuPage")) pageDic.Add("MenuPage",GameObject.Find("MenuPage"));
+        if(GameObject.Find("TextingPage") && !pageDic.ContainsKey("TextPage")) pageDic.Add("TextPage", GameObject.Find("TextingPage"));
+        if(GameObject.Find("DialPage") && !pageDic.ContainsKey("DialPage")) pageDic.Add("DialPage",GameObject.Find("DialPage"));
+        if(GameObject.Find("DemonCallingPage") && !pageDic.ContainsKey("DemonCallingPage")) pageDic.Add("DemonCallingPage",GameObject.Find("DemonCallingPage"));
+        if(GameObject.Find("FinalRitualPage") && !pageDic.ContainsKey("FinalRitualPage")) pageDic.Add("FinalRitualPage",GameObject.Find("FinalRitualPage"));
     }
 
     void CanvasOn(CanvasGroup canvas)
@@ -232,8 +273,9 @@ public class GameStates
         if (SceneManager.GetActiveScene().buildIndex == Services.referenceInfo.GetSceneWithName("Setting")) {_fsm.TransitionTo<SettingPage>(); return;}
         if (SceneManager.GetActiveScene().buildIndex == Services.referenceInfo.GetSceneWithName("OpeningRitual")){_fsm.TransitionTo<OpeningRitualPage>(); return;}
         
-        _fsm.TransitionTo<MenuPage>();
+        _fsm.TransitionTo<OpeningRitualPage>();
     }
+    
     #endregion
 }
 
