@@ -111,5 +111,15 @@ public class KeyboardInput : MonoBehaviour
                     content, choiceNumber);
         }
     }
+
+    public void Clear()
+    {
+        //save data
+    }
+
+    private void OnDestroy()
+    {
+        Clear();
+    }
 }
 

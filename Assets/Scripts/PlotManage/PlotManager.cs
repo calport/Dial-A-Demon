@@ -35,10 +35,10 @@ public class PlotManager
     
 
     //The actual functioning system which is in charge of the life circle of plots
-    private List<Plot> _pendingPlot;
-    private List<Plot> _deletedPlot;
-    private List<Plot> _newPlot;
-    private List<Plot> _currentPlot;
+    private List<Plot> _pendingPlot = new List<Plot>();
+    private List<Plot> _deletedPlot =new List<Plot>();
+    private List<Plot> _newPlot = new List<Plot>();
+    private List<Plot> _currentPlot = new List<Plot>();
 
     public List<Plot> DeletedPlot
     {

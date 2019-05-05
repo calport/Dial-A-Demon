@@ -12,10 +12,10 @@ public class PostEffect : MonoBehaviour
         Graphics.Blit(source, destination, Mat);
     }*/
 
-    private void OnPostRender(RenderTexture source, RenderTexture destination)
+    /*private void OnPostRender(RenderTexture source, RenderTexture destination)
     {
         source = this.GetComponent<Camera>().targetTexture;
         Graphics.Blit(source, destination, Mat);
-    }
+    }*/
 
-}
+ }
