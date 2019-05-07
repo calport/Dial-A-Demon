@@ -23,7 +23,7 @@ public class PlotManager
         get { return _plotNumber; }
     }
 
-    public void RegisterNewPlot<T>(Plot newPlot) where T : Plot
+    public void RegisterNewPlot<T>(T newPlot) where T : Plot
     {
         TotalTask.Add(newPlot);        
     }
@@ -59,9 +59,12 @@ public class PlotManager
 
     public void DeletePlot(Plot newPlot)
     {
-        _deletedPlot.Add(newPlot);
-        _currentPlot.Remove(newPlot);
-        newPlot.Clean();
+        if (_currentPlot.Contains(newPlot))
+        {
+            _deletedPlot.Add(newPlot);
+            _currentPlot.Remove(newPlot);
+            newPlot.Clean();
+        }
     }
 
     //initiate everything when the game first start
@@ -84,6 +87,7 @@ public class PlotManager
             {
                 plot.InitTime();
             }
+            AddPlot(TotalTask[0]);
             //not really need this if the order was set in the beginning, but if the register becomes dynamic, the system should be careful with the insert plot
             //because the aiming time is not updated all the time, and there is no use of the arrange calendar function
             //ArrangeCalendar();

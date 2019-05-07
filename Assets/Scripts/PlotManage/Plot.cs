@@ -28,6 +28,8 @@ public abstract class Plot
 
     public void InitTime()
     {
+        //TODO 
+        //simple add or settled time 
         _plotStartTime = Services.plotManager.StartTime.AddDays(Day);
         _plotStartTime = Services.plotManager.StartTime.AddHours(Hour);
         _plotStartTime = Services.plotManager.StartTime.AddMinutes(Minute);
@@ -103,11 +105,13 @@ public class TextPlot : Plot
     public override void Init()
     {
         //find the dialogueRunner to control and get info
+        while(!GameObject.FindObjectOfType<DialogueRunner>()){}
         _dialogueRunner = GameObject.FindObjectOfType<DialogueRunner>();
         _dialogueRunner.sourceText[0] = Resources.Load(_fileLocation) as TextAsset;
         _dialogueUI = _dialogueRunner.dialogueUI;
         //register the dialogueRunner
         _dialogueUI.controlPlot = this;
+        _dialogueRunner.StartDialogue();
     }
     
     public virtual void Update(){}
