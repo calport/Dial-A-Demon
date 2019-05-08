@@ -11,11 +11,15 @@ public class MicrophoneRepeat : MonoBehaviour
 
     public GameObject[] words;
     public GameObject demonResponds;
+    public GameObject wordScene;
+
+    public float micThreshold; 
     
     // Start is called before the first frame update
     void Start()
     {
-        RepeatedTime = 0; 
+        RepeatedTime = 0;
+        micThreshold = .2f; 
         StartCoroutine(WaitForWords()); 
     }
 
@@ -80,7 +84,9 @@ public class MicrophoneRepeat : MonoBehaviour
         Handheld.Vibrate();
         demonResponds.SetActive(true);
         yield return new WaitForSeconds(1);
-        SceneManager.LoadScene("Texting");
+        //SceneManager.LoadScene("Texting");
+        demonResponds.SetActive(false);
+        wordScene.SetActive(false);
     }
     
 }
