@@ -20,7 +20,7 @@ public class ParticleFollow : MonoBehaviour
     void Update()
     {
         newLocation = new Vector2(FollowObj.transform.position.x, FollowObj.transform.position.y);
-        var worldLoc = Camera.main.ScreenToWorldPoint(newLocation);
-        gameObject.transform.position = worldLoc; 
+        //var worldLoc = Camera.main.ScreenToWorldPoint(newLocation);
+        gameObject.transform.position = newLocation; 
     }
 }
