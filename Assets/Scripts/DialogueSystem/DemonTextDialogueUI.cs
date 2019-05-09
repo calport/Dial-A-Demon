@@ -63,7 +63,7 @@ namespace Yarn.Unity.Example {
         {
             _demonTextBox = "Prefabs/MessageBubble_Demon";
             _playerTextBox = "Prefabs/MessageBubble_Player";
-            _demonContract = "Prefabs/pdfAttachment";
+            _demonContract = "Prefabs/DemonContract";
             
             //finding demon texting audio
             demonAudio = GameObject.Find("DemonTexted").GetComponent<AudioSource>();
