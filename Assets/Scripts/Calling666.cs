@@ -26,7 +26,7 @@ public class Calling666 : MonoBehaviour
         //just for milestone 2 demo 
         declineCall.onClick.AddListener(hangUp);
         
-        
+        StartCoroutine(PhoneCall());
         
         numberButton = GameObject.Find("666_button").GetComponent<Button>();
         numberButton.onClick.AddListener(Dial6);
@@ -38,12 +38,7 @@ public class Calling666 : MonoBehaviour
 
     }
 
-    public void MakeACall()
-    {
-        //I'M CUTE DIRTY CODE 
-        StartCoroutine(PhoneCall());
-    }
-
+   
     IEnumerator PhoneCall()
     {
         yield return 0; 
