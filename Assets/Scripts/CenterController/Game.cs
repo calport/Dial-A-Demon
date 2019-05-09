@@ -22,6 +22,8 @@ public class Game : MonoBehaviour
         Services.gameStates.Start();
         SceneManager.sceneLoaded += OnSceneLoaded;
         //Services.eventManager.AddHandler<SceneChanged>(OnSceneChange);
+
+        Input.simulateMouseWithTouches = true;
     }
     
     // Update is called once per frame

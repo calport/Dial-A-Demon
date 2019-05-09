@@ -3957,7 +3957,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   sourceText:
-  - {fileID: 4900000, guid: 5208b04dbd157be46a89d7742cb2c5b1, type: 3}
+  - {fileID: 4900000, guid: bbd4307864c97b34586a109162059a2c, type: 3}
   stringGroups: []
   shouldOverrideLanguage: 0
   overrideLanguage: 10
@@ -7112,9 +7112,9 @@ CanvasGroup:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 424770441}
   m_Enabled: 1
-  m_Alpha: 0
-  m_Interactable: 0
-  m_BlocksRaycasts: 0
+  m_Alpha: 1
+  m_Interactable: 1
+  m_BlocksRaycasts: 1
   m_IgnoreParentGroups: 0
 --- !u!1 &428795671
 GameObject:
@@ -7449,6 +7449,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   whereToGo: 0
+  callDemon: {fileID: 0}
 --- !u!1 &479957168
 GameObject:
   m_ObjectHideFlags: 0
@@ -7859,9 +7860,9 @@ CanvasGroup:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 505981821}
   m_Enabled: 1
-  m_Alpha: 1
-  m_Interactable: 1
-  m_BlocksRaycasts: 1
+  m_Alpha: 0
+  m_Interactable: 0
+  m_BlocksRaycasts: 0
   m_IgnoreParentGroups: 0
 --- !u!1 &519420028
 GameObject:
@@ -7873,6 +7874,7 @@ GameObject:
   m_Component:
   - component: {fileID: 519420032}
   - component: {fileID: 519420031}
+  - component: {fileID: 519420030}
   m_Layer: 0
   m_Name: Main Camera
   m_TagString: Untagged
@@ -7880,6 +7882,27 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
+--- !u!223 &519420030
+Canvas:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 519420028}
+  m_Enabled: 1
+  serializedVersion: 3
+  m_RenderMode: 2
+  m_Camera: {fileID: 0}
+  m_PlaneDistance: 100
+  m_PixelPerfect: 0
+  m_ReceivesEvents: 1
+  m_OverrideSorting: 0
+  m_OverridePixelPerfect: 0
+  m_SortingBucketNormalizedSize: 0
+  m_AdditionalShaderChannelsFlag: 0
+  m_SortingLayerID: 0
+  m_SortingOrder: 0
+  m_TargetDisplay: 0
 --- !u!20 &519420031
 Camera:
   m_ObjectHideFlags: 0
@@ -7922,20 +7945,25 @@ Camera:
   m_OcclusionCulling: 0
   m_StereoConvergence: 10
   m_StereoSeparation: 0.022
---- !u!4 &519420032
-Transform:
+--- !u!224 &519420032
+RectTransform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 519420028}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 225, y: 412, z: -122}
+  m_LocalPosition: {x: 0, y: 0, z: -122}
   m_LocalScale: {x: 1, y: 1, z: 13.413363}
   m_Children: []
   m_Father: {fileID: 1775270162}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0.5, y: 0.5}
+  m_AnchorMax: {x: 0.5, y: 0.5}
+  m_AnchoredPosition: {x: 225, y: 412}
+  m_SizeDelta: {x: 100, y: 100}
+  m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &519779874
 GameObject:
   m_ObjectHideFlags: 0
@@ -14076,6 +14104,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   whereToGo: 3
+  callDemon: {fileID: 0}
 --- !u!1 &990378542
 GameObject:
   m_ObjectHideFlags: 0
@@ -14271,6 +14300,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   whereToGo: 0
+  callDemon: {fileID: 0}
 --- !u!1 &1002003165
 GameObject:
   m_ObjectHideFlags: 0
@@ -14476,6 +14506,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   whereToGo: 0
+  callDemon: {fileID: 0}
 --- !u!1 &1021833657
 GameObject:
   m_ObjectHideFlags: 0
@@ -19764,7 +19795,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: ffddjlskjdlkdj
+  m_Text: 
 --- !u!222 &1066329700
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -30190,6 +30221,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   whereToGo: 1
+  callDemon: {fileID: 0}
 --- !u!1 &1453924832
 GameObject:
   m_ObjectHideFlags: 0
@@ -42733,6 +42765,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   whereToGo: 4
+  callDemon: {fileID: 0}
 --- !u!1 &2013319252
 GameObject:
   m_ObjectHideFlags: 0
