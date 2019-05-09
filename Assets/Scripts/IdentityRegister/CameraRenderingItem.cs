@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+
 public class CameraRenderingItem : MonoBehaviour
 {
     public Page pageBelongedTo;
@@ -12,7 +13,7 @@ public class CameraRenderingItem : MonoBehaviour
         if (!Services.referenceInfo.CameraRenderingItem[Convert.ToInt32(pageBelongedTo)].Contains(gameObject))
         {
             Services.referenceInfo.CameraRenderingItem[Convert.ToInt32(pageBelongedTo)].Add(gameObject);
-        }
+        } 
     }
 
     private void OnEnable()
