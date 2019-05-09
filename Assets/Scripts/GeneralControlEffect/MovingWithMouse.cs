@@ -11,7 +11,8 @@ public class MovingWithMouse : MonoBehaviour, IPointerEnterHandler, IPointerExit
     void ChangePos(Touch touch)
     {
         Vector3 posChange = touch.position;
-        transform.position = new Vector3(posChange.x, posChange.y, 0);                         
+        transform.position = Camera.main.WorldToScreenPoint(new Vector3(posChange.x, posChange.y, 0));
+
     }
     
     public void OnPointerEnter(PointerEventData pointerEventData)
