@@ -4,8 +4,21 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
+public enum Page
+{
+    MainMenu,
+    TextingPage,
+    PhoneCallPage,
+    DialPage,
+    SettingPage,
+    OpeningRitualPage,
+    FinalRitualPage
+}
 public class ReferenceInfo : MonoSingleton<ReferenceInfo>
 {
+    //the size of the array is the same as the number of the page;
+    public List<GameObject>[] CameraRenderingItem = new List<GameObject>[7];
+    
     public List<Button> ToTextingPage = new List<Button>();
     public List<Button> ToPhoneCallPage= new List<Button>();
     public List<Button> ToSettingPage= new List<Button>();
@@ -19,6 +32,11 @@ public class ReferenceInfo : MonoSingleton<ReferenceInfo>
     public Dictionary<string, GameObject> BigPage = new Dictionary<string, GameObject>();
     private void Awake()
     {
+        for(int i = 0; i <CameraRenderingItem.Length; i++)
+        {
+            CameraRenderingItem[i] = new List<GameObject>();
+        }
+        
         SceneDic.Add("Main",1);
         SceneDic.Add("OpeningRitual",0);
         

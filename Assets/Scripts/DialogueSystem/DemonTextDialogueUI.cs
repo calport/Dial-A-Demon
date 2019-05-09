@@ -138,11 +138,9 @@ namespace Yarn.Unity.Example {
         // called by the sent button to make a selection
         public void SendWords()
         {
-            Debug.Log("send options");
             Debug.Log(OptionsCollectionLength);
             if (selectedOption < OptionsCollectionLength && textBox!= null)
             {
-                Debug.Log("send options");
                 // show text
                 GameObject newPlayerBox = Instantiate(Resources.Load<GameObject>(_playerTextBox), content.transform);
                 StartCoroutine(waitToScroll());       
@@ -167,7 +165,7 @@ namespace Yarn.Unity.Example {
                     key.content = String.Empty;
                 }
                 
-                Debug.Log("keyboardclean");
+                //Debug.Log("keyboardclean");
             }
         }
 
