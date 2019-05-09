@@ -1136,7 +1136,7 @@ MonoBehaviour:
   magicCircle: {fileID: 846220230}
   threshold: 0.01
   DurTime: 0
-  MicrophoneVisual: {fileID: 0}
+  MicrophoneVisual: {fileID: 954308215}
   microphoneGetSoundTime:
   - 0.5
   - 0.5
