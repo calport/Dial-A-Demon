@@ -19,6 +19,7 @@ public class Game : MonoBehaviour
 
     private void Start()
     {
+        Services.gameStates.Start();
         SceneManager.sceneLoaded += OnSceneLoaded;
         //Services.eventManager.AddHandler<SceneChanged>(OnSceneChange);
     }
@@ -50,23 +51,23 @@ public class Game : MonoBehaviour
     
     //init must include the start of all the components and the reading of all ths save files
     void Init()
-        {
-            //import all the library utils
-            
-            //import all the data file
-            Services.referenceInfo = FindObjectOfType<ReferenceInfo>();
-            Services.gameSettings = new GameSettings();
-            Services.gameSettings.Init();
-            //import the system so it starts working
-            Services.game = this;
-            Services.eventManager = new EventManager();
-            Services.plotManager = new PlotManager();
-            //some logic problem here that doesnt consider the save situation
-            //TODO
-            Services.plotManager.Init();
-            Services.gameStates = new GameStates();
-            Services.gameStates.Init();
-        }
+    {
+        //import all the library utils
+        
+        //import all the data file
+        Services.referenceInfo = FindObjectOfType<ReferenceInfo>();
+        Services.gameSettings = new GameSettings();
+        Services.gameSettings.Init();
+        //import the system so it starts working
+        Services.game = this;
+        Services.eventManager = new EventManager();
+        Services.plotManager = new PlotManager();
+        //some logic problem here that doesnt consider the save situation
+        //TODO
+        Services.plotManager.Init();
+        Services.gameStates = new GameStates();
+        Services.gameStates.Init();
+    }
     
     public void ReInit()
     {
