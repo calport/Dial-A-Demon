@@ -35,7 +35,8 @@ public class MagicCircle : MonoBehaviour
         Debug.Log(noLongerRubbing);
         if (noLongerRubbing)
         {
-            if (rend.material.color.a < 0.5f)
+            //if (rend.material.color.a < 0.5f)
+            if (rend.material.color.a < 0.2f)
             {
                 gameObject.GetComponent<DrawCircle>().speed =
                     Mathf.Lerp(gameObject.GetComponent<DrawCircle>().speed, 3.0f, 2.0f * Time.deltaTime);
@@ -59,14 +60,16 @@ public class MagicCircle : MonoBehaviour
 
         }
         
-        if (rend.material.color.a > 0.8f)
+        //if (rend.material.color.a > 0.8f)
+        if (rend.material.color.a > 0.2f)
         {
             Color c = demonCircle.GetComponent<SpriteRenderer>().color;
             c.a = Mathf.Lerp(c.a,1,0.1f*Time.deltaTime);
             demonCircle.GetComponent<SpriteRenderer>().color = c;
         }
 
-        if (demonCircle.GetComponent<SpriteRenderer>().color.a > 0.4f && !startFade)
+        //if (demonCircle.GetComponent<SpriteRenderer>().color.a > 0.4f && !startFade)
+        if (demonCircle.GetComponent<SpriteRenderer>().color.a > 0.2f && !startFade)
         {
             startFade = true;
             fadeTime = Time.time;
