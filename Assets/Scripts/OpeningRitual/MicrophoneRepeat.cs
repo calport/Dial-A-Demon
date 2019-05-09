@@ -134,12 +134,14 @@ public class MicrophoneRepeat : MonoBehaviour
     
                 var coroutineLastTime = Time.time - startCoroutineTime;
     
-                if (coroutineLastTime > 2.0f)
+                if (coroutineLastTime > 3.0f)
                 {
+                    
                     finishCheck = true;
                    
                     startGetSoundTime = 0.0f;
-                    nextCoroutine = StartCoroutine(WordsUp(order++));
+                    order++;
+                    nextCoroutine = StartCoroutine(WordsUp(order));
                 }
     
                 if (audioVisualizer.largestSound > threshold)
