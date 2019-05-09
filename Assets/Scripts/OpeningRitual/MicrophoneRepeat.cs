@@ -81,9 +81,9 @@ public class MicrophoneRepeat : MonoBehaviour
         Handheld.Vibrate();
         demonResponds.SetActive(true);
         yield return new WaitForSeconds(1);
-        //SceneManager.LoadScene("Texting");
-        demonResponds.SetActive(false);
-        wordScene.SetActive(false);
+        SceneManager.LoadScene("Texting");
+        //demonResponds.SetActive(false);
+        //wordScene.SetActive(false);
     }
     
 }
