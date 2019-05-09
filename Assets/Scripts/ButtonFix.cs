@@ -5,21 +5,19 @@ using UnityEngine.Experimental.UIElements;
 
 //figure out how to get rid of this script during summer or before showcase
 public class ButtonFix : MonoBehaviour
-{
-    
-    public Page whereToGo; 
+{    
+    public Page whereToGo;
+    public GameObject callDemon;
     
     //buttons For phone Call 
     
-    //audio for demon call 
-    public AudioSource DemonRinging;
-    public AudioSource hangingUpSound;
+    //don't hate me later
      
     
     // Start is called before the first frame update
     void Start()
     {
-        
+        //callDemon = GameObject.Find("Background");
     }
 
     // Update is called once per frame
@@ -32,8 +30,9 @@ public class ButtonFix : MonoBehaviour
     {
         switch (whereToGo)
         {
-            case Page.DialPage:
+            case Page.DialPage: // call the demon
             {
+                //callDemon.GetComponent<Calling666>().MakeACall();
                 Services.gameStates.ChangeGameState<GameStates.DialPage>(new GameStates.DialPage());
                 break;
             }
@@ -45,7 +44,7 @@ public class ButtonFix : MonoBehaviour
             case Page.SettingPage:
                 Services.gameStates.ChangeGameState<GameStates.SettingPage>(new GameStates.SettingPage());
                 break;
-            case Page.PhoneCallPage:
+            case Page.PhoneCallPage: // demon call you 
             {    
                 Services.gameStates.ChangeGameState<GameStates.PhoneCallPage>(new GameStates.PhoneCallPage());
                 
@@ -58,4 +57,9 @@ public class ButtonFix : MonoBehaviour
             }
         }
     }
+    
+
+
+   
+    
 }
