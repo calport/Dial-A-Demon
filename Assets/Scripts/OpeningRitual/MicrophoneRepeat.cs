@@ -134,7 +134,7 @@ public class MicrophoneRepeat : MonoBehaviour
     
                 var coroutineLastTime = Time.time - startCoroutineTime;
     
-                if (coroutineLastTime > 5.0f)
+                if (coroutineLastTime > 2.0f)
                 {
                     finishCheck = true;
                    

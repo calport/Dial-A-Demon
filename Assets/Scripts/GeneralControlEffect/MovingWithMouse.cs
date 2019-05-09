@@ -15,7 +15,7 @@ public class MovingWithMouse : MonoBehaviour, IPointerEnterHandler, IPointerExit
         var posLength = posChange.magnitude;
         var plantPos = new Vector3(posChange.x, posChange.y, 0)    ;
         var plantLength = plantPos.magnitude;
-        transform.position = plantPos / plantLength * posLength;
+        transform.position = plantPos * 0.65f;
     }
     
     public void OnPointerEnter(PointerEventData pointerEventData)
