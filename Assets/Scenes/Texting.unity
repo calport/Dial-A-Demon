@@ -7319,6 +7319,7 @@ GameObject:
   - component: {fileID: 463352564}
   - component: {fileID: 463352563}
   - component: {fileID: 463352562}
+  - component: {fileID: 463352566}
   m_Layer: 5
   m_Name: BackButton
   m_TagString: Untagged
@@ -7365,7 +7366,18 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 463352563}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 463352566}
+        m_MethodName: goToPage
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
     m_TypeName: UnityEngine.UI.Button+ButtonClickedEvent, UnityEngine.UI, Version=1.0.0.0,
       Culture=neutral, PublicKeyToken=null
 --- !u!114 &463352563
@@ -7424,6 +7436,19 @@ RectTransform:
   m_AnchoredPosition: {x: -319, y: 612}
   m_SizeDelta: {x: 160, y: 30}
   m_Pivot: {x: 0.5, y: 0.5}
+--- !u!114 &463352566
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 463352561}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e970fb3909d1e6040b6fd0d05071fd05, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  whereToGo: 0
 --- !u!1 &479957168
 GameObject:
   m_ObjectHideFlags: 0
@@ -11546,7 +11571,7 @@ MonoBehaviour:
       m_Calls: []
     m_TypeName: UnityEngine.UI.MaskableGraphic+CullStateChangedEvent, UnityEngine.UI,
       Version=1.0.0.0, Culture=neutral, PublicKeyToken=null
-  m_Sprite: {fileID: 21300000, guid: 149c58dfeda4e4704b0014d3285c0612, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 22d34d74ee58147939a56bcddc9f813e, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -13921,6 +13946,7 @@ GameObject:
   - component: {fileID: 971118772}
   - component: {fileID: 971118771}
   - component: {fileID: 971118770}
+  - component: {fileID: 971118773}
   m_Layer: 5
   m_Name: DialButton
   m_TagString: Untagged
@@ -13986,7 +14012,18 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 971118771}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 971118773}
+        m_MethodName: goToPage
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
     m_TypeName: UnityEngine.UI.Button+ButtonClickedEvent, UnityEngine.UI, Version=1.0.0.0,
       Culture=neutral, PublicKeyToken=null
 --- !u!114 &971118771
@@ -14026,6 +14063,19 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 971118768}
   m_CullTransparentMesh: 0
+--- !u!114 &971118773
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 971118768}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e970fb3909d1e6040b6fd0d05071fd05, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  whereToGo: 3
 --- !u!1 &990378542
 GameObject:
   m_ObjectHideFlags: 0
@@ -14271,6 +14321,7 @@ GameObject:
   - component: {fileID: 1013430692}
   - component: {fileID: 1013430691}
   - component: {fileID: 1013430690}
+  - component: {fileID: 1013430693}
   m_Layer: 5
   m_Name: BackButton
   m_TagString: Untagged
@@ -14336,7 +14387,18 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1013430691}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 1013430693}
+        m_MethodName: goToPage
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
     m_TypeName: UnityEngine.UI.Button+ButtonClickedEvent, UnityEngine.UI, Version=1.0.0.0,
       Culture=neutral, PublicKeyToken=null
 --- !u!114 &1013430691
@@ -14376,6 +14438,19 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1013430688}
   m_CullTransparentMesh: 0
+--- !u!114 &1013430693
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1013430688}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e970fb3909d1e6040b6fd0d05071fd05, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  whereToGo: 0
 --- !u!1 &1021833657
 GameObject:
   m_ObjectHideFlags: 0
@@ -14528,8 +14603,8 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 381873069}
   m_HandleRect: {fileID: 381873068}
   m_Direction: 2
-  m_Value: 0
-  m_Size: 0.6576205
+  m_Value: 1
+  m_Size: 1
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:
@@ -29960,6 +30035,7 @@ GameObject:
   - component: {fileID: 1446632262}
   - component: {fileID: 1446632261}
   - component: {fileID: 1446632260}
+  - component: {fileID: 1446632263}
   m_Layer: 5
   m_Name: TextButton
   m_TagString: Untagged
@@ -30025,7 +30101,18 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1446632261}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 1446632263}
+        m_MethodName: goToPage
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
     m_TypeName: UnityEngine.UI.Button+ButtonClickedEvent, UnityEngine.UI, Version=1.0.0.0,
       Culture=neutral, PublicKeyToken=null
 --- !u!114 &1446632261
@@ -30065,6 +30152,19 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1446632258}
   m_CullTransparentMesh: 0
+--- !u!114 &1446632263
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1446632258}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e970fb3909d1e6040b6fd0d05071fd05, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  whereToGo: 1
 --- !u!1 &1453924832
 GameObject:
   m_ObjectHideFlags: 0
@@ -41040,7 +41140,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 0}
-  m_AnchoredPosition: {x: -0.000098228455, y: 7083.0005}
+  m_AnchoredPosition: {x: -0.000098228455, y: 7083.001}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0, y: 1}
 --- !u!114 &1839210070
@@ -42478,6 +42578,7 @@ GameObject:
   - component: {fileID: 2012984908}
   - component: {fileID: 2012984907}
   - component: {fileID: 2012984906}
+  - component: {fileID: 2012984909}
   m_Layer: 5
   m_Name: SettingButton
   m_TagString: Untagged
@@ -42544,8 +42645,8 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 0}
-        m_MethodName: GoToSettings
+      - m_Target: {fileID: 2012984909}
+        m_MethodName: goToPage
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -42594,6 +42695,19 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2012984904}
   m_CullTransparentMesh: 0
+--- !u!114 &2012984909
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2012984904}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e970fb3909d1e6040b6fd0d05071fd05, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  whereToGo: 4
 --- !u!1 &2013319252
 GameObject:
   m_ObjectHideFlags: 0

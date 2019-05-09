@@ -10,6 +10,8 @@ public class Rotate : MonoBehaviour
     private float noiseOffestX = 0f;
     private float noiseOffestY = 0.5f;
     private float noiseOffestZ = 1f;
+    
+    
 
     public float Speed = 10f;
     // Start is called before the first frame update
