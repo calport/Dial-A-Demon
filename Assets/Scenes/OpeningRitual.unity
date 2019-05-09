@@ -1134,7 +1134,7 @@ MonoBehaviour:
   demonResponds: {fileID: 1874502673}
   wordScene: {fileID: 971584882}
   magicCircle: {fileID: 846220230}
-  threshold: 0.004
+  threshold: 0.01
   DurTime: 0
   MicrophoneVisual: {fileID: 954308215}
   microphoneGetSoundTime:
