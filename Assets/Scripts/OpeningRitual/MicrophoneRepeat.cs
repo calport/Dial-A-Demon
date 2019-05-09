@@ -38,7 +38,8 @@ public class MicrophoneRepeat : MonoBehaviour
 
     IEnumerator WaitForWords()
     {
-        yield return new WaitForSeconds(3);
+        //yield return new WaitForSeconds(3);
+        yield return new WaitForSeconds(1);
             
         /*switch (RepeatedTime)
         {

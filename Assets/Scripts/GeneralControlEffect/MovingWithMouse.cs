@@ -10,9 +10,12 @@ public class MovingWithMouse : MonoBehaviour, IPointerEnterHandler, IPointerExit
     
     void ChangePos(Touch touch)
     {
+        
         Vector3 posChange = touch.position;
-        transform.position = Camera.main.WorldToScreenPoint(new Vector3(posChange.x, posChange.y, 0));
-
+        var posLength = posChange.magnitude;
+        var plantPos = new Vector3(posChange.x, posChange.y, 0)    ;
+        var plantLength = plantPos.magnitude;
+        transform.position = plantPos / plantLength * posLength;
     }
     
     public void OnPointerEnter(PointerEventData pointerEventData)
