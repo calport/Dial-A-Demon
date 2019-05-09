@@ -209,8 +209,52 @@ public class GameStates
        
         public override void OnSceneChanged(){}
     }
-    
-    public class PhoneCallPage : GameStatesList{}
+
+    public class PhoneCallPage : GameStatesList
+    {
+        public override void OnEnter()
+        {
+            
+            //remember to change
+            if (SceneManager.GetActiveScene().buildIndex != Services.referenceInfo.GetSceneWithName("Main"))
+            {
+                
+                SceneManager.LoadSceneAsync(Services.referenceInfo.GetSceneWithName("Main"));
+                TransitionTo<SceneChanging>();
+            }
+            else
+            {
+                GameObject mainmenu;
+                Services.referenceInfo.BigPage.TryGetValue("MainMenu", out mainmenu);
+                mainmenu.SetActive(true);
+                
+                GameObject Page;
+                Services.referenceInfo.MenuPage.TryGetValue("DemonCallingPage", out Page);
+                Context.CanvasOn(Page.GetComponent<CanvasGroup>());
+                
+                foreach (var renderedItem in Services.referenceInfo.CameraRenderingItem[global::Page.PhoneCallPage.GetHashCode()])
+                {
+                    renderedItem.SetActive(true);
+                }
+            }
+        }
+        
+        public override void OnExit()
+        {
+            GameObject mainmenu;
+            Services.referenceInfo.BigPage.TryGetValue("MainMenu", out mainmenu);
+            mainmenu.SetActive(false);
+                
+            GameObject Page;
+            Services.referenceInfo.MenuPage.TryGetValue("DemonCallingPage", out Page);
+            Context.CanvasOff(Page.GetComponent<CanvasGroup>());
+            
+            foreach (var renderedItem in Services.referenceInfo.CameraRenderingItem[global::Page.PhoneCallPage.GetHashCode()])
+            {
+                renderedItem.SetActive(false);
+            }
+        }
+    }
 
     public class TextPage : GameStatesList
     {
