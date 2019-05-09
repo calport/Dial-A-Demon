@@ -26,7 +26,7 @@ public class Calling666 : MonoBehaviour
         //just for milestone 2 demo 
         declineCall.onClick.AddListener(hangUp);
         
-        StartCoroutine(PhoneCall());
+        //DemonRinging.Play();
         
         numberButton = GameObject.Find("666_button").GetComponent<Button>();
         numberButton.onClick.AddListener(Dial6);
@@ -38,19 +38,15 @@ public class Calling666 : MonoBehaviour
 
     }
 
-   
-    IEnumerator PhoneCall()
+    public void CallingDemon()
     {
-        yield return 0; 
-        Debug.Log("waited 1 second");
-        
-        yield return new WaitForSeconds(5);
-        Debug.Log("waited for 5 seconds");
-        DemonRinging.Play(0);
+       
         callScreen.SetActive(true);
         Debug.Log("started ringing");
         
     }
+    
+ 
 
     IEnumerator HangUpCall()
     {
