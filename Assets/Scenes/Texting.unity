@@ -477,8 +477,8 @@ RectTransform:
   m_Father: {fileID: 545974121}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0.00000017881393, y: 0}
-  m_AnchorMax: {x: 1, y: 1}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 0, y: 0}
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 20, y: 20}
   m_Pivot: {x: 0.5, y: 0.5}
@@ -1251,9 +1251,9 @@ RectTransform:
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 1, y: 1}
+  m_AnchorMax: {x: 0, y: 0}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: -17, y: -17}
+  m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0, y: 1}
 --- !u!114 &55605505
 MonoBehaviour:
@@ -2049,8 +2049,9 @@ GameObject:
   m_Component:
   - component: {fileID: 83217320}
   - component: {fileID: 83217321}
+  - component: {fileID: 83217322}
   m_Layer: 5
-  m_Name: DemonCallingPage
+  m_Name: PhoneCallPage
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -2086,6 +2087,19 @@ CanvasGroup:
   m_Interactable: 0
   m_BlocksRaycasts: 0
   m_IgnoreParentGroups: 0
+--- !u!114 &83217322
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 83217319}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0a2233eb35d2f6e48aa70a324f00a04f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  nameOfPage: PhoneCallPage
 --- !u!1 &83639469
 GameObject:
   m_ObjectHideFlags: 0
@@ -2195,9 +2209,9 @@ RectTransform:
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 1, y: 1}
+  m_AnchorMax: {x: 0, y: 0}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: -17, y: -17}
+  m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0, y: 1}
 --- !u!114 &90508924
 MonoBehaviour:
@@ -2690,7 +2704,7 @@ RectTransform:
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 1}
+  m_AnchorMax: {x: 0, y: 0}
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 20, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
@@ -3369,6 +3383,7 @@ GameObject:
   - component: {fileID: 170259076}
   - component: {fileID: 170259075}
   - component: {fileID: 170259074}
+  - component: {fileID: 170259077}
   m_Layer: 5
   m_Name: Decline_Button
   m_TagString: Untagged
@@ -3474,6 +3489,20 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 170259072}
   m_CullTransparentMesh: 0
+--- !u!114 &170259077
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 170259072}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ac8af5ca60314754397b0805f3a31723, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  transferToPreviousPage: 1
+  TransToPage: 0
 --- !u!1 &176650989
 GameObject:
   m_ObjectHideFlags: 0
@@ -4705,7 +4734,7 @@ RectTransform:
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 1}
+  m_AnchorMax: {x: 0, y: 0}
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 20, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
@@ -4853,9 +4882,9 @@ RectTransform:
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 1, y: 1}
+  m_AnchorMax: {x: 0, y: 0}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: -17, y: -17}
+  m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0, y: 1}
 --- !u!114 &288133435
 MonoBehaviour:
@@ -6350,9 +6379,9 @@ RectTransform:
   m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 1, y: 0}
-  m_AnchorMax: {x: 1, y: 1}
+  m_AnchorMax: {x: 1, y: 0}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 20, y: -17}
+  m_SizeDelta: {x: 20, y: 0}
   m_Pivot: {x: 1, y: 1}
 --- !u!114 &361189333
 MonoBehaviour:
@@ -6470,8 +6499,8 @@ RectTransform:
   m_Father: {fileID: 329945985}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0.000000059604645, y: 0}
-  m_AnchorMax: {x: 1, y: 1}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 0, y: 0}
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 20, y: 20}
   m_Pivot: {x: 0.5, y: 0.5}
@@ -7045,6 +7074,7 @@ GameObject:
   m_Component:
   - component: {fileID: 424770442}
   - component: {fileID: 424770443}
+  - component: {fileID: 424770444}
   m_Layer: 5
   m_Name: MenuPage
   m_TagString: Untagged
@@ -7086,6 +7116,19 @@ CanvasGroup:
   m_Interactable: 1
   m_BlocksRaycasts: 1
   m_IgnoreParentGroups: 0
+--- !u!114 &424770444
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 424770441}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0a2233eb35d2f6e48aa70a324f00a04f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  nameOfPage: MenuPage
 --- !u!1 &428795671
 GameObject:
   m_ObjectHideFlags: 0
@@ -7336,18 +7379,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 463352563}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 463352566}
-        m_MethodName: goToPage
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
+      m_Calls: []
     m_TypeName: UnityEngine.UI.Button+ButtonClickedEvent, UnityEngine.UI, Version=1.0.0.0,
       Culture=neutral, PublicKeyToken=null
 --- !u!114 &463352563
@@ -7415,11 +7447,11 @@ MonoBehaviour:
   m_GameObject: {fileID: 463352561}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e970fb3909d1e6040b6fd0d05071fd05, type: 3}
+  m_Script: {fileID: 11500000, guid: ac8af5ca60314754397b0805f3a31723, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  whereToGo: 0
-  callDemon: {fileID: 0}
+  transferToPreviousPage: 0
+  TransToPage: 0
 --- !u!1 &479957168
 GameObject:
   m_ObjectHideFlags: 0
@@ -7611,9 +7643,9 @@ RectTransform:
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 1, y: 1}
+  m_AnchorMax: {x: 0, y: 0}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: -17, y: -17}
+  m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0, y: 1}
 --- !u!114 &482837864
 MonoBehaviour:
@@ -7791,6 +7823,7 @@ GameObject:
   m_Component:
   - component: {fileID: 505981822}
   - component: {fileID: 505981823}
+  - component: {fileID: 505981824}
   m_Layer: 5
   m_Name: TextingPage
   m_TagString: Untagged
@@ -7834,6 +7867,19 @@ CanvasGroup:
   m_Interactable: 0
   m_BlocksRaycasts: 0
   m_IgnoreParentGroups: 0
+--- !u!114 &505981824
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 505981821}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0a2233eb35d2f6e48aa70a324f00a04f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  nameOfPage: TextingPage
 --- !u!1 &519420028
 GameObject:
   m_ObjectHideFlags: 0
@@ -8677,7 +8723,7 @@ RectTransform:
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 1}
+  m_AnchorMax: {x: 0, y: 0}
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 10, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
@@ -8893,13 +8939,14 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 569308940}
+  - component: {fileID: 569308941}
   m_Layer: 0
   m_Name: Setting
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &569308940
 Transform:
   m_ObjectHideFlags: 0
@@ -8923,6 +8970,19 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 5
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &569308941
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 569308939}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 07cf7af5f51f48846818de7906b28195, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  nameOfPage: Setting
 --- !u!1 &582564781
 GameObject:
   m_ObjectHideFlags: 0
@@ -9268,9 +9328,9 @@ RectTransform:
   m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 1, y: 0}
-  m_AnchorMax: {x: 1, y: 1}
+  m_AnchorMax: {x: 1, y: 0}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 20, y: -17}
+  m_SizeDelta: {x: 20, y: 0}
   m_Pivot: {x: 1, y: 1}
 --- !u!114 &616709308
 MonoBehaviour:
@@ -11150,7 +11210,7 @@ RectTransform:
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 1}
+  m_AnchorMax: {x: 0, y: 0}
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 20, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
@@ -12885,6 +12945,7 @@ GameObject:
   - component: {fileID: 885998236}
   - component: {fileID: 885998238}
   - component: {fileID: 885998237}
+  - component: {fileID: 885998239}
   m_Layer: 5
   m_Name: FinalRitualPage
   m_TagString: Untagged
@@ -12941,6 +13002,19 @@ MonoBehaviour:
   hangingUpSound: {fileID: 1399666740}
   callScreen: {fileID: 83217319}
   declineCall: {fileID: 170259074}
+--- !u!114 &885998239
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 885998235}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0a2233eb35d2f6e48aa70a324f00a04f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  nameOfPage: FinalRitualPage
 --- !u!1 &889254977
 GameObject:
   m_ObjectHideFlags: 0
@@ -13289,7 +13363,7 @@ RectTransform:
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 1}
+  m_AnchorMax: {x: 0, y: 0}
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 10, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
@@ -14010,18 +14084,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 971118771}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 971118773}
-        m_MethodName: goToPage
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
+      m_Calls: []
     m_TypeName: UnityEngine.UI.Button+ButtonClickedEvent, UnityEngine.UI, Version=1.0.0.0,
       Culture=neutral, PublicKeyToken=null
 --- !u!114 &971118771
@@ -14070,11 +14133,11 @@ MonoBehaviour:
   m_GameObject: {fileID: 971118768}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e970fb3909d1e6040b6fd0d05071fd05, type: 3}
+  m_Script: {fileID: 11500000, guid: ac8af5ca60314754397b0805f3a31723, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  whereToGo: 3
-  callDemon: {fileID: 0}
+  transferToPreviousPage: 0
+  TransToPage: 3
 --- !u!1 &990378542
 GameObject:
   m_ObjectHideFlags: 0
@@ -14243,18 +14306,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 998696534}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 998696538}
-        m_MethodName: goToPage
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
+      m_Calls: []
     m_TypeName: UnityEngine.UI.Button+ButtonClickedEvent, UnityEngine.UI, Version=1.0.0.0,
       Culture=neutral, PublicKeyToken=null
 --- !u!114 &998696538
@@ -14266,11 +14318,11 @@ MonoBehaviour:
   m_GameObject: {fileID: 998696532}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e970fb3909d1e6040b6fd0d05071fd05, type: 3}
+  m_Script: {fileID: 11500000, guid: ac8af5ca60314754397b0805f3a31723, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  whereToGo: 0
-  callDemon: {fileID: 0}
+  transferToPreviousPage: 0
+  TransToPage: 0
 --- !u!1 &1002003165
 GameObject:
   m_ObjectHideFlags: 0
@@ -14412,18 +14464,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1013430691}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 1013430693}
-        m_MethodName: goToPage
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
+      m_Calls: []
     m_TypeName: UnityEngine.UI.Button+ButtonClickedEvent, UnityEngine.UI, Version=1.0.0.0,
       Culture=neutral, PublicKeyToken=null
 --- !u!114 &1013430691
@@ -14472,11 +14513,11 @@ MonoBehaviour:
   m_GameObject: {fileID: 1013430688}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e970fb3909d1e6040b6fd0d05071fd05, type: 3}
+  m_Script: {fileID: 11500000, guid: ac8af5ca60314754397b0805f3a31723, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  whereToGo: 0
-  callDemon: {fileID: 0}
+  transferToPreviousPage: 0
+  TransToPage: 0
 --- !u!1 &1021833657
 GameObject:
   m_ObjectHideFlags: 0
@@ -14630,7 +14671,7 @@ MonoBehaviour:
   m_HandleRect: {fileID: 381873068}
   m_Direction: 2
   m_Value: 1
-  m_Size: 0.99999845
+  m_Size: 0.55424947
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:
@@ -20751,7 +20792,7 @@ RectTransform:
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 1}
+  m_AnchorMax: {x: 0, y: 0}
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 20, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
@@ -21118,7 +21159,7 @@ RectTransform:
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 1}
+  m_AnchorMax: {x: 0, y: 0}
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 20, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
@@ -21297,6 +21338,7 @@ GameObject:
   - component: {fileID: 1165058029}
   - component: {fileID: 1165058031}
   - component: {fileID: 1165058030}
+  - component: {fileID: 1165058032}
   m_Layer: 5
   m_Name: DialPage
   m_TagString: Untagged
@@ -21354,6 +21396,19 @@ MonoBehaviour:
   hangingUpSound: {fileID: 1399666740}
   callScreen: {fileID: 83217319}
   declineCall: {fileID: 170259074}
+--- !u!114 &1165058032
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1165058028}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0a2233eb35d2f6e48aa70a324f00a04f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  nameOfPage: DialPage
 --- !u!1 &1165116082
 GameObject:
   m_ObjectHideFlags: 0
@@ -22020,7 +22075,7 @@ RectTransform:
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 1}
+  m_AnchorMax: {x: 0, y: 0}
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 10, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
@@ -27698,7 +27753,7 @@ RectTransform:
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 1}
+  m_AnchorMax: {x: 0, y: 0}
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 20, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
@@ -27916,8 +27971,8 @@ RectTransform:
   m_Father: {fileID: 129039374}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0.00000017881393, y: 0}
-  m_AnchorMax: {x: 1, y: 1}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 0, y: 0}
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 20, y: 20}
   m_Pivot: {x: 0.5, y: 0.5}
@@ -28402,7 +28457,7 @@ RectTransform:
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 1}
+  m_AnchorMax: {x: 0, y: 0}
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 10, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
@@ -28729,9 +28784,9 @@ RectTransform:
   m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 1, y: 0}
-  m_AnchorMax: {x: 1, y: 1}
+  m_AnchorMax: {x: 1, y: 0}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 20, y: -17}
+  m_SizeDelta: {x: 20, y: 0}
   m_Pivot: {x: 1, y: 1}
 --- !u!114 &1385516305
 MonoBehaviour:
@@ -30121,18 +30176,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1446632261}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 1446632263}
-        m_MethodName: goToPage
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
+      m_Calls: []
     m_TypeName: UnityEngine.UI.Button+ButtonClickedEvent, UnityEngine.UI, Version=1.0.0.0,
       Culture=neutral, PublicKeyToken=null
 --- !u!114 &1446632261
@@ -30181,11 +30225,11 @@ MonoBehaviour:
   m_GameObject: {fileID: 1446632258}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e970fb3909d1e6040b6fd0d05071fd05, type: 3}
+  m_Script: {fileID: 11500000, guid: ac8af5ca60314754397b0805f3a31723, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  whereToGo: 1
-  callDemon: {fileID: 0}
+  transferToPreviousPage: 0
+  TransToPage: 1
 --- !u!1 &1453924832
 GameObject:
   m_ObjectHideFlags: 0
@@ -31141,9 +31185,9 @@ RectTransform:
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 1, y: 0}
+  m_AnchorMax: {x: 0, y: 0}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: -17, y: 20}
+  m_SizeDelta: {x: 0, y: 20}
   m_Pivot: {x: 0, y: 0}
 --- !u!114 &1493383012
 MonoBehaviour:
@@ -31836,9 +31880,9 @@ RectTransform:
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 1, y: 0}
+  m_AnchorMax: {x: 0, y: 0}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: -17, y: 20}
+  m_SizeDelta: {x: 0, y: 20}
   m_Pivot: {x: 0, y: 0}
 --- !u!114 &1534261385
 MonoBehaviour:
@@ -32538,9 +32582,9 @@ RectTransform:
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 1, y: 0}
+  m_AnchorMax: {x: 0, y: 0}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: -17, y: 20}
+  m_SizeDelta: {x: 0, y: 20}
   m_Pivot: {x: 0, y: 0}
 --- !u!114 &1580489215
 MonoBehaviour:
@@ -33347,7 +33391,7 @@ RectTransform:
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 1}
+  m_AnchorMax: {x: 0, y: 0}
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 10, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
@@ -38322,9 +38366,9 @@ RectTransform:
   m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 1, y: 0}
-  m_AnchorMax: {x: 1, y: 1}
+  m_AnchorMax: {x: 1, y: 0}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 20, y: -17}
+  m_SizeDelta: {x: 20, y: 0}
   m_Pivot: {x: 1, y: 1}
 --- !u!114 &1664039678
 MonoBehaviour:
@@ -40292,6 +40336,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1775270162}
+  - component: {fileID: 1775270163}
   m_Layer: 0
   m_Name: MainMenu
   m_TagString: Untagged
@@ -40317,6 +40362,19 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 4
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1775270163
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1775270161}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 07cf7af5f51f48846818de7906b28195, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  nameOfPage: MainMenu
 --- !u!1 &1791301644
 GameObject:
   m_ObjectHideFlags: 0
@@ -40352,9 +40410,9 @@ RectTransform:
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 1, y: 0}
+  m_AnchorMax: {x: 0, y: 0}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: -17, y: 20}
+  m_SizeDelta: {x: 0, y: 20}
   m_Pivot: {x: 0, y: 0}
 --- !u!114 &1791301646
 MonoBehaviour:
@@ -40935,7 +40993,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 0}
-  m_AnchoredPosition: {x: -0.000098228455, y: 6542.999}
+  m_AnchoredPosition: {x: -0.000098228455, y: 5657.813}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0, y: 1}
 --- !u!114 &1839210070
@@ -41594,8 +41652,8 @@ RectTransform:
   m_Father: {fileID: 859774957}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0.000000059604645, y: 0}
-  m_AnchorMax: {x: 1, y: 1}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 0, y: 0}
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 20, y: 20}
   m_Pivot: {x: 0.5, y: 0.5}
@@ -41880,7 +41938,7 @@ RectTransform:
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 1}
+  m_AnchorMax: {x: 0, y: 0}
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 10, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
@@ -42112,29 +42170,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e5acb091ffdc1ec459f010ee1767d9bb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  ToTextingPage:
-  - {fileID: 1446632260}
-  ToPhoneCallPage:
-  - {fileID: 971118770}
-  ToSettingPage:
-  - {fileID: 2012984906}
-  ToFinalRitualPage:
-  - {fileID: 324371811}
-  ToMainMenuPage:
-  - {fileID: 463352562}
-  - {fileID: 170259074}
-  - {fileID: 1013430690}
-  - {fileID: 1439485330}
-  - {fileID: 998696537}
-  MenuPageObj:
-  - {fileID: 885998235}
-  - {fileID: 505981821}
-  - {fileID: 83217319}
-  - {fileID: 1165058028}
-  - {fileID: 424770441}
-  BigPageObj:
-  - {fileID: 1775270161}
-  - {fileID: 569308939}
 --- !u!1 &1978249678
 GameObject:
   m_ObjectHideFlags: 0
@@ -42439,18 +42474,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 2012984907}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 2012984909}
-        m_MethodName: goToPage
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
+      m_Calls: []
     m_TypeName: UnityEngine.UI.Button+ButtonClickedEvent, UnityEngine.UI, Version=1.0.0.0,
       Culture=neutral, PublicKeyToken=null
 --- !u!114 &2012984907
@@ -42499,11 +42523,11 @@ MonoBehaviour:
   m_GameObject: {fileID: 2012984904}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e970fb3909d1e6040b6fd0d05071fd05, type: 3}
+  m_Script: {fileID: 11500000, guid: ac8af5ca60314754397b0805f3a31723, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  whereToGo: 4
-  callDemon: {fileID: 0}
+  transferToPreviousPage: 0
+  TransToPage: 4
 --- !u!1 &2013319252
 GameObject:
   m_ObjectHideFlags: 0

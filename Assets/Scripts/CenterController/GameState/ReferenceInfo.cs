@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -16,18 +17,12 @@ public enum Page
 }
 public class ReferenceInfo : MonoSingleton<ReferenceInfo>
 {
+    public List<Type> GameStatesRefList = new List<Type>(){typeof(GameStates.MenuPage),typeof(GameStates.TextingPage),typeof(GameStates.PhoneCallPage),
+        typeof(GameStates.DialPage),typeof(GameStates.SettingPage),typeof(GameStates.OpeningRitualPage),typeof(GameStates.FinalRitualPage)};
+    
     //the size of the array is the same as the number of the page;
-    public List<GameObject>[] CameraRenderingItem = new List<GameObject>[7];
-    
-    
-    public List<Button> ToTextingPage = new List<Button>();
-    public List<Button> ToPhoneCallPage= new List<Button>();
-    public List<Button> ToSettingPage= new List<Button>();
-    public List<Button> ToFinalRitualPage= new List<Button>();
-    public List<Button> ToMainMenuPage= new List<Button>();
-
-    public List<GameObject> MenuPageObj = new List<GameObject>();
-    public List<GameObject> BigPageObj = new List<GameObject>();
+    public List<GameObject>[] CameraRenderingItem = new List<GameObject>[System.Enum.GetNames (typeof(Page)).Length];
+    public List<Button>[] ToSpecifiedPage = new List<Button>[System.Enum.GetNames (typeof(Page)).Length+1];
     public Dictionary<string, int> SceneDic = new Dictionary<string, int>();
     public Dictionary<string, GameObject> MenuPage = new Dictionary<string, GameObject>();
     public Dictionary<string, GameObject> BigPage = new Dictionary<string, GameObject>();
@@ -38,18 +33,18 @@ public class ReferenceInfo : MonoSingleton<ReferenceInfo>
         {
             CameraRenderingItem[i] = new List<GameObject>();
         }
+        
+        for(int i = 0; i <ToSpecifiedPage.Length; i++)
+        {
+            ToSpecifiedPage[i] = new List<Button>();
+        }
+        
         Debug.Log(CameraRenderingItem[2]);
         SceneDic.Add("Main",1);
         SceneDic.Add("OpeningRitual",0);
         
-        MenuPage.Add("MenuPage", MenuPageObj.Find(x => x.name == "MenuPage"));
-        MenuPage.Add("TextPage", MenuPageObj.Find(x => x.name == "TextingPage"));
-        MenuPage.Add("DialPage",MenuPageObj.Find(x => x.name =="DialPage"));
-        MenuPage.Add("DemonCallingPage",MenuPageObj.Find(x => x.name =="DemonCallingPage"));
-        MenuPage.Add("FinalRitualPage",MenuPageObj.Find(x => x.name =="FinalRitualPage"));
-        
-        BigPage.Add("MainMenu", BigPageObj.Find(x => x.name == "MainMenu"));
-        BigPage.Add("Setting", BigPageObj.Find(x => x.name == "Setting"));
+        //BigPage.Add("MainMenu", BigPageObj.Find(x => x.name == "MainMenu"));
+        //BigPage.Add("Setting", BigPageObj.Find(x => x.name == "Setting"));
     }
 
     public int GetSceneWithName(string sceneName)
