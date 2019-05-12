@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using UnityEngine;
+using Debug = UnityEngine.Debug;
 
 
 // To make it a little easier to reference the state machine's context we make the FSM
@@ -23,8 +25,13 @@ public class FSM<TContext>
     // property in case someone needs to query it.
     public State CurrentState { get; private set; }
     
-    public State PreviousState { get; private set; }
+    //this has to be set to the first page or otherwise the first previous state will be null;
+    public State PreviousState
+    {
+        get { return _previousState; }
+    }
 
+    public State _previousState;
     // We don't want to change the current state in the middle of an update, so when a transition is called
     private State _pendingState;
 
@@ -57,7 +64,7 @@ public class FSM<TContext>
     {
         if (PreviousState != null)
         {
-            _pendingState = PreviousState;
+            _pendingState = _previousState;
         }
     }
 
@@ -67,8 +74,12 @@ public class FSM<TContext>
         if (_pendingState != null)
         {
             if (CurrentState != null) CurrentState.OnExit();
-            PreviousState = CurrentState;
+            _previousState = CurrentState;
             CurrentState = _pendingState;
+            if (_previousState == null)
+            {
+                _previousState = CurrentState;
+            }
             CurrentState.OnEnter();
             _pendingState = null;
         }

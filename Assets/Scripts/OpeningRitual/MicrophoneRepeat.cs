@@ -12,6 +12,7 @@ public class MicrophoneRepeat : MonoBehaviour
     public GameObject[] words;
     public GameObject demonResponds;
     public GameObject wordScene;
+    public GameObject soundRecieving;
     public GameObject magicCircle;
     private AudioVisualizer audioVisualizer;
     public float threshold;
@@ -37,7 +38,10 @@ public class MicrophoneRepeat : MonoBehaviour
     }
 
     IEnumerator WaitForWords()
-    {
+    {   
+        while(!gameObject.GetComponent<AudioVisualizer>().adjustmentFinished){yield return new WaitForSeconds(Time.deltaTime);}
+        soundRecieving.SetActive(false);
+        wordScene.SetActive(true);
         //yield return new WaitForSeconds(3);
         yield return new WaitForSeconds(1);
             
