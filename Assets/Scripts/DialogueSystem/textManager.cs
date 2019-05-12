@@ -14,9 +14,9 @@ public class TextManager
     
     public GameObject DialogueSys;
     //this is a place that record all the dialogue lines, so it will be easier to restore the game
-    public List<string> FinishedLog;
+    public List<string> FinishedLog = new List<string>();
     //this is a place to record who says the dialogue in finished log, so it will help restore the game, while 0 is demon and 1 is the player
-    public List<int> Speaker;
+    public List<int> Speaker = new List<int>();
 
     #region Lifecycle
 
