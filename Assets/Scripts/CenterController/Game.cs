@@ -55,14 +55,15 @@ public class Game : MonoBehaviour
     void Init()
     {
         //import all the library utils
-        
+
         //import all the data file
         Services.referenceInfo = FindObjectOfType<ReferenceInfo>();
         Services.gameSettings = new GameSettings();
         Services.gameSettings.Init();
         //import the system so it starts working
         Services.game = this;
-        Services.eventManager = new EventManager();
+        Services.textManager = new TextManager();
+        Services.textManager.Init();
         Services.plotManager = new PlotManager();
         //some logic problem here that doesnt consider the save situation
         //TODO

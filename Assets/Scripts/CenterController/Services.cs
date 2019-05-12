@@ -10,7 +10,7 @@ public class Services
     public static GameSettings gameSettings;
     public static PlotManager plotManager;
     public static GameStates gameStates;
-    public static EventManager eventManager;
+    public static TextManager textManager;
 
     #endregion
 

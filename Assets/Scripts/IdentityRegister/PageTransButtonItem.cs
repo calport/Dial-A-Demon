@@ -5,8 +5,10 @@ using UnityEngine.UI;
 
 public class PageTransButtonItem : MonoBehaviour
 {
-    public bool transferToPreviousPage = false;
-    public Page TransToPage;
+    
+    [SerializeField] private bool transferToPreviousPage = false;
+    [SerializeField] private Page TransToPage;
+    
     // Start is called before the first frame update
     void Awake()
     {

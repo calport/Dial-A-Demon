@@ -5,7 +5,7 @@ using UnityEngine;
 
 public class BigPageItem : MonoBehaviour
 {
-    public string nameOfPage;
+    [SerializeField]private string nameOfPage;
     // Start is called before the first frame update
     void Awake()
     {

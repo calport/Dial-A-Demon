@@ -32,11 +32,11 @@ public class MagicCircle : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        Debug.Log(noLongerRubbing);
+        //Debug.Log(noLongerRubbing);
         if (noLongerRubbing)
         {
             //if (rend.material.color.a < 0.5f)
-            if (rend.material.color.a < 0.2f)
+            if (rend.material.color.a < 0.4f)
             {
                 gameObject.GetComponent<DrawCircle>().speed =
                     Mathf.Lerp(gameObject.GetComponent<DrawCircle>().speed, 3.0f, 2.0f * Time.deltaTime);
@@ -61,7 +61,7 @@ public class MagicCircle : MonoBehaviour
         }
         
         //if (rend.material.color.a > 0.8f)
-        if (rend.material.color.a > 0.2f)
+        if (rend.material.color.a > 0.4f)
         {
             Color c = demonCircle.GetComponent<SpriteRenderer>().color;
             c.a = Mathf.Lerp(c.a,1,0.1f*Time.deltaTime);
@@ -69,7 +69,7 @@ public class MagicCircle : MonoBehaviour
         }
 
         //if (demonCircle.GetComponent<SpriteRenderer>().color.a > 0.4f && !startFade)
-        if (demonCircle.GetComponent<SpriteRenderer>().color.a > 0.2f && !startFade)
+        if (demonCircle.GetComponent<SpriteRenderer>().color.a > 0.4f && !startFade)
         {
             startFade = true;
             fadeTime = Time.time;
@@ -77,12 +77,20 @@ public class MagicCircle : MonoBehaviour
 
         if (startFade)
         {
-            var timeSpan = Time.time - fadeTime;
-            if (timeSpan > waitTime)
+            GameObject openingRitual;
+            Services.referenceInfo.BigPage.TryGetValue("OpeningRitual",out openingRitual);
+            var pic = openingRitual.transform.Find("Background").Find("Pic").gameObject;
+            Color c = pic.GetComponent<SpriteRenderer>().color;
+            c.a = Mathf.Lerp(c.a,0,0.8f*Time.deltaTime);
+            //remember to fade all the pics 
+            pic.GetComponent<SpriteRenderer>().color = c;
+            rend.material.color = c;
+            demonCircle.GetComponent<SpriteRenderer>().color = c;
+            gameObject.GetComponent<SpriteRenderer>().color = c;
+            if (c.a <0.02f)
             {
-                SceneManager.LoadScene("Texting");
+                Services.gameStates.ChangeGameState<GameStates.MenuPage>(new GameStates.MenuPage());
             }
-            Debug.Log(timeSpan);
         }
        
         
@@ -94,7 +102,7 @@ public class MagicCircle : MonoBehaviour
         gameObject.GetComponent<DrawCircle>().speed =
             Mathf.Lerp(gameObject.GetComponent<DrawCircle>().speed, 500f, 0.5f*Time.deltaTime);
         
-        if(gameObject.GetComponent<DrawCircle>().speed>480f)
+        if(gameObject.GetComponent<DrawCircle>().speed>400f)
         {
             Color c = rend.material.color;
             c.a = Mathf.Lerp(c.a,1,0.1f*Time.deltaTime);
