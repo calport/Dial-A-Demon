@@ -170,7 +170,7 @@ public class GameStates
                     renderedItem.SetActive(true);
                 }
 
-                Services.textManager.DialogueSys.GetComponent<DialogueRunner>().StartDialogue();
+                if(Services.gameStates._fsm.PreviousState.GetType() == typeof(OpeningRitualPage)) Services.textManager.DialogueSys.GetComponent<DialogueRunner>().StartDialogue();
             }
         }
         
@@ -497,10 +497,10 @@ public class GameStates
     void SetInitialScene()
     {
    
-        if (SceneManager.GetActiveScene().buildIndex == Services.referenceInfo.GetSceneWithName("Main")) {_fsm.TransitionTo<OpeningRitualPage>(); return;}
+        if (SceneManager.GetActiveScene().buildIndex == Services.referenceInfo.GetSceneWithName("Main")) {ChangeGameState(new OpeningRitualPage()); return;}
         //if (SceneManager.GetActiveScene().buildIndex == Services.referenceInfo.GetSceneWithName("OpeningRitual")){_fsm.TransitionTo<OpeningRitualPage>(); return;}
         
-        _fsm.TransitionTo<OpeningRitualPage>();
+        //_fsm.TransitionTo<OpeningRitualPage>();
     }
     
     #endregion
