@@ -86,14 +86,17 @@ public class MicrophoneRepeat : MonoBehaviour
     }
 
     IEnumerator DemonResponds()
-    {
+    {    
+        wordScene.SetActive(false);
+        words[5].SetActive(false);
+        MicrophoneVisual.SetActive(false);
         yield return new WaitForSeconds(1); 
         Handheld.Vibrate(); 
         yield return new WaitForSeconds(2);
         Handheld.Vibrate();
         
         wordScene.SetActive(false);
-        for (int i = 0; i < 7; i++)
+        for (int i = 0; i < 6; i++)
         {
             words[i].SetActive(false);
         }
@@ -102,14 +105,13 @@ public class MicrophoneRepeat : MonoBehaviour
         yield return new WaitForSeconds(3);
         magicCircle.SetActive(true);
         demonResponds.SetActive(false);
-        wordScene.SetActive(false);
-        MicrophoneVisual.SetActive(false);
+        yield return new WaitForSeconds(1);
+        
     }
 
     IEnumerator WordsUp(int order)
     {
-        Debug.Log(order);
-        if (order == 7)
+        if (order == 6)
         {
             StartCoroutine(DemonResponds());
         }
@@ -171,7 +173,6 @@ public class MicrophoneRepeat : MonoBehaviour
                 }
                 else
                 {
-                    Debug.Log("RecordFalse");
                     startGetSoundTime = 0.0f;
                 }
                 

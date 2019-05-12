@@ -9,7 +9,6 @@ using Object = UnityEngine.Object;
 
 namespace Yarn.Unity.Example {
     
-    
     /// Displays dialogue lines to the player, and sends
     /// user choices back to the dialogue system.
 
@@ -67,9 +66,12 @@ namespace Yarn.Unity.Example {
             
             //finding demon texting audio
             demonAudio = GameObject.Find("DemonTexted").GetComponent<AudioSource>();
+
         }
 
-
+        private void Start()
+        {
+        }
 
         public override IEnumerator RunLine(Yarn.Line line)
         {
@@ -79,6 +81,10 @@ namespace Yarn.Unity.Example {
             //creat the real dialogue
             GameObject newDemonBox = Instantiate(Resources.Load<GameObject>(_demonTextBox), content.transform);
             newDemonBox.GetComponentInChildren<TextMeshProUGUI>().text = line.text;
+            
+            //send the text to text manager as a record
+            Services.textManager.FinishedLog.Add(line.text);
+            Services.textManager.Speaker.Add(0);
             
             //create audio whenever the demon sends a message
             Debug.Log("demon is speaking");
@@ -146,6 +152,10 @@ namespace Yarn.Unity.Example {
                 StartCoroutine(waitToScroll());       
                 newPlayerBox.GetComponentInChildren<TextMeshProUGUI>().text = textBox.text;
                 
+                //send the text to text manager as a record
+                Services.textManager.FinishedLog.Add(textBox.text);
+                Services.textManager.Speaker.Add(1);
+                
                 // Call the delegate to tell the dialogue system that we've
                 // selected an option.
                 SetSelectedOption(selectedOption);
@@ -194,6 +204,7 @@ namespace Yarn.Unity.Example {
         public override IEnumerator DialogueComplete()
         {
             GameObject newDemonContract = Instantiate(Resources.Load<GameObject>(_demonContract), content.transform);
+            StartCoroutine(waitToScroll());
             //controlPlot.PlotFinishedStateChange(true);
             Debug.Log ("Complete!");
             yield break;

@@ -5,7 +5,7 @@ using UnityEngine;
 
 public class MenuPageItem : MonoBehaviour
 {
-    public string nameOfPage = String.Empty;
+    [SerializeField] private string nameOfPage = String.Empty;
     // Start is called before the first frame update
     void Awake()
     {
