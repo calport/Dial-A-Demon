@@ -40,8 +40,7 @@ public class ReferenceInfo : MonoSingleton<ReferenceInfo>
         }
         
         Debug.Log(CameraRenderingItem[2]);
-        SceneDic.Add("Main",1);
-        SceneDic.Add("OpeningRitual",0);
+        SceneDic.Add("Main",0);
         
         //BigPage.Add("MainMenu", BigPageObj.Find(x => x.name == "MainMenu"));
         //BigPage.Add("Setting", BigPageObj.Find(x => x.name == "Setting"));

@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using DG.Tweening;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using Yarn.Unity;
 
 public class GameStates
 {
@@ -26,9 +28,10 @@ public class GameStates
             foreach (var value in Services.referenceInfo.BigPage.Values)
             {
                 value.SetActive(false);
+                Debug.Log(value);
             }
 
-            SetInitialScene();
+            //SetInitialScene();
             formalState = typeof(MenuPage);
             
             //Initialize all the buttons to make them function for transition between scenes
@@ -160,11 +163,14 @@ public class GameStates
                 GameObject Page;
                 Services.referenceInfo.MenuPage.TryGetValue("MenuPage", out Page);
                 Context.CanvasOn(Page.GetComponent<CanvasGroup>());
+                
 
                 foreach (var renderedItem in Services.referenceInfo.CameraRenderingItem[global::Page.MainMenu.GetHashCode()])
                 {
                     renderedItem.SetActive(true);
                 }
+
+                Services.textManager.DialogueSys.GetComponent<DialogueRunner>().StartDialogue();
             }
         }
         
@@ -434,14 +440,25 @@ public class GameStates
         {
             
             //remember to change
-            if (SceneManager.GetActiveScene().buildIndex != Services.referenceInfo.GetSceneWithName("OpeningRitual"))
+            if (SceneManager.GetActiveScene().buildIndex != Services.referenceInfo.GetSceneWithName("Main"))
             {
                 
-                SceneManager.LoadSceneAsync(Services.referenceInfo.GetSceneWithName("OpeningRitual"));
+                SceneManager.LoadSceneAsync(Services.referenceInfo.GetSceneWithName("Main"));
                 TransitionTo<SceneChanging>();
             }
+            
+            GameObject openingRitual;
+            Services.referenceInfo.BigPage.TryGetValue("OpeningRitual", out openingRitual);
+            openingRitual.SetActive(true);
         }
-        
+
+        public override void OnExit()
+        {
+            GameObject openingRitual;
+            Services.referenceInfo.BigPage.TryGetValue("OpeningRitual", out openingRitual);
+            openingRitual.SetActive(false);
+        }
+
         public override void OnSceneChanged(){}
     }
 
@@ -464,7 +481,8 @@ public class GameStates
         canvas.blocksRaycasts = true;
         //TODO
         //someswitching effect can be added here
-        canvas.alpha = 1;
+        //canvas.alpha = 1;
+        canvas.DOFade(1.0f, 0.2f);
     }
     
     void CanvasOff(CanvasGroup canvas)
@@ -473,14 +491,14 @@ public class GameStates
         canvas.blocksRaycasts = false;
         //TODO
         //someswitching effect can be added here
-        canvas.alpha = 0;
+        canvas.DOFade(0.0f, 0.2f);
     }
 
     void SetInitialScene()
     {
    
-        if (SceneManager.GetActiveScene().buildIndex == Services.referenceInfo.GetSceneWithName("Main")) {_fsm.TransitionTo<MenuPage>(); return;}
-        if (SceneManager.GetActiveScene().buildIndex == Services.referenceInfo.GetSceneWithName("OpeningRitual")){_fsm.TransitionTo<OpeningRitualPage>(); return;}
+        if (SceneManager.GetActiveScene().buildIndex == Services.referenceInfo.GetSceneWithName("Main")) {_fsm.TransitionTo<OpeningRitualPage>(); return;}
+        //if (SceneManager.GetActiveScene().buildIndex == Services.referenceInfo.GetSceneWithName("OpeningRitual")){_fsm.TransitionTo<OpeningRitualPage>(); return;}
         
         _fsm.TransitionTo<OpeningRitualPage>();
     }
