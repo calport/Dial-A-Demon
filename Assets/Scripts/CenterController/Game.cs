@@ -76,7 +76,6 @@ public class Game : MonoBehaviour
         //update the reference info in specific info files
         Debug.Log(FindObjectOfType<ReferenceInfo>());
         Services.referenceInfo = ReferenceInfo.Instance;
-        Debug.Log(Services.referenceInfo.ToMainMenuPage[0]);
         
         //update the reference info in all the system managers
         //Services.gameStates.ReInitWhenSceneLoad();

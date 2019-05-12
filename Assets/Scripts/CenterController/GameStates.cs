@@ -3,8 +3,6 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
-using UnityEngine.UI;
-using Yarn.Analysis;
 
 public class GameStates
 {
@@ -25,19 +23,56 @@ public class GameStates
             _fsm = new FSM<GameStates>(this);
     
             // Set the initial state. Don't forget to do this!!
-            
+            foreach (var value in Services.referenceInfo.BigPage.Values)
+            {
+                value.SetActive(false);
+            }
+
             SetInitialScene();
             formalState = typeof(MenuPage);
             
             //Initialize all the buttons to make them function for transition between scenes
-            //Commenting these out for now
-            /*
-            foreach (var button in Services.referenceInfo.ToSettingPage) button.onClick.AddListener(() => { _fsm.TransitionTo<SettingPage>(); });
-            foreach (var button in Services.referenceInfo.ToTextingPage) button.onClick.AddListener(() => { _fsm.TransitionTo<TextPage>(); });
+            for(int i = 0; i < Services.referenceInfo.ToSpecifiedPage.Length; i++)
+            {
+                foreach (var button in Services.referenceInfo.ToSpecifiedPage[i])
+                {
+                    switch (i)
+                    {
+                        case 0:
+                            button.onClick.AddListener(() => { ChangeGameState<MenuPage>(new MenuPage()); });
+                            break;
+                        case 1:
+                            button.onClick.AddListener(() => { ChangeGameState<TextingPage>(new TextingPage()); });
+                            break;
+                        case 2:
+                            button.onClick.AddListener(() => { ChangeGameState<PhoneCallPage>(new PhoneCallPage()); });
+                            break;
+                        case 3:
+                            button.onClick.AddListener(() => { ChangeGameState<DialPage>(new DialPage()); });
+                            break;
+                        case 4:
+                            button.onClick.AddListener(() => { ChangeGameState<SettingPage>(new SettingPage()); });
+                            break;
+                        case 5:
+                            button.onClick.AddListener(() => { ChangeGameState<OpeningRitualPage>(new OpeningRitualPage()); });
+                            break;
+                        case 6:
+                            button.onClick.AddListener(() => { ChangeGameState<FinalRitualPage>(new FinalRitualPage()); });
+                            break;
+                        case 7:
+                            button.onClick.AddListener(() => { _fsm.TransitionToPreviousState(); });
+                            break;
+                        
+                    }
+                }
+            }
+            
+            /*foreach (var button in Services.referenceInfo.ToSettingPage) button.onClick.AddListener(() => { _fsm.TransitionTo<SettingPage>(); });
+            foreach (var button in Services.referenceInfo.ToTextingPage) button.onClick.AddListener(() => { _fsm.TransitionTo<TextingPage>(); });
             foreach (var button in Services.referenceInfo.ToPhoneCallPage) button.onClick.AddListener(() => { _fsm.TransitionTo<DialPage>(); });
             foreach (var button in Services.referenceInfo.ToFinalRitualPage) button.onClick.AddListener(() => { _fsm.TransitionTo<FinalRitualPage>(); });
-            foreach (var button in Services.referenceInfo.ToMainMenuPage) button.onClick.AddListener(() => { _fsm.TransitionTo<MenuPage>(); });
-            */
+            foreach (var button in Services.referenceInfo.ToMainMenuPage) button.onClick.AddListener(() => { _fsm.TransitionTo<MenuPage>(); });*/
+            
             RegistePage();
             //pull saved infos
 
@@ -57,7 +92,7 @@ public class GameStates
         SetInitialScene();        
     }
     
-    public void ReInitWhenSceneLoad()
+    /*public void ReInitWhenSceneLoad()
     {
         //remove all the listeners to make sure that no other listeners are here
         //reinit is also mainly only for adding listeners when main page is loaded for the first time
@@ -78,7 +113,7 @@ public class GameStates
         //dont forget to register the page
         pageDic.Clear();
         RegistePage();
-    }
+    }*/
 
     public void Update()
     {
@@ -256,7 +291,7 @@ public class GameStates
         }
     }
 
-    public class TextPage : GameStatesList
+    public class TextingPage : GameStatesList
     {
         public override void OnEnter()
         {
@@ -275,7 +310,7 @@ public class GameStates
                 mainmenu.SetActive(true);
                 
                 GameObject Page;
-                Services.referenceInfo.MenuPage.TryGetValue("TextPage", out Page);
+                Services.referenceInfo.MenuPage.TryGetValue("TextingPage", out Page);
                 Context.CanvasOn(Page.GetComponent<CanvasGroup>());
                 
                 foreach (var renderedItem in Services.referenceInfo.CameraRenderingItem[global::Page.TextingPage.GetHashCode()])
@@ -292,7 +327,7 @@ public class GameStates
             mainmenu.SetActive(false);
                 
             GameObject Page;
-            Services.referenceInfo.MenuPage.TryGetValue("TextPage", out Page);
+            Services.referenceInfo.MenuPage.TryGetValue("TextingPage", out Page);
             Context.CanvasOff(Page.GetComponent<CanvasGroup>());
             
             foreach (var renderedItem in Services.referenceInfo.CameraRenderingItem[global::Page.TextingPage.GetHashCode()])
