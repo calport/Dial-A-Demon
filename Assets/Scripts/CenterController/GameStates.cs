@@ -270,7 +270,7 @@ public class GameStates
                 mainmenu.SetActive(true);
                 
                 GameObject Page;
-                Services.referenceInfo.MenuPage.TryGetValue("DemonCallingPage", out Page);
+                Services.referenceInfo.MenuPage.TryGetValue("PhoneCallPage", out Page);
                 Context.CanvasOn(Page.GetComponent<CanvasGroup>());
                 
                 foreach (var renderedItem in Services.referenceInfo.CameraRenderingItem[global::Page.PhoneCallPage.GetHashCode()])
@@ -287,7 +287,7 @@ public class GameStates
             mainmenu.SetActive(false);
                 
             GameObject Page;
-            Services.referenceInfo.MenuPage.TryGetValue("DemonCallingPage", out Page);
+            Services.referenceInfo.MenuPage.TryGetValue("PhoneCallPage", out Page);
             Context.CanvasOff(Page.GetComponent<CanvasGroup>());
             
             foreach (var renderedItem in Services.referenceInfo.CameraRenderingItem[global::Page.PhoneCallPage.GetHashCode()])
