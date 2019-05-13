@@ -15,12 +15,17 @@ public enum Page
     OpeningRitualPage,
     FinalRitualPage
 }
+
+//INTENT: Creates reference list of GameObjects, buttons, and main scenes rendered into each screen. 
+//USAGE: This script is attached to GameObject called GameReference in the MainSceen 
+
 public class ReferenceInfo : MonoSingleton<ReferenceInfo>
 {
     public List<Type> GameStatesRefList = new List<Type>(){typeof(GameStates.MenuPage),typeof(GameStates.TextingPage),typeof(GameStates.PhoneCallPage),
         typeof(GameStates.DialPage),typeof(GameStates.SettingPage),typeof(GameStates.OpeningRitualPage),typeof(GameStates.FinalRitualPage)};
     
-    //the size of the array is the same as the number of the page;
+    //the size of the array is the same as the number of the page; 
+    //there is a separate script for each of these lists and dictionaries and that script is attached to accurate GameObjects
     public List<GameObject>[] CameraRenderingItem = new List<GameObject>[System.Enum.GetNames (typeof(Page)).Length];
     public List<Button>[] ToSpecifiedPage = new List<Button>[System.Enum.GetNames (typeof(Page)).Length+1];
     public Dictionary<string, int> SceneDic = new Dictionary<string, int>();
