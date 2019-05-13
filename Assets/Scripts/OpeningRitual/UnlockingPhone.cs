@@ -21,6 +21,9 @@ public class UnlockingPhone : MonoBehaviour
     private float shakeMagnitude = 2.7f; 
     //how fast it should go away
     private float dampingSpeed = 0.75f; 
+    List<int> inputNumber = new List<int>();
+    Vector3 correctCode = new Vector3((int)6, (int)6, (int)6);
+    Vector3 jumpCode = new Vector3((int)1, (int)2, (int)3);
     
     //initial position of GameObject
     private Vector3 initialPosition;
@@ -57,6 +60,35 @@ public class UnlockingPhone : MonoBehaviour
             }
     }
 
+    public void UnlockPhoneClick(int number)
+    {
+        switch (guess)
+        {
+            case 0:
+                Unlock1.SetActive(true);
+                break;
+            case 1:
+                Unlock2.SetActive(true);
+                break; 
+            case 2:
+                Unlock3.SetActive(true);
+                break;
+        }
+        guess++;
+        
+        if(inputNumber.Count<3) inputNumber.Add(number);
+        if (inputNumber.Count == 3)
+        {
+            var currentCode = new Vector3((int)inputNumber[0], (int)inputNumber[1], (int)inputNumber[2]);
+            if (currentCode == correctCode) StartCoroutine(CorrectFade());
+            else if (currentCode == jumpCode)
+                Services.gameStates.ChangeGameState<GameStates.MenuPage>(new GameStates.MenuPage());
+            else StartCoroutine(ScreenShake());
+
+            guess = 0;
+            inputNumber.Clear();
+        }
+    }
     public void UnlockPhoneCorrect()
     {
         switch (guess)
