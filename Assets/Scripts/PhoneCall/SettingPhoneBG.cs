@@ -8,7 +8,7 @@ public class SettingPhoneBG : MonoBehaviour
     public Image BgCalling, BgAnswered, BgDemonCalling;
     private int waitTime;
     public float TimeLeft = 1000f;
-    public bool runningCo =false; 
+    
     
     // Start is called before the first frame update
     void Start()
@@ -27,10 +27,8 @@ public class SettingPhoneBG : MonoBehaviour
         BgCalling.enabled = true;
         BgAnswered.enabled = false;
         BgDemonCalling.enabled = false;
-        if (runningCo == false)
-        {
-            StartCoroutine("DialingTime");
-        }
+        DialingTime();
+        
        
         
 
@@ -53,7 +51,6 @@ public class SettingPhoneBG : MonoBehaviour
     void DialingTime()
     {
         Debug.Log("Stared the dialing time");
-        runningCo = true;
         //This is the amount of time it takes for the Demon to answer
         //in the future we should make this a variable
         //this needs help 

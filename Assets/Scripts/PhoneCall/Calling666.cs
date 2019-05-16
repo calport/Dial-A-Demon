@@ -16,7 +16,6 @@ public class Calling666 : MonoBehaviour
     //This should be set to true when there are three 6s
     private int dialed6;
 
-    public GameObject phoneCallScript;
 
     
 
@@ -31,7 +30,7 @@ public class Calling666 : MonoBehaviour
         }
         
         callButton.onClick.AddListener(CallButtonClick);
-        phoneCallScript.GetComponent<SettingPhoneBG>();
+   
    
       
         //This is where the 6s will be added
