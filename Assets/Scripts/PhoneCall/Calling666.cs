@@ -16,6 +16,9 @@ public class Calling666 : MonoBehaviour
     //This should be set to true when there are three 6s
     private int dialed6;
 
+    public GameObject phoneCallScript;
+
+    
 
     
     // Start is called before the first frame update
@@ -26,6 +29,10 @@ public class Calling666 : MonoBehaviour
         {
            numberButtons[i].onClick.AddListener(Dial6);
         }
+        
+        callButton.onClick.AddListener(CallButtonClick);
+        phoneCallScript.GetComponent<SettingPhoneBG>();
+   
       
         //This is where the 6s will be added
         dialText = GameObject.Find("DialText").GetComponent<Text>();
@@ -36,11 +43,12 @@ public class Calling666 : MonoBehaviour
              
     }
 
-    void ClearCall()
+    public void ClearCall()
     {
         //This is to clear the call number and reset so player can dial 6
         dialText.text = "";
         dialed6 = 0;
+        callButton.interactable = false;
     }
 
     void Dial6()
@@ -50,11 +58,22 @@ public class Calling666 : MonoBehaviour
         {
             dialText.text = dialText.text+ "6";
             
-        }else if (dialed6 > 2) //when you have 666 you can call
+        } 
+        
+        if (dialed6 > 1) //when you have 666 you can call
         {
             callButton.interactable = true;
         }
         dialed6++; 
+    }
+
+    void CallButtonClick()
+    {
+
+       // phoneCallScript.GetComponent<SettingPhoneBG>().BgCalling(); 
+      
+       
+        Debug.Log("call demon");
     }
 
 
