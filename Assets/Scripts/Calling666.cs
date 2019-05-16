@@ -8,7 +8,7 @@ public class Calling666 : MonoBehaviour
     //button
     public Button[] numberButtons;
 
-    private Button callButton;
+    public Button callButton;
     
     //this will be the text in the call
     private Text dialText;
@@ -16,11 +16,7 @@ public class Calling666 : MonoBehaviour
     //This should be set to true when there are three 6s
     private int dialed6;
 
-    //just for milestone 2 demo
-    public AudioSource DemonRinging;
-    public AudioSource hangingUpSound;
-    public GameObject callScreen;
-    public Button declineCall; 
+
     
     // Start is called before the first frame update
     void Start()
@@ -37,50 +33,29 @@ public class Calling666 : MonoBehaviour
         
         //Should be set to 0 when at the start
         dialed6 = 0; 
-        
-        //just for milestone 2 demo 
-        declineCall.onClick.AddListener(hangUp);
-        
+             
     }
 
-    public void CallingDemon()
+    void ClearCall()
     {
-       
-        callScreen.SetActive(true);
-        Debug.Log("started ringing");
-        
-    }
-    
- 
-
-    IEnumerator HangUpCall()
-    {
-        yield return new WaitForSeconds(1);
-        DemonRinging.Stop();
-        
-        callScreen.SetActive(false);
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
+        //This is to clear the call number and reset so player can dial 6
+        dialText.text = "";
+        dialed6 = 0;
     }
 
     void Dial6()
     {
+        //When there is less than 3 6s add a 6 to the text
         if (dialed6 < 3)
         {
             dialText.text = dialText.text+ "6";
-        }     
+            
+        }else if (dialed6 > 2) //when you have 666 you can call
+        {
+            callButton.interactable = true;
+        }
         dialed6++; 
     }
 
-    void hangUp()
-    {
-        DemonRinging.Stop();
-        hangingUpSound.Play();
-        StartCoroutine(HangUpCall());
-    }
 
 }
