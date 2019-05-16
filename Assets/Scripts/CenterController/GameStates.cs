@@ -17,6 +17,16 @@ public class GameStates
         _fsm.TransitionTo<T>();
     }
 
+    public void TransitToPreviousState()
+    {
+        _fsm.TransitionToPreviousState();
+    }
+
+    public FSM<GameStates>.State GetCurrentState()
+    {
+        return _fsm.CurrentState;
+    }
+
     #region Class state dynamic
 
     public void Init()
@@ -323,6 +333,9 @@ public class GameStates
                 {
                     renderedItem.SetActive(true);
                 }
+                
+                //text state start to function
+                Services.textStates.ChangeGameState<TextStates.NormalText>(new TextStates.NormalText());
             }
         }
         
@@ -340,6 +353,9 @@ public class GameStates
             {
                 renderedItem.SetActive(false);
             }
+            
+            //text state end function
+            Services.textStates.ChangeGameState<TextStates.NotInText>(new TextStates.NotInText());
         }
         
         public override void OnSceneChanged(){}
@@ -462,6 +478,7 @@ public class GameStates
         public override void OnSceneChanged(){}
     }
 
+
     #endregion
 
     #region Static functions
@@ -493,6 +510,7 @@ public class GameStates
         //someswitching effect can be added here
         canvas.DOFade(0.0f, 0.2f);
     }
+    
 
     void SetInitialScene()
     {
