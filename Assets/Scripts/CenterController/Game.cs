@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using HedgehogTeam.EasyTouch;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -39,6 +40,7 @@ public class Game : MonoBehaviour
         }
 
         Services.gameStates.Update();
+        Services.textStates.Update();
     }
 
     void OnDestroy()
@@ -58,6 +60,7 @@ public class Game : MonoBehaviour
 
         //import all the data file
         Services.referenceInfo = FindObjectOfType<ReferenceInfo>();
+        Services.easyTouch = FindObjectOfType<EasyTouch>();
         Services.gameSettings = new GameSettings();
         Services.gameSettings.Init();
         //import the system so it starts working
@@ -70,6 +73,8 @@ public class Game : MonoBehaviour
         Services.plotManager.Init();
         Services.gameStates = new GameStates();
         Services.gameStates.Init();
+        Services.textStates = new TextStates();
+        Services.textStates.Init();
     }
     
     public void ReInit()

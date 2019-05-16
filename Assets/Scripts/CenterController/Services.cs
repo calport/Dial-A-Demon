@@ -1,5 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using HedgehogTeam.EasyTouch;
+using UnityEditorInternal;
 using UnityEngine;
 
 public class Services
@@ -9,7 +11,10 @@ public class Services
     public static Game game;
     public static GameSettings gameSettings;
     public static PlotManager plotManager;
+    
     public static GameStates gameStates;
+    public static TextStates textStates;
+    
     public static TextManager textManager;
 
     #endregion
@@ -17,11 +22,12 @@ public class Services
     #region Object & Date reference
 
     public static ReferenceInfo referenceInfo;
+    public static EasyTouch easyTouch;
 
     #endregion
 
     #region Library reference
 
-    
+
     #endregion
 }
