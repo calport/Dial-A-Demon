@@ -42,7 +42,7 @@ public class TextStates
 
     public void Update()
     {
-        
+        _fsm.Update();
     }
 
     public void Clear()
@@ -77,12 +77,28 @@ public class TextStates
         public override void OnEnter()
         {
              Context.CanvasFade(Context.textPage.GetComponent<CanvasGroup>());
+             GameObject frontLayer;
+             Services.referenceInfo.MenuPage.TryGetValue("FrontLayer", out frontLayer);
+             Context.CanvasOn(frontLayer.GetComponent<CanvasGroup>());
+             
+             foreach (var renderedItem in Services.referenceInfo.CameraRenderingItem[global::Page.TextingPage.GetHashCode()])
+             {
+                 renderedItem.SetActive(false);
+             }
         }
         
         public override void OnExit()
         {
             
             Context.CanvasBack(Context.textPage.GetComponent<CanvasGroup>());
+            GameObject frontLayer;
+            Services.referenceInfo.MenuPage.TryGetValue("FrontLayer", out frontLayer);
+            Context.CanvasOff(frontLayer.GetComponent<CanvasGroup>());
+            
+            foreach (var renderedItem in Services.referenceInfo.CameraRenderingItem[global::Page.TextingPage.GetHashCode()])
+            {
+                renderedItem.SetActive(true);
+            }
         }
     }
     
@@ -105,6 +121,25 @@ public class TextStates
         //TODO
         //someswitching effect can be added here
         //canvas.alpha = 1;
-        canvas.DOFade(0.5f, 0.2f);
+        canvas.DOFade(1.0f, 0.2f);
+    }
+    
+    void CanvasOn(CanvasGroup canvas)
+    {
+        canvas.interactable = true;
+        canvas.blocksRaycasts = true;
+        //TODO
+        //someswitching effect can be added here
+        //canvas.alpha = 1;
+        canvas.DOFade(1.0f, 0.2f);
+    }
+    
+    void CanvasOff(CanvasGroup canvas)
+    {
+        canvas.interactable = false;
+        canvas.blocksRaycasts = false;
+        //TODO
+        //someswitching effect can be added here
+        canvas.DOFade(0.0f, 0.2f);
     }
 }
