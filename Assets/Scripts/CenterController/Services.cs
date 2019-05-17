@@ -23,6 +23,7 @@ public class Services
 
     public static ReferenceInfo referenceInfo;
     public static EasyTouch easyTouch;
+    public static Data_Contract dataContract;
 
     #endregion
 
