@@ -9,14 +9,6 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4325b4565b2cce545909adf5ab502ba6, type: 3}
-  m_Name: Contract
+  m_Script: {fileID: 11500000, guid: 274a632d6fa664541894a4f0ffa3a59e, type: 3}
+  m_Name: Data_Contract
   m_EditorClassIdentifier: 
-  Notification: 0
-  Mail: 0
-  Camera: 0
-  Album: 0
-  Location: 0
-  YourPhone: 0
-  YourLove: 0
-  Yourself: 0
