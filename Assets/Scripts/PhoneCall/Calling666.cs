@@ -36,7 +36,7 @@ public class Calling666 : MonoBehaviour
    
       
         //This is where the 6s will be added
-        dialText = GameObject.Find("DialText").GetComponent<Text>();
+        dialText = dialText.GetComponent<Text>();
         dialText.text = "";
         
         //Should be set to 0 when at the start
