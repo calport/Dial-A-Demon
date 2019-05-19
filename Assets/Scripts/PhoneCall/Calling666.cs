@@ -11,13 +11,15 @@ public class Calling666 : MonoBehaviour
     public Button callButton;
     
     //this will be the text in the call
-    private Text dialText;
+    public Text dialText;
     
     //This should be set to true when there are three 6s
     private int dialed6;
 
 
-    
+    public Image BgCalling, BgAnswered, BgDemonCalling;
+    private int waitTime;
+    public float TimeLeft = 1000f;
 
     
     // Start is called before the first frame update
@@ -69,11 +71,47 @@ public class Calling666 : MonoBehaviour
     void CallButtonClick()
     {
 
-       // phoneCallScript.GetComponent<SettingPhoneBG>().BgCalling(); 
+       PlayerCallingDemon();
       
-       
-        Debug.Log("call demon");
+   
     }
+    
+    public void PlayerCallingDemon()
+    {
+        BgCalling.enabled = true;
+        BgAnswered.enabled = false;
+        BgDemonCalling.enabled = false;
+        StartCoroutine(DialingTime());
+
+    }
+    
+    public void DemonCallingPlayer()
+    {
+        BgCalling.enabled = false;
+        BgAnswered.enabled = false;
+        BgDemonCalling.enabled = true;
+    }
+    
+    public void AnsweredPhone()
+    {
+        BgCalling.enabled = false;
+        BgAnswered.enabled = true;
+        BgDemonCalling.enabled = false;
+        Debug.Log("Answered Phone");
+    }
+
+    IEnumerator DialingTime()
+    {
+        Debug.Log("Stared the dialing time");
+        //This is the amount of time it takes for the Demon to answer
+        //in the future we should make this a variable
+        //this needs help 
+        yield return new WaitForSeconds(2);
+        Debug.Log("made it past null");
+        AnsweredPhone();
+    }
+    
+    
 
 
 }

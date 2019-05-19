@@ -22,49 +22,5 @@ public class SettingPhoneBG : MonoBehaviour
         
     }
 
-    public void PlayerCallingDemon()
-    {
-        BgCalling.enabled = true;
-        BgAnswered.enabled = false;
-        BgDemonCalling.enabled = false;
-        DialingTime();
-        
-       
-        
-
-    }
-    
-    public void DemonCallingPlayer()
-    {
-        BgCalling.enabled = false;
-        BgAnswered.enabled = false;
-        BgDemonCalling.enabled = true;
-    }
-    
-    public void AnsweredPhone()
-    {
-        BgCalling.enabled = false;
-        BgAnswered.enabled = true;
-        BgDemonCalling.enabled = false;
-    }
-
-    void DialingTime()
-    {
-        Debug.Log("Stared the dialing time");
-        //This is the amount of time it takes for the Demon to answer
-        //in the future we should make this a variable
-        //this needs help 
-        while (TimeLeft > 0 )
-        {
-            TimeLeft--;
-            //TimeLeft -= Time.deltaTime; 
-        }
-
-        if (TimeLeft< 0)
-        {
-            AnsweredPhone();
-        }
-
-
-    }
+   
 }
