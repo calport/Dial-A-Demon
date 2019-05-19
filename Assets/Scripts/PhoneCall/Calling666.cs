@@ -97,6 +97,7 @@ public class Calling666 : MonoBehaviour
         BgCalling.enabled = false;
         BgAnswered.enabled = true;
         BgDemonCalling.enabled = false;
+        gameObject.GetComponent<AudioSource>().Play();
         Debug.Log("Answered Phone");
     }
 
