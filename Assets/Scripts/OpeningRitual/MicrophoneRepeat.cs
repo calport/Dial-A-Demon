@@ -95,9 +95,9 @@ public class MicrophoneRepeat : MonoBehaviour
         words[5].SetActive(false);
         MicrophoneVisual.SetActive(false);
         yield return new WaitForSeconds(1); 
-//        Handheld.Vibrate(); 
+        //Handheld.Vibrate(); 
         yield return new WaitForSeconds(2);
-//        Handheld.Vibrate();
+        //Handheld.Vibrate();
         
         wordScene.SetActive(false);
         for (int i = 0; i < 6; i++)

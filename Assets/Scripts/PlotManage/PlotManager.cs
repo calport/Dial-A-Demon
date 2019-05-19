@@ -73,7 +73,7 @@ public class PlotManager
     {
 
         //clear notification
-//        UnityEngine.iOS.NotificationServices.ClearLocalNotifications();
+        //UnityEngine.iOS.NotificationServices.ClearLocalNotifications();
 
         //register all the plots
         RegisterPlot.RegisterAllPlot();
