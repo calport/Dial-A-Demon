@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using UnityEngine;
-using UnityEngine.iOS;
+//using UnityEngine.iOS;
 
 public class PlotManager
 {
@@ -73,7 +73,7 @@ public class PlotManager
     {
 
         //clear notification
-        UnityEngine.iOS.NotificationServices.ClearLocalNotifications();
+        //UnityEngine.iOS.NotificationServices.ClearLocalNotifications();
 
         //register all the plots
         RegisterPlot.RegisterAllPlot();
