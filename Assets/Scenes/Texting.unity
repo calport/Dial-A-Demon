@@ -11084,10 +11084,10 @@ MonoBehaviour:
   - {fileID: 716988052}
   - {fileID: 612294353}
   callButton: {fileID: 471327449}
-  dialText: {fileID: 1847577504}
-  BgCalling: {fileID: 1674585692}
-  BgAnswered: {fileID: 1139683580}
-  BgDemonCalling: {fileID: 258340916}
+  dialText: {fileID: 0}
+  BgCalling: {fileID: 0}
+  BgAnswered: {fileID: 0}
+  BgDemonCalling: {fileID: 0}
   TimeLeft: 1000
 --- !u!1 &650996319
 GameObject:
@@ -17986,7 +17986,7 @@ MonoBehaviour:
   m_HandleRect: {fileID: 381873068}
   m_Direction: 2
   m_Value: 1
-  m_Size: 0.9999998
+  m_Size: 1
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:
