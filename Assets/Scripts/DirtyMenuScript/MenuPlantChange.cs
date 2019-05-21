@@ -55,7 +55,7 @@ public class MenuPlantChange : MonoSingleton<MenuPlantChange>
             plantIcon[x + 1].sprite = Resources.Load(plantIconSmallPath[x]) as Sprite;
             plantIcon[x+i].GetComponent<MenuChangeCall>().i
         }*/
-        for(int x= 0;x<plantIcon.Length;x++)
+        /*for(int x= 0;x<plantIcon.Length;x++)
         {
             if (x < i)
             {
@@ -74,7 +74,7 @@ public class MenuPlantChange : MonoSingleton<MenuPlantChange>
                 plantIcon[x].color = color;
                 plantIcon[x].GetComponent<MenuChangeCall>().i = x;
             }
-        }
+        }*/
 
         yield return StartCoroutine(ShaderAppear(i));
         
