@@ -57,7 +57,7 @@ public class Calling666 : MonoBehaviour
         //When there is less than 3 6s add a 6 to the text
         if (dialed6 < 3)
         {
-            dialText.text = dialText.text+ "6";
+            dialText.text = dialText.text+ "6"; //
             
         } 
         
