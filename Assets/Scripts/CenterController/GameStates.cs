@@ -354,6 +354,9 @@ public class GameStates
                 renderedItem.SetActive(false);
             }
             
+            //the planchette goes back to the original position
+            Services.referenceInfo.planchette.transform.position =
+                Services.referenceInfo.planchette.GetComponent<PlanchetteItem>().OriginPos;
             //text state end function
             Services.textStates.ChangeGameState<TextStates.NotInText>(new TextStates.NotInText());
         }
