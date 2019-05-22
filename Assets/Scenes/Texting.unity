@@ -18124,7 +18124,7 @@ MonoBehaviour:
   m_HandleRect: {fileID: 381873068}
   m_Direction: 2
   m_Value: 1
-  m_Size: 1
+  m_Size: 0
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:
@@ -47241,7 +47241,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 0}
-  m_AnchoredPosition: {x: -0.000098228455, y: 6542.9995}
+  m_AnchoredPosition: {x: -0.000098228455, y: 3666.791}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0, y: 1}
 --- !u!114 &1839210070
@@ -51999,7 +51999,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   sourceText:
-  - {fileID: 4900000, guid: 912239b4fd917da4f8f41fc3797a91e9, type: 3}
+  - {fileID: 4900000, guid: c4e453aa58d3eb1438d9a7e8a8932ea7, type: 3}
   stringGroups: []
   shouldOverrideLanguage: 0
   overrideLanguage: 10
