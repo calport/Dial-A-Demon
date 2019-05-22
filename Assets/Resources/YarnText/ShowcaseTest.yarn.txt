@@ -1,0 +1,71 @@
+title: Start
+tags: 
+colorID: 0
+position: 328,272
+---
+Hey.
+So, welcome to my game.
+Can I ask...
+Why you would play such a very dumb game?
+To summon me???
+[[The thrill of it|Thrill]]
+[[So Fake|Fake]]
+===
+title: Thrill
+tags: 
+colorID: 0
+position: 640,755
+---
+<<set $PlayerNickname = "little bird">>
+mmmmmmmmmm
+a thrill seeker
+maybe our little bird here is a bit destructive.
+maybe our little bird needs someone to be a bit more possessive...
+;)
+->Who are you?
+    hahah
+    maybe a better question is what am I?
+    but you invited me here
+    did you just think I wouldn't come?
+     [[Answer:YourName|YourName]]
+    ->Look I'm just here to have fun
+        Well you happened to summon the right demon
+        [[You're so not real|Fake]]
+
+
+
+
+===
+title: Fake
+tags: 
+colorID: 0
+position: 75,561
+---
+<<set $PlayerNickname = "little believer">>
+Well that's scary- I always thought I was quite real!
+If I'm wrong though, what's stopping you from just erasing me away?
+===
+title: YourName
+tags: 
+colorID: 0
+position: 663,61
+---
+My silly bird, your voice was so quiet. Were you nervous?
+->I'm not scared of you
+    I'm sure you'll get a bit louder when we get to know each other more.
+    Now, I have a reward for you.
+===
+title: SayMyName
+tags: 
+colorID: 0
+position: 961,367
+---
+You mumbled through the pronunciation a bit when summoning me.
+but it was kinda cute.
+Practice typing it a few more times.
+->Dantalian
+    ->Dantalian
+        Good bird.
+        Now, I have a reward for you
+
+===

@@ -16,7 +16,7 @@ To summon me???
 title: Thrill
 tags: 
 colorID: 0
-position: -552,-206
+position: -549,-206
 ---
 <<set $PlayerNickname = "little bird">>
 mmmmmmmmmm
@@ -29,7 +29,7 @@ maybe our little bird needs someone to be a bit more possessive...
     maybe a better question is what am I?
     but you invited me here
     did you just think I wouldn't come?
-    [[i didn’t realize that was your name…|YourName]]
+    [[I didn’t realize that was your name…|YourName]]
     ->Look I'm just here to have fun
         Well you happened to summon the right demon
         [[You're so not real|Fake]]
@@ -155,7 +155,7 @@ If I’m wrong though, what’s stopping you from just erasing me away?
 title: YourName
 tags: 
 colorID: 0
-position: -1019,-44
+position: -1142,-176
 ---
 My silly bird, your voice was so quiet. Were you nervous?
 ->i’m not scared of you
@@ -235,7 +235,7 @@ How about we set some guidelines?
 title: Bite
 tags: 
 colorID: 0
-position: -138,-503
+position: -138,-509
 ---
 I’ll take the “sure” but a bite would be moving things a little fast, don’t you think ;)
 Sign this contract with that name of yours and our bond will be even stronger. I can be here to bother you out of boredom for a bit longer
