@@ -476,6 +476,7 @@ public class GameStates
             GameObject openingRitual;
             Services.referenceInfo.BigPage.TryGetValue("OpeningRitual", out openingRitual);
             openingRitual.SetActive(false);
+            Camera.main.GetComponent<AudioListener>().enabled = true;
         }
 
         public override void OnSceneChanged(){}
