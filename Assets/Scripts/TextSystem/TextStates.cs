@@ -61,14 +61,17 @@ public class TextStates
 
     #region States detail perform
 
-    public class NotInText : TextStatesList
-    {
-
-    }
+    public class NotInText : TextStatesList{}
 
     public class NormalText : TextStatesList
     {
-        
+        public override void OnEnter()
+        {
+            if (Services.gameStates.GetCurrentState().GetType() != typeof(GameStates.TextingPage))
+            {
+                Services.gameStates.ChangeGameState(new GameStates.TextingPage());
+            }
+        }
     }
 
     public class OnFileCheck : TextStatesList
@@ -76,6 +79,11 @@ public class TextStates
         
         public override void OnEnter()
         {
+            if (Services.gameStates.GetCurrentState().GetType() != typeof(GameStates.TextingPage))
+            {
+                Services.gameStates.ChangeGameState(new GameStates.TextingPage());
+            }
+            
              Context.CanvasFade(Context.textPage.GetComponent<CanvasGroup>());
              GameObject frontLayer;
              Services.referenceInfo.MenuPage.TryGetValue("FrontLayer", out frontLayer);

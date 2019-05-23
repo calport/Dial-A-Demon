@@ -14,6 +14,7 @@ public class Services
     
     public static GameStates gameStates;
     public static TextStates textStates;
+    public static PhoneStates phoneStates;
     
     public static TextManager textManager;
 

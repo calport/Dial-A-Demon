@@ -41,6 +41,7 @@ public class Game : MonoBehaviour
 
         Services.gameStates.Update();
         Services.textStates.Update();
+        Services.phoneStates.Update();
     }
 
     void OnDestroy()
@@ -77,6 +78,8 @@ public class Game : MonoBehaviour
         Services.gameStates.Init();
         Services.textStates = new TextStates();
         Services.textStates.Init();
+        Services.phoneStates = new PhoneStates();
+        Services.phoneStates.Init();
     }
     
     public void ReInit()
@@ -94,6 +97,7 @@ public class Game : MonoBehaviour
         //this place is for save and clear everything
                 Services.gameStates.Clear();
                 Services.gameStates = null;
+                Services.phoneStates.Clear();
                 Services.plotManager.Clear();
                 Services.plotManager = null;
                 Services.gameSettings.Clear();
