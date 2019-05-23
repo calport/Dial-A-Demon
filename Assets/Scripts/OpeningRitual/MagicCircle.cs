@@ -26,7 +26,8 @@ public class MagicCircle : MonoBehaviour
         rend = drawCircle.GetComponent<SpriteRenderer>();
         Color colorOfCircle = rend.material.color;
         colorOfCircle.a = 0f;
-        rend.material.color = colorOfCircle; 
+        rend.material.color = colorOfCircle;
+        //iPhoneSpeaker.ForceToSpeaker();
     }
 
     // Update is called once per frame
