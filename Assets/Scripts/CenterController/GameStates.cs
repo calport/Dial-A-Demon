@@ -354,6 +354,9 @@ public class GameStates
                 renderedItem.SetActive(false);
             }
             
+            //the planchette goes back to the original position
+            Services.referenceInfo.planchette.transform.position =
+                Services.referenceInfo.planchette.GetComponent<PlanchetteItem>().OriginPos;
             //text state end function
             Services.textStates.ChangeGameState<TextStates.NotInText>(new TextStates.NotInText());
         }
@@ -473,6 +476,7 @@ public class GameStates
             GameObject openingRitual;
             Services.referenceInfo.BigPage.TryGetValue("OpeningRitual", out openingRitual);
             openingRitual.SetActive(false);
+            Camera.main.GetComponent<AudioListener>().enabled = true;
         }
 
         public override void OnSceneChanged(){}

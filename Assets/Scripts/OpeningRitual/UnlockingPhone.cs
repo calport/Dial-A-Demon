@@ -23,7 +23,7 @@ public class UnlockingPhone : MonoBehaviour
     private float dampingSpeed = 0.75f; 
     List<int> inputNumber = new List<int>();
     Vector3 correctCode = new Vector3((int)6, (int)6, (int)6);
-    Vector3 jumpCode = new Vector3((int)1, (int)2, (int)3);
+    Vector3 jumpCode = new Vector3((int)2, (int)7, (int)8);
     
     //initial position of GameObject
     private Vector3 initialPosition;
@@ -147,7 +147,7 @@ public class UnlockingPhone : MonoBehaviour
         yield return new WaitForSeconds(1);
         //make the screenshake and a vibration play 
         shakeDuration = 2.0f;
-        Handheld.Vibrate(); 
+//        Handheld.Vibrate(); 
         //set all unlocks back to false 
         Unlock1.SetActive(false);
         Unlock2.SetActive(false);
