@@ -23,7 +23,7 @@ public class UnlockingPhone : MonoBehaviour
     private float dampingSpeed = 0.75f; 
     List<int> inputNumber = new List<int>();
     Vector3 correctCode = new Vector3((int)6, (int)6, (int)6);
-    Vector3 jumpCode = new Vector3((int)1, (int)2, (int)3);
+    Vector3 jumpCode = new Vector3((int)2, (int)7, (int)8);
     
     //initial position of GameObject
     private Vector3 initialPosition;

@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
@@ -17,10 +18,17 @@ public class Calling666 : MonoBehaviour
     private int dialed6;
 
 
-    public Image BgCalling, BgAnswered, BgDemonCalling;
+    public Image BgCalling, BgAnswered, BgDemonCalling, BgThankYou;
     private int waitTime;
-    public float TimeLeft = 1000f;
 
+    public GameObject ringTone;
+    public Boolean setCall;
+
+    public GameObject backButton;
+
+    public GameObject pointer, textingUI, chatText;
+
+    public GameObject declineCall, answerCall; 
     
     // Start is called before the first frame update
     void Start()
@@ -87,9 +95,7 @@ public class Calling666 : MonoBehaviour
     
     public void DemonCallingPlayer()
     {
-        BgCalling.enabled = false;
-        BgAnswered.enabled = false;
-        BgDemonCalling.enabled = true;
+        StartCoroutine(DemonCallYou());
     }
     
     public void AnsweredPhone()
@@ -99,6 +105,43 @@ public class Calling666 : MonoBehaviour
         BgDemonCalling.enabled = false;
         gameObject.GetComponent<AudioSource>().Play();
         Debug.Log("Answered Phone");
+    }
+    
+    public void DemonCalled()
+    {
+        BgCalling.enabled = false;
+        BgAnswered.enabled = false;
+        BgDemonCalling.enabled = false;
+        BgThankYou.enabled = true;
+        
+       
+        Debug.Log("DemonCalling");
+    }
+
+    public void SetCallUp()
+    {
+        Debug.Log("Setting up call");
+        setCall = true;
+    }
+
+    public void ChangeButton()
+    {
+        DemonCallingPlayer();
+    }
+
+    IEnumerator DemonCallYou()
+    {
+        yield return new WaitForSeconds(0.5f);
+        BgCalling.enabled = false;
+        BgAnswered.enabled = false;
+        BgDemonCalling.enabled = true;
+        pointer.SetActive(false);
+        textingUI.SetActive(false);
+        declineCall.SetActive(true);
+        answerCall.SetActive(true);
+        chatText.SetActive(false);
+        ringTone.GetComponent<AudioSource>().Play();
+        Handheld.Vibrate();
     }
 
     IEnumerator DialingTime()

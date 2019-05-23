@@ -31,6 +31,8 @@ public class ReferenceInfo : MonoSingleton<ReferenceInfo>
     public Dictionary<string, int> SceneDic = new Dictionary<string, int>();
     public Dictionary<string, GameObject> MenuPage = new Dictionary<string, GameObject>();
     public Dictionary<string, GameObject> BigPage = new Dictionary<string, GameObject>();
+    public GameObject planchette;
+    
     private void Awake()
     {
         Services.referenceInfo = this;

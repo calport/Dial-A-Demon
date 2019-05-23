@@ -1,7 +1,7 @@
 title: Start
 tags: 
 colorID: 0
-position: 38,-270
+position: -1180,82
 ---
 <<set $PlayerContract = 0>> 
 <<set $PlayerNickname= "null">>
@@ -16,7 +16,7 @@ To summon me???
 title: Thrill
 tags: 
 colorID: 0
-position: -549,-206
+position: -1300,-487
 ---
 <<set $PlayerNickname = "little bird">>
 mmmmmmmmmm
@@ -24,61 +24,16 @@ a thrill seeker
 maybe our little bird here is a bit destructive.
 maybe our little bird needs someone to be a bit more possessive...
 ;)
-->Who are you?
-    hahah
-    maybe a better question is what am I?
-    but you invited me here
-    did you just think I wouldn't come?
-    [[I didn’t realize that was your name…|YourName]]
-    ->Look I'm just here to have fun
-        Well you happened to summon the right demon
-        [[You're so not real|Fake]]
-        ->Hope so
-            We haven't even done introductions. 
-            I'm Dantalian
-            [[Danta..dan|SayMyName]]
-            ->I thought I'd summon someone a bit more...
-                Scary?
-                Fierce?
-                ->Hellish
-                ->Devilish
-                Well I'm certainly not angelic. 
-                It takes some time for me to learn all your preferences. 
-                But I have something to entertain you, it's nothing too scary. 
-                I promise!
-                [[Slow down|SlowDown]]
-                [[Sure, I'll bite|Bite]] 
-->maaaybe   
-    ;)))))))
-    little bird you don't even know who I am.
-    shouldn't you ask some simple questions before signing your soul to me?
-    ->ok fair, so who are you?
-        …
-        You invited me here
-        You called my name…
-        [[i didn’t realize that was your name...|YourName]]
-        [[That’s right, you serve me.|ServeMe]]
-        [[Wait, so you’re Dantalian?|Dantalian]]
-        ->Danta…….dan?
-            Dantalian.
-            You mumbled through the pronunciation a bit, but it was a quite charming.
-            Practice typing it a few more times.
-            ->Dantalian
-                ->Dantalian
-                    Good bird.
-                    Now, I have a reward for you
-                    <<set $PlayerContract = 1>> 
-    ->i don’t understand
-        It’s not anything really important.
-        Although worry makes your face scrunch up real cute.
-        Remember, that tender circle you drew?
-        Unlucky for you, it stops me from being with you in any form outside of this.
-        [[What if i want you out of the circle?|WantYouOut]]
+[[maaaybe|Maybe]] 
+[[Who are you|WhoAreYou ]] 
+
+
+
 ===
 title: Fake
 tags: 
 colorID: 0
-position: 292,-35
+position: -1164,392
 ---
 <<set $PlayerNickname = "little believer">>
 Well that’s scary - I always thought I was quite real! 
@@ -152,39 +107,17 @@ If I’m wrong though, what’s stopping you from just erasing me away?
 
 
 ===
-title: YourName
-tags: 
-colorID: 0
-position: -1142,-176
----
-My silly bird, your voice was so quiet. Were you nervous?
-->i’m not scared of you
-    I’m sure you’ll get a bit louder when we get to know each other more.
-    Now, I have a reward for you.
-    <<set $PlayerContract = 1>> 
-->yes
-    Awww I don’t want you to feel uncomfortable
-    Sometimes summonings can be intense, but remember you’re always safe in your circle.
-    -> my circle?
-        Remember that little circle you drew when you logged in?
-        Unlucky for you, it stops me from being with you in any form outside of this.
-        [[ what if i want you out: |WantYouOut ]] 
-        [[ Wait, so your Dantalian?: |Dantalian ]] 
-
-===
 title: ServeMe
 tags: 
 colorID: 0
-position: -308,250
+position: 508,-558
 ---
-Binding myself to you…
-Let’s try it
-<<set $PlayerContract = 1>> 
+
 ===
 title: Dantalian
 tags: 
 colorID: 0
-position: 44,228
+position: -656,109
 ---
 You’re a quick one, huh? :P
 I’d give you a gold star, but all I have are some lollipops
@@ -201,7 +134,7 @@ I was kinda expecting complete subservience and total admiration
 title: WantYouOut
 tags: 
 colorID: 0
-position: -655,297
+position: -434,-623
 ---
 My bird, I am Dantalian, of Hell itself. Trust me, you don’t want me out ;)
 ->That excites me even more!
@@ -212,7 +145,7 @@ My bird, I am Dantalian, of Hell itself. Trust me, you don’t want me out ;)
 title: SayMyName
 tags: 
 colorID: 0
-position: -747,-499
+position: -207,-740
 ---
 Dantalian.
 You mumbled through the pronunciation a bit, but it was a quite charming.
@@ -226,7 +159,7 @@ Practice typing it a few more times.
 title: SlowDown
 tags: 
 colorID: 0
-position: -475,-496
+position: -120,-280
 ---
 Whew I'm glad you feel the same. I want you to be comfortable.
 How about we set some guidelines?
@@ -235,9 +168,196 @@ How about we set some guidelines?
 title: Bite
 tags: 
 colorID: 0
-position: -138,-509
+position: -14,521
 ---
 I’ll take the “sure” but a bite would be moving things a little fast, don’t you think ;)
 Sign this contract with that name of yours and our bond will be even stronger. I can be here to bother you out of boredom for a bit longer
 <<set $PlayerContract = 1>> 
+===
+title: YouHaveName
+tags: 
+colorID: 0
+position: 99,-659
+---
+My silly bird, your voice was so quiet. Were you nervous?
+->i’m not scared of you
+    I’m sure you’ll get a bit louder when we get to know each other more.
+    Now, I have a reward for you.
+    <<set $PlayerContract = 1>> 
+->yes
+    Awww I don’t want you to feel uncomfortable
+    Sometimes summonings can be intense, but remember you’re always safe in your circle.
+    -> my circle?
+        Remember that little circle you drew when you logged in?
+        Unlucky for you, it stops me from being with you in any form outside of this.
+        [[ what if i want you out: |WantYouOut ]] 
+        [[ Wait, so your Dantalian?: |Dantalian ]] 
+===
+title: YourName
+tags: 
+colorID: 0
+position: -498,-285
+---
+My silly bird, your voice was so quiet. Were you nervous?
+->i'm not scared of you
+    I'm sure you'll get a bit louder when we get to know each other more.
+    Now, I have a reward for you.
+    <<set $PlayerContract = 1>>
+->yes
+    Awww I don't want you to feel uncomfortable
+    Sometimes summonings can be intense, but remember youâ€™re always safe in your circle.
+->my circle?
+    Remember that little circle you drew when you logged in?
+    Unlucky for you, it stops me from being with you in any form outside of this.
+    [[ what if i want you out: |WantYouOut ]]
+    [[ Wait, so your Dantalian?: |Dantalian ]]
+===
+title: HopeSo
+tags: 
+colorID: 0
+position: -269,-59
+---
+We haven't even done introductions. 
+            I'm Dantalian
+            ->Danta..dan
+                Dantalian.
+                You mumbled through the pronunciation a bit, but it was a quite charming.
+                Practice typing it a few more times.
+                ->Dantalian
+                    ->Dantalian
+                        Good bird.
+                        Now, I have a reward for you
+            <<set $PlayerContract = 1>>
+            ->I thought I'd summon someone a bit more...
+                Scary?
+                Fierce?
+                ->Hellish
+                ->Devilish
+                Well I'm certainly not angelic. 
+                It takes some time for me to learn all your preferences. 
+                But I have something to entertain you, it's nothing too scary. 
+                I promise!
+                [[Slow down|SlowDown]]
+                [[Sure, I'll bite|Bite]]
+===
+title: Maybe
+tags: 
+colorID: 0
+position: -989,-812
+---
+;)))))))
+little bird you don't even know who I am.
+shouldn't you ask some simple questions before signing your soul to me?
+->ok fair, so who are you?
+    …
+    You invited me here
+    You called my name…
+    ->i didn’t realize that was your name...
+        My silly bird, your voice was so quiet. Were you nervous?
+        ->i'm not scared of you
+            I'm sure you'll get a bit louder when we get to know each other more.
+            Now, I have a reward for you.
+            <<set $PlayerContract = 1>>
+        ->yes
+            Awww I don't want you to feel uncomfortable
+            Sometimes summonings can be intense, but remember youâ€™re always safe in your circle.
+        ->my circle?
+            Remember that little circle you drew when you logged in?
+            Unlucky for you, it stops me from being with you in any form outside of this.
+            ->What if i want you out
+                My bird, I am Dantalian, of Hell itself. Trust me, you don’t want me out ;)
+                ->That excites me even more!
+                    I’d like that, but maybe that’s moving a little fast.
+                    Why don’t you bind yourself to me first?
+                    <<set $PlayerContract = 1>>             
+            ->Wait, so your Dantalian?          
+                You’re a quick one, huh? :P
+                I’d give you a gold star, but all I have are some lollipops
+                And besides, you barely remember who you’ve summoned.
+                I was kinda expecting complete subservience and total admiration
+                ->All you had to do was ask
+                    Then I’m not asking anymore!
+                    <<set $PlayerContract = 1>> 
+                ->I think you should serve me
+                    Binding myself to you…
+                    Let’s try it
+                    <<set $PlayerContract = 1>> 
+    ->That’s right, you serve me.
+        Binding myself to you…
+        Let’s try it
+        <<set $PlayerContract = 1>> 
+    ->Wait, so you’re Dantalian?
+        You’re a quick one, huh? :P
+        I’d give you a gold star, but all I have are some lollipops
+        And besides, you barely remember who you’ve summoned.
+        I was kinda expecting complete subservience and total admiration
+        ->All you had to do was ask
+            Then I’m not asking anymore!
+            <<set $PlayerContract = 1>> 
+        -> I think you should serve me
+            Binding myself to you…
+            Let’s try it
+            <<set $PlayerContract = 1>> 
+    ->Danta…….dan?
+        Dantalian.
+        You mumbled through the pronunciation a bit, but it was a quite charming.
+        Practice typing it a few more times.
+        ->Dantalian
+            ->Dantalian
+                Good bird.
+                Now, I have a reward for you
+                <<set $PlayerContract = 1>>
+->i don’t understand
+    It’s not anything really important.
+    Although worry makes your face scrunch up real cute.
+    Remember, that tender circle you drew?
+    Unlucky for you, it stops me from being with you in any form outside of this.
+    ->What if i want you out of the circle?
+        My bird, I am Dantalian, of Hell itself. Trust me, you don’t want me out ;)
+        ->That excites me even more!
+            I’d like that, but maybe that’s moving a little fast.
+            Why don’t you bind yourself to me first?
+            <<set $PlayerContract = 1>> 
+===
+title: WhoAreYou
+tags: 
+colorID: 0
+position: -844,-418
+---
+hahah
+maybe a better question is what am I?
+but you invited me here
+did you just think I wouldn't come?
+->I didn't realize that was your name
+    My silly bird, your voice was so quiet. Were you nervous?
+    ->i’m not scared of you
+        I’m sure you’ll get a bit louder when we get to know each other more.
+        Now, I have a reward for you.
+        <<set $PlayerContract = 1>> 
+    ->yes
+        Awww I don’t want you to feel uncomfortable
+        Sometimes summonings can be intense, but remember you’re always safe in your circle.
+    ->my circle?
+        Remember that little circle you drew when you logged in?
+        Unlucky for you, it stops me from being with you in any form outside of this.
+        [[what if i want you out: |WantYouOut ]] 
+        [[Wait, so your Dantalian? |Dantalian ]] 
+    ->Look I'm just here to have fun
+        Well you happened to summon the right demon
+        [[You're so not real|Fake]]
+        [[Hope so |HopeSo ]] 
+===
+title: DantalianRepeat
+tags: 
+colorID: 0
+position: -636,-882
+---
+Dantalian.
+    You mumbled through the pronunciation a bit, but it was a quite charming.
+    Practice typing it a few more times.
+    ->Dantalian
+        ->Dantalian
+            Good bird.
+            Now, I have a reward for you
+            <<set $PlayerContract = 1>>
 ===
