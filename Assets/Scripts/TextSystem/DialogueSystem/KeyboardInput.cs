@@ -38,8 +38,8 @@ public class KeyboardInput : MonoBehaviour
                 {
                     DemonTextDialogueUI.Instance.TextBoxStateChange(DemonTextDialogueUI.TextBoxState.ChosenWords,
                         content, choiceNumber);
-//                    Handheld.Vibrate();
-//                    Handheld.Vibrate();
+                       Handheld.Vibrate();
+                       Handheld.Vibrate();
                     //testing sound
                     optionSound.Play();
 
