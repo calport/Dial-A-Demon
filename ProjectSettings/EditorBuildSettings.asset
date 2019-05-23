@@ -17,10 +17,10 @@ EditorBuildSettings:
   - enabled: 0
     path: Assets/EasyTouchBundle/EasyTouch/Examples/4.X/_StartScene.unity
     guid: 23139826a0cefdc4ab0cfa66ca9f1027
-  - enabled: 0
+  - enabled: 1
     path: Assets/Scenes/Texting.unity
     guid: 7f6618ef0b7556447ac95766d1960180
-  - enabled: 1
+  - enabled: 0
     path: Assets/NiceVibrations/Demo/NiceVibrationsDemo.unity
     guid: e82ce5e3c1fb14a34aa626ea6c06ac51
   m_configObjects: {}

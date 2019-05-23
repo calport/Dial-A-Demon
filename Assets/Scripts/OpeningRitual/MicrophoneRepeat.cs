@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
-
+using MoreMountains.NiceVibrations;
 
 public class MicrophoneRepeat : MonoBehaviour
 {
@@ -29,6 +29,7 @@ public class MicrophoneRepeat : MonoBehaviour
         RepeatedTime = 0; 
         StartCoroutine(WaitForWords());
         audioVisualizer = gameObject.GetComponent<AudioVisualizer>();
+        MMVibrationManager.iOSInitializeHaptics ();
     }
 
     // Update is called once per frame

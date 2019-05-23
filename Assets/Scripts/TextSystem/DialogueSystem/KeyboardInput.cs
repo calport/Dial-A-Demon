@@ -5,6 +5,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
 using Yarn.Unity.Example;
+using MoreMountains.NiceVibrations;
 
 public class KeyboardInput : MonoBehaviour
 {
@@ -24,6 +25,7 @@ public class KeyboardInput : MonoBehaviour
     {
         //_textInput = this.transform.parent.GetComponentInChildren<TextInput>();
         DemonTextDialogueUI.Instance.keyboardArray.Add(keyCode, this);
+        MMVibrationManager.iOSInitializeHaptics ();
     }
 
     // Update is called once per frame
@@ -38,8 +40,9 @@ public class KeyboardInput : MonoBehaviour
                 {
                     DemonTextDialogueUI.Instance.TextBoxStateChange(DemonTextDialogueUI.TextBoxState.ChosenWords,
                         content, choiceNumber);
-                       Handheld.Vibrate();
-                       Handheld.Vibrate();
+                    MMVibrationManager.Vibrate ();
+                    MMVibrationManager.Vibrate ();
+                    
                     //testing sound
                     optionSound.Play();
 
@@ -114,6 +117,7 @@ public class KeyboardInput : MonoBehaviour
 
     public void Clear()
     {
+        MMVibrationManager.iOSReleaseHaptics ();
         //save data
     }
 
