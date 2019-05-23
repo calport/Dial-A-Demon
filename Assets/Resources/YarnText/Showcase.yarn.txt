@@ -1,7 +1,7 @@
 title: Start
 tags: 
 colorID: 0
-position: -1177,-4
+position: -1183,-24
 ---
 <<set $PlayerContract = 0>> 
 <<set $PlayerNickname= "null">>
@@ -12,12 +12,12 @@ Why you would play such a very dumb game?
 To summon me???
 [[The thrill of it|Thrill]]
 [[So Fake|Fake]]
-[[Summoning a demon seemed fun|Thrill]] 
+[[Ahh summoning a demon seemed fun|Thrill]] 
 ===
 title: Thrill
 tags: 
 colorID: 0
-position: -1142,-546
+position: -1142,-545
 ---
 <<set $PlayerNickname = "little bird">>
 mmmmmmmmmm
@@ -262,7 +262,7 @@ shouldn't you ask some simple questions before signing your soul to me?
 title: WhoAreYou
 tags: 
 colorID: 0
-position: -645,-612
+position: -642,-616
 ---
 hahah
 maybe a better question is what am I?
@@ -277,11 +277,27 @@ did you just think I wouldn't come?
     ->yes
         Awww I don’t want you to feel uncomfortable
         Sometimes summonings can be intense, but remember you’re always safe in your circle.
-    ->my circle?
-        Remember that little circle you drew when you logged in?
-        Unlucky for you, it stops me from being with you in any form outside of this.
-        [[what if i want you out: |WantYouOut ]] 
-        [[Wait, so your Dantalian? |Dantalian ]] 
+        ->my circle?
+            Remember that little circle you drew when you logged in?
+            Unlucky for you, it stops me from being with you in any form outside of this.
+            ->what if i want you out?
+            My bird, I am Dantalian, of Hell itself. Trust me, you don’t want me out ;)
+            ->That excites me even more!
+            I’d like that, but maybe that’s moving a little fast.
+            Why don’t you bind yourself to me first?
+            <<set $PlayerContract = 1>>
+            ->Wait, so your Dantalian?
+            You’re a quick one, huh? :P
+            I’d give you a gold star, but all I have are some lollipops
+            And besides, you barely remember who you’ve summoned.
+            I was kinda expecting complete subservience and total admiration
+            ->All you had to do was ask
+                Then I’m not asking anymore!
+                <<set $PlayerContract = 1>> 
+            ->I think you should serve me
+                Binding myself to you…
+                Let’s try it
+                <<set $PlayerContract = 1>> 
     ->Look I'm just here to have fun
         Well you happened to summon the right demon
         [[You're so not real|Fake]]

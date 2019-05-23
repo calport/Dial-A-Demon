@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using HedgehogTeam.EasyTouch;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using MoreMountains.NiceVibrations;
 
 public class Game : MonoBehaviour
 {
@@ -25,6 +26,7 @@ public class Game : MonoBehaviour
         //Services.eventManager.AddHandler<SceneChanged>(OnSceneChange);
 
         Input.simulateMouseWithTouches = true;
+        MMVibrationManager.iOSInitializeHaptics ();
     }
     
     // Update is called once per frame
@@ -47,6 +49,7 @@ public class Game : MonoBehaviour
     {   
         if(clearDestroy) Clear();
         SceneManager.sceneLoaded -= OnSceneLoaded;
+        MMVibrationManager.iOSReleaseHaptics();
     }
 
     #endregion
