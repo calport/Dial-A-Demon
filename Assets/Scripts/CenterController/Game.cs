@@ -57,9 +57,10 @@ public class Game : MonoBehaviour
     void Init()
     {
         //import all the library utils
-
+        Services.libPage = new LibPage();
+        
         //import all the data file
-        Services.referenceInfo = FindObjectOfType<ReferenceInfo>();
+        //Services.referenceInfo = FindObjectOfType<ReferenceInfo>();
         Services.easyTouch = FindObjectOfType<EasyTouch>();
         Services.gameSettings = new GameSettings();
         Services.gameSettings.Init();

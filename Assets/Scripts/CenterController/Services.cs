@@ -4,7 +4,7 @@ using HedgehogTeam.EasyTouch;
 //using UnityEditorInternal;
 using UnityEngine;
 
-public class Services
+public static class Services
 {
     #region Game play reference
 
@@ -29,6 +29,7 @@ public class Services
 
     #region Library reference
 
+    public static LibPage libPage;
 
     #endregion
 }
