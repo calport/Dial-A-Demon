@@ -5,23 +5,23 @@ using UnityEngine;
 
 public class MenuPageItem : MonoBehaviour
 {
-    [SerializeField] private string nameOfPage = String.Empty;
+    [SerializeField]private string _nameOfPage = String.Empty;
+    public List<GameObject> attachedSpriteItem;
     // Start is called before the first frame update
     void Awake()
     {
-        //Debug.Assert(String.Compare(nameOfPage, string.Empty) == 0);
-        if (!Services.referenceInfo.MenuPage.ContainsValue(gameObject))
+        //
+        attachedSpriteItem = new List<GameObject>();
+        var list = gameObject.GetComponentsInChildren<CameraRenderingItem>();
+        foreach (var cri in list)
         {
-            Services.referenceInfo.MenuPage.Add(nameOfPage,gameObject);
+            attachedSpriteItem.Add(cri.gameObject);
         }
-    }
-
-    private void OnEnable()
-    {
-        //Debug.Assert(String.Compare(nameOfPage, string.Empty) == 0);
+        
+        //
         if (!Services.referenceInfo.MenuPage.ContainsValue(gameObject))
         {
-            Services.referenceInfo.MenuPage.Add(nameOfPage,gameObject);
+            Services.referenceInfo.MenuPage.Add(_nameOfPage,gameObject);
         }
     }
 
@@ -29,7 +29,7 @@ public class MenuPageItem : MonoBehaviour
     {
         if (Services.referenceInfo.MenuPage.ContainsValue(gameObject))
         {
-            Services.referenceInfo.MenuPage.Remove(nameOfPage);
+            Services.referenceInfo.MenuPage.Remove(_nameOfPage);
         }
     }
 }
