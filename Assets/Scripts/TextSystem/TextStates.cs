@@ -81,10 +81,10 @@ public class TextStates
              Services.referenceInfo.MenuPage.TryGetValue("FrontLayer", out frontLayer);
              Context.CanvasOn(frontLayer.GetComponent<CanvasGroup>());
              
-             foreach (var renderedItem in Services.referenceInfo.CameraRenderingItem[global::Page.TextingPage.GetHashCode()])
+             /*foreach (var renderedItem in Services.referenceInfo.CameraRenderingItem[global::Page.TextingPage.GetHashCode()])
              {
                  renderedItem.SetActive(false);
-             }
+             }*/
         }
         
         public override void OnExit()
@@ -95,10 +95,10 @@ public class TextStates
             Services.referenceInfo.MenuPage.TryGetValue("FrontLayer", out frontLayer);
             Context.CanvasOff(frontLayer.GetComponent<CanvasGroup>());
             
-            foreach (var renderedItem in Services.referenceInfo.CameraRenderingItem[global::Page.TextingPage.GetHashCode()])
+            /*foreach (var renderedItem in Services.referenceInfo.CameraRenderingItem[global::Page.TextingPage.GetHashCode()])
             {
                 renderedItem.SetActive(true);
-            }
+            }*/
         }
     }
     

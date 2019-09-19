@@ -95,13 +95,13 @@ public class GameStates
 
     public void Start()
     {
-        foreach (var itemList in Services.referenceInfo.CameraRenderingItem)
+        /*foreach (var itemList in Services.referenceInfo.CameraRenderingItem)
         {
             foreach (var item in itemList)
             {
                 item.SetActive(false);
             }
-        }
+        }*/
         SetInitialScene();        
     }
     
@@ -175,10 +175,10 @@ public class GameStates
                 Context.CanvasOn(Page.GetComponent<CanvasGroup>());
                 
 
-                foreach (var renderedItem in Services.referenceInfo.CameraRenderingItem[global::Page.MainMenu.GetHashCode()])
+                /*foreach (var renderedItem in Services.referenceInfo.CameraRenderingItem[global::Page.MainMenu.GetHashCode()])
                 {
                     renderedItem.SetActive(true);
-                }
+                }*/
 
                 if(Services.gameStates._fsm.PreviousState.GetType() == typeof(OpeningRitualPage)) Services.textManager.DialogueSys.GetComponent<DialogueRunner>().StartDialogue();
             }
@@ -194,10 +194,10 @@ public class GameStates
             Services.referenceInfo.MenuPage.TryGetValue("MenuPage", out Page);
             Context.CanvasOff(Page.GetComponent<CanvasGroup>());
             
-            foreach (var renderedItem in Services.referenceInfo.CameraRenderingItem[global::Page.MainMenu.GetHashCode()])
+            /*foreach (var renderedItem in Services.referenceInfo.CameraRenderingItem[global::Page.MainMenu.GetHashCode()])
             {
                 renderedItem.SetActive(false);
-            }
+            }*/
         }
         
         public override void OnSceneChanged(){}
@@ -235,10 +235,10 @@ public class GameStates
                 Services.referenceInfo.MenuPage.TryGetValue("DialPage", out Page);
                 Context.CanvasOn(Page.GetComponent<CanvasGroup>());
                 
-                foreach (var renderedItem in Services.referenceInfo.CameraRenderingItem[global::Page.DialPage.GetHashCode()])
+                /*foreach (var renderedItem in Services.referenceInfo.CameraRenderingItem[global::Page.DialPage.GetHashCode()])
                 {
                     renderedItem.SetActive(true);
-                }
+                }*/
             }
         }
         
@@ -252,10 +252,10 @@ public class GameStates
             Services.referenceInfo.MenuPage.TryGetValue("DialPage", out Page);
             Context.CanvasOff(Page.GetComponent<CanvasGroup>());
             
-            foreach (var renderedItem in Services.referenceInfo.CameraRenderingItem[global::Page.DialPage.GetHashCode()])
+            /*foreach (var renderedItem in Services.referenceInfo.CameraRenderingItem[global::Page.DialPage.GetHashCode()])
             {
                 renderedItem.SetActive(false);
-            }
+            }*/
         }
        
         public override void OnSceneChanged(){}
@@ -283,10 +283,10 @@ public class GameStates
                 Services.referenceInfo.MenuPage.TryGetValue("PhoneCallPage", out Page);
                 Context.CanvasOn(Page.GetComponent<CanvasGroup>());
                 
-                foreach (var renderedItem in Services.referenceInfo.CameraRenderingItem[global::Page.PhoneCallPage.GetHashCode()])
+                /*foreach (var renderedItem in Services.referenceInfo.CameraRenderingItem[global::Page.PhoneCallPage.GetHashCode()])
                 {
                     renderedItem.SetActive(true);
-                }
+                }*/
             }
         }
         
@@ -300,10 +300,10 @@ public class GameStates
             Services.referenceInfo.MenuPage.TryGetValue("PhoneCallPage", out Page);
             Context.CanvasOff(Page.GetComponent<CanvasGroup>());
             
-            foreach (var renderedItem in Services.referenceInfo.CameraRenderingItem[global::Page.PhoneCallPage.GetHashCode()])
+            /*foreach (var renderedItem in Services.referenceInfo.CameraRenderingItem[global::Page.PhoneCallPage.GetHashCode()])
             {
                 renderedItem.SetActive(false);
-            }
+            }*/
         }
     }
 
@@ -329,10 +329,10 @@ public class GameStates
                 Services.referenceInfo.MenuPage.TryGetValue("TextingPage", out Page);
                 Context.CanvasOn(Page.GetComponent<CanvasGroup>());
                 
-                foreach (var renderedItem in Services.referenceInfo.CameraRenderingItem[global::Page.TextingPage.GetHashCode()])
+                /*foreach (var renderedItem in Services.referenceInfo.CameraRenderingItem[global::Page.TextingPage.GetHashCode()])
                 {
                     renderedItem.SetActive(true);
-                }
+                }*/
                 
                 //text state start to function
                 Services.textStates.ChangeGameState<TextStates.NormalText>(new TextStates.NormalText());
@@ -349,11 +349,12 @@ public class GameStates
             Services.referenceInfo.MenuPage.TryGetValue("TextingPage", out Page);
             Context.CanvasOff(Page.GetComponent<CanvasGroup>());
             
-            foreach (var renderedItem in Services.referenceInfo.CameraRenderingItem[global::Page.TextingPage.GetHashCode()])
+            /*foreach (var renderedItem in Services.referenceInfo.CameraRenderingItem[global::Page.TextingPage.GetHashCode()])
             {
                 renderedItem.SetActive(false);
             }
-            
+            */
+
             //text state end function
             Services.textStates.ChangeGameState<TextStates.NotInText>(new TextStates.NotInText());
         }
@@ -385,10 +386,10 @@ public class GameStates
                 Services.referenceInfo.MenuPage.TryGetValue("FinalRitualPage", out Page);
                 Context.CanvasOn(Page.GetComponent<CanvasGroup>());
                 
-                foreach (var renderedItem in Services.referenceInfo.CameraRenderingItem[global::Page.FinalRitualPage.GetHashCode()])
+                /*foreach (var renderedItem in Services.referenceInfo.CameraRenderingItem[global::Page.FinalRitualPage.GetHashCode()])
                 {
                     renderedItem.SetActive(true);
-                }
+                }*/
             }
         }
         
@@ -402,10 +403,10 @@ public class GameStates
             Services.referenceInfo.MenuPage.TryGetValue("FinalRitualPage", out Page);
             Context.CanvasOff(Page.GetComponent<CanvasGroup>());
             
-            foreach (var renderedItem in Services.referenceInfo.CameraRenderingItem[global::Page.FinalRitualPage.GetHashCode()])
+            /*foreach (var renderedItem in Services.referenceInfo.CameraRenderingItem[global::Page.FinalRitualPage.GetHashCode()])
             {
                 renderedItem.SetActive(false);
-            }
+            }*/
         }
         public override void OnSceneChanged(){}
     }
@@ -428,10 +429,10 @@ public class GameStates
                 Services.referenceInfo.BigPage.TryGetValue("Setting", out setting);
                 setting.SetActive(true);
                 
-                foreach (var renderedItem in Services.referenceInfo.CameraRenderingItem[global::Page.SettingPage.GetHashCode()])
+                /*foreach (var renderedItem in Services.referenceInfo.CameraRenderingItem[global::Page.SettingPage.GetHashCode()])
                 {
                     renderedItem.SetActive(true);
-                }
+                }*/
             }
         }
         
@@ -441,10 +442,10 @@ public class GameStates
             Services.referenceInfo.BigPage.TryGetValue("Setting", out setting);
             setting.SetActive(false);
             
-            foreach (var renderedItem in Services.referenceInfo.CameraRenderingItem[global::Page.SettingPage.GetHashCode()])
+            /*foreach (var renderedItem in Services.referenceInfo.CameraRenderingItem[global::Page.SettingPage.GetHashCode()])
             {
                 renderedItem.SetActive(true);
-            }
+            }*/
         }
 
         public override void OnSceneChanged(){}
