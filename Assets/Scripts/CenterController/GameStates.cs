@@ -169,7 +169,7 @@ public class GameStates
                 GameObject mainmenu;
                 Services.referenceInfo.BigPage.TryGetValue("MainMenu", out mainmenu);
                 mainmenu.SetActive(true);
-                
+                 
                 GameObject Page;
                 Services.referenceInfo.MenuPage.TryGetValue("MenuPage", out Page);
                 Context.CanvasOn(Page.GetComponent<CanvasGroup>());

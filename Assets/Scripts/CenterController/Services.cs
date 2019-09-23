@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using HedgehogTeam.EasyTouch;
+using DialADemon.Page;
 //using UnityEditorInternal;
 using UnityEngine;
 
@@ -11,7 +12,8 @@ public static class Services
     public static Game game;
     public static GameSettings gameSettings;
     public static PlotManager plotManager;
-    
+
+    public static PageState pageState;
     public static GameStates gameStates;
     public static TextStates textStates;
     
@@ -29,7 +31,7 @@ public static class Services
 
     #region Library reference
 
-    public static LibPage libPage;
+    public static CanvasEffect canvasEffect;
 
     #endregion
 }

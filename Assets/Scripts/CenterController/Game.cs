@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using DialADemon.Page;
 using HedgehogTeam.EasyTouch;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -57,8 +58,7 @@ public class Game : MonoBehaviour
     void Init()
     {
         //import all the library utils
-        Services.libPage = new LibPage();
-        
+        Services.canvasEffect = new CanvasEffect();
         //import all the data file
         //Services.referenceInfo = FindObjectOfType<ReferenceInfo>();
         Services.easyTouch = FindObjectOfType<EasyTouch>();
@@ -74,6 +74,8 @@ public class Game : MonoBehaviour
         //some logic problem here that doesnt consider the save situation
         //TODO
         Services.plotManager.Init();
+        Services.pageState = new PageState();
+        Services.pageState.Init();
         Services.gameStates = new GameStates();
         Services.gameStates.Init();
         Services.textStates = new TextStates();

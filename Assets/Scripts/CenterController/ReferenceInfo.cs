@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
-using DialADemon.DataStructure;
+using DialADemon.Page;
 
 public enum Page
 {
@@ -22,7 +22,7 @@ public enum Page
 
 public class ReferenceInfo : MonoSingleton<ReferenceInfo>
 {
-    public PageTree rootPage = new PageTree();
+    public List<Pages> pageList = new List<Pages>();
     
     public List<Type> GameStatesRefList = new List<Type>(){typeof(GameStates.MenuPage),typeof(GameStates.TextingPage),typeof(GameStates.PhoneCallPage),
         typeof(GameStates.DialPage),typeof(GameStates.SettingPage),typeof(GameStates.OpeningRitualPage),typeof(GameStates.FinalRitualPage)};
