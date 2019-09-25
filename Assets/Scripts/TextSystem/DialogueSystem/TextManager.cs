@@ -7,6 +7,7 @@ using Yarn.Unity.Example;
 
 public class TextManager
 {
+    public TextRunner textRunner;
     // path of the massage bubble prefabs
     private string _demonTextBox;
     private string _playerTextBox;
@@ -22,15 +23,17 @@ public class TextManager
 
     public void Init()
     {
-        
-        
         _demonTextBox = "Prefabs/MessageBubble_Demon";
         _playerTextBox = "Prefabs/MessageBubble_Player";
         _demonContract = "Prefabs/DemonContract";
 
         DialogueSys = DemonTextDialogueUI.Instance.gameObject;
     }
-    
+
+    public void Update()
+    {
+        
+    }
     public void Clear()
     {
         //save here

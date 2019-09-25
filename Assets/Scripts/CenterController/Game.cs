@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using DialADemon.Library;
 using DialADemon.Page;
 using HedgehogTeam.EasyTouch;
 using UnityEngine;

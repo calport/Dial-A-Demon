@@ -38,7 +38,7 @@ namespace Yarn.Unity.Example {
         private string _demonContract;
         
         //A dictionary saves all the keyboard informations
-        public Dictionary<string, KeyboardInput> keyboardArray = new Dictionary<string, KeyboardInput>();
+        public Dictionary<string, Keyboard> keyboardArray = new Dictionary<string, Keyboard>();
         //the parent of all the chatlog
         public GameObject content;
         
@@ -116,10 +116,10 @@ namespace Yarn.Unity.Example {
             {
                 string _firstLetter = optionString;
                 _firstLetter = _firstLetter.Substring(0, 1).ToUpper();
-                KeyboardInput key = keyboardArray[_firstLetter];
+                var key = keyboardArray[_firstLetter];
               
                 key.content = optionString;
-                key.choiceNumber = i;
+                key.choiceIdex = i;
                 i++;
             }
 
@@ -136,7 +136,7 @@ namespace Yarn.Unity.Example {
             //reset the choice number
             foreach (var key in keyboardArray.Values)
             {
-                key.choiceNumber = 50;
+                key.choiceIdex = 50;
             }
             selectedOption = 50;
         }
