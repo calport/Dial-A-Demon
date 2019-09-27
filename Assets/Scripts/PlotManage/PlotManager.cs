@@ -1,216 +1,314 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Threading.Tasks;
 using UnityEngine;
 //using UnityEngine.iOS;
-
+public class PlotManagerInfo
+{
+    public DateTime baseTime;
+}
 public class PlotManager
 {
+    public PlotManagerInfo plotInfo = new PlotManagerInfo();
     //Calendar system
-    public List<Plot> TotalTask { get; private set; }
-    private DateTime _startTime;
+    public Dictionary<Type, Plot> plots = new Dictionary<Type, Plot>();
+    public Dictionary<Type, Plot> globalCheckPlot = new Dictionary<Type, Plot>();
+    public Dictionary<Plot, DateTime> Calendar = new Dictionary<Plot, DateTime>();
 
-    public DateTime StartTime
-    {
-        get { return _startTime; }
-    }
 
-    private int _plotNumber = 0;
-    public int PlotNumber
-    {
-        get { return _plotNumber; }
-    }
 
-    public void RegisterNewPlot<T>(T newPlot) where T : Plot
-    {
-        TotalTask.Add(newPlot);        
-    }
-
-    private void ArrangeCalendar()
-    {
-        TotalTask = TotalTask.OrderBy(o => o.PlotStartTime.Day).ThenBy(o => o.PlotStartTime.Hour).ThenBy(o => o.PlotStartTime.Minute).ToList();
-    }
-    
-
-    //The actual functioning system which is in charge of the life circle of plots
-    private List<Plot> _pendingPlot = new List<Plot>();
-    private List<Plot> _deletedPlot =new List<Plot>();
-    private List<Plot> _newPlot = new List<Plot>();
-    private List<Plot> _currentPlot = new List<Plot>();
-
-    public List<Plot> DeletedPlot
-    {
-        get { return _deletedPlot; }
-    }
-
-    public List<Plot> CurrentPlot
-    {
-        get { return _currentPlot; }
-    }
-    
-    public void AddPlot(Plot newPlot)
-    {
-        _pendingPlot.Add(newPlot);
-        //When a plot has been put in pending,then the time of the plot is set and will never been changed in the future
-        //TotalTask.Remove(newPlot);
-    }
-
-    public void DeletePlot(Plot newPlot)
-    {
-        if (_currentPlot.Contains(newPlot))
-        {
-            _deletedPlot.Add(newPlot);
-            _currentPlot.Remove(newPlot);
-            newPlot.Clean();
-        }
-    }
-
-    //initiate everything when the game first start
-    //recover everything when the game is logged in
     public void Init()
     {
 
         //clear notification
         //UnityEngine.iOS.NotificationServices.ClearLocalNotifications();
 
-        //register all the plots
-        RegisterPlot.RegisterAllPlot();
-        
-        //initialize when the first time login
-        if (!PlayerPrefs.HasKey("Plot"))
-        {
-            PlayerPrefs.SetInt("Plot", _plotNumber);
-            _startTime = System.DateTime.Now;
-            foreach (var plot in TotalTask)
-            {
-                plot.InitTime();
-            }
-            AddPlot(TotalTask[0]);
-            //not really need this if the order was set in the beginning, but if the register becomes dynamic, the system should be careful with the insert plot
-            //because the aiming time is not updated all the time, and there is no use of the arrange calendar function
-            //ArrangeCalendar();
-        }
-        else
-        {
-
-            _plotNumber = PlayerPrefs.GetInt("Plot");
-        }
-
         //read the save plot
         //AddPlot(TotalTask[_plotNumber]);
         //read the saved plot start time
         //TODO
+        
+        //for the first time upload
+        InitBaseTime();
+        InitLeadPlot();
     }
 
-    //keep tracking how each plot works in different stage
-    public void RegularUpdate()
+    public void Update()
     {
-        //running the plots
-        //running plots should be first in case that deleteplot func delete things that was initiated by new plot
-        foreach (var plot in _currentPlot)
+        List<Plot> unusedPlot = new List<Plot>();
+        //constantly update the plots' state
+        foreach (var plotPair in Calendar)
         {
-            plot.Update();
-            if (plot.IsFinished())
+            if (plotPair.Value > DateTime.Now && plotPair.Key.plotState == plotState.isOnCalendar)
             {
-                DeletePlot(plot);
+                plotPair.Key.plotState = plotState.isPlaying;
+                plotPair.Key.Start();
+            }
+
+            if (plotPair.Key.plotState == plotState.isPlaying)
+            {
+                plotPair.Key.Update();
+            }
+
+            if (plotPair.Key.plotState == plotState.isFinished)
+            {
+                plotPair.Key.Clear();
+                unusedPlot.Add(plotPair.Key);
+            }
+
+            if (plotPair.Key.plotState == plotState.isBreak)
+            {
+                plotPair.Key.Break();
+                unusedPlot.Add(plotPair.Key);
             }
         }
-
-        //keep rearrange the plot start time
-        //if the situation and reached and the time can be settled, then move this plot to new plot
-        foreach (var pendingPlot in _pendingPlot)
+        
+        //clean finished plots
+        foreach (var plot in unusedPlot)
         {
-            if (pendingPlot.IsAbleToSetTimeDown())
-            {
-                pendingPlot.RearrangeTime();
-                _newPlot.Add(pendingPlot);
-                _pendingPlot.Remove(pendingPlot);
-            }
+            Calendar.Remove(plot);
         }
-
-        //keep check the time of initiation may need future change
-        //if the time has reached, then put the pending plot into the current plot
-        foreach (var newPlot in _newPlot)
+        
+        foreach (var plot in globalCheckPlot.Values)
         {
-            if (newPlot.IsAbleToStart())
+            if (plot.plotState == plotState.isStandingBy || plot.plotState == plotState.isChecking)
             {
-                _newPlot.Remove(newPlot);
-                _currentPlot.Add(newPlot);
-                _plotNumber++;
-                newPlot.Init();
-                newPlot.AddPendingPlot();
+                bool isLoadable = plot.CheckLoad();
+                if (isLoadable)
+                {
+                    plot.AddToCalendar();
+                }
             }
         }
     }
 
-    public void SpeedUpdate()
-    {
-        //running the plots
-        //running plots should be first in case that deleteplot func delete things that was initiated by new plot
-        foreach (var plot in _currentPlot)
-        {
-            plot.Update();
-            if (plot.IsFinished())
-            {
-                DeletePlot(plot);
-            }
-        }
-
-        //keep rearrange the plot start time
-        //if the situation and reached and the time can be settled, then move this plot to new plot
-        foreach (var pendingPlot in _pendingPlot)
-        {
-            if (pendingPlot.IsAbleToSetTimeDown())
-            {
-                pendingPlot.ShrinkTime();
-                _newPlot.Add(pendingPlot);
-                _pendingPlot.Remove(pendingPlot);
-            }
-        }
-        
-        //keep check the time of initiation may need future change
-        //if the time has reached, then put the pending plot into the current plot
-        foreach (var newPlot in _newPlot)
-        {
-            if (newPlot.IsAbleToStart())
-            {
-                _newPlot.Remove(newPlot);
-                _currentPlot.Add(newPlot);
-                _plotNumber++;
-                newPlot.Init();
-                newPlot.AddPendingPlot();
-            }
-    }
-        
-        /*
-        //do the cleaning when a plot is finished
-        foreach (var deletePlot in _deletePlot)
-        {
-            _currentPlot.Remove(deletePlot);
-            //rearrange all the task times after one of the plot is finished
-        }*/
-        
-    }
-
-    
-    //when the app quit, save all the info that needed
-    //add notification and other stuff to keep track the gameflow
     public void Clear()
     {
         //save all the list of plots
         //save all the plot start time
         //TODO
         //add notification
-        foreach (var newPlot in _newPlot)
-        {
-            newPlot.NewPlotNote();
-        }
+    }
 
-        foreach (var currentPlot in _currentPlot)
+    public void ClearCalendar()
+    {
+        //including save and clean data
+        //save TODO
+        //clean
+        Calendar.Clear();
+        plots.Clear();
+        
+    }
+    void InitBaseTime()
+    {
+        if (!File.Exists(Application.dataPath + "/Resources/Json/Time.json"))
         {
-            currentPlot.CurrentPlotNote();
+            plotInfo.baseTime = DateTime.Now;
+            ;
+        }
+        else
+        {
+            StreamReader sr = new StreamReader(Application.dataPath + "/Resources/Json/Time.json");
+            string json = sr.ReadToEnd();
+            if (json.Length > 0)
+            {
+                plotInfo = JsonUtility.FromJson<PlotManagerInfo>(json);
+            }
         }
     }
+
+    void InitLeadPlot()
+    {
+        var root = GetOrCreatePlots<RootPlot>();
+        root.AddToCalendar();
+    }
+
+    public T GetOrCreatePlots<T>() where T : Plot
+    {
+        Plot outPlot;
+        plots.TryGetValue(typeof(T), out outPlot);
+        if (outPlot != null)
+        {
+            return outPlot as T;
+        }
+        else
+        {
+            T newPlot = Activator.CreateInstance<T>();
+            newPlot.parent = this;
+            newPlot.Init();
+            newPlot.plotState = plotState.isChecking;
+            if(newPlot.isGlobalCheck) globalCheckPlot.Add(newPlot.GetType(),newPlot);
+            plots.Add(typeof(T), newPlot);
+            return newPlot;
+        }
+    }
+    
+    public Plot GetOrCreatePlots(Type type)
+    {
+        Plot outPlot;
+        plots.TryGetValue(type, out outPlot);
+        if (outPlot != null)
+        {
+            return outPlot;
+        }
+        else
+        {
+            Plot newPlot = Activator.CreateInstance(type) as Plot;
+            newPlot.parent = this;
+            newPlot.Init();
+            newPlot.plotState = plotState.isChecking;
+            if(newPlot.isGlobalCheck) globalCheckPlot.Add(newPlot.GetType(),newPlot);
+            plots.Add(type, newPlot);
+            return newPlot;
+        }
+    }
+
+    public void StartPlot<T>() where T : Plot
+    {
+        ClearCalendar();
+        var newPlot = GetOrCreatePlots<T>();
+        plotInfo.baseTime = DateTime.Now;
+        newPlot.SetRelatedSpanToZero();
+        newPlot.AddToCalendar();
+    }
+
+    //when the app quit, save all the info that needed
+    //add notification and other stuff to keep track the gameflow
+    
+
+    public enum plotState
+    {
+        isStandingBy,
+        isChecking,
+        isOnCalendar,
+        isPlaying,
+        isFinished,
+        isAbandoned,
+        isBreak,
+    }
+
+    public abstract class Plot
+    {
+        public PlotManager parent;
+        protected  Dictionary<Type, Plot> parentPlots = new Dictionary<Type, Plot>();
+        protected  Dictionary<Type, Plot> childPlots = new Dictionary<Type, Plot>();
+        
+        public plotState plotState = plotState.isStandingBy;
+        
+        //true when the checking 
+        public  bool isGlobalCheck = false;
+
+        public  bool isInstance = false;
+        
+        //calendar time
+        protected Plot _referPlot;
+        protected TimeSpan _relaSpan;
+
+        public TimeSpan absSpan
+        {
+            get
+            {
+                TimeSpan time = _relaSpan;
+                Plot rp = this;
+                while(rp._referPlot.GetType() != typeof(RootPlot))
+                {
+                    rp = parent.GetOrCreatePlots(rp._referPlot.GetType());
+                    time += rp._relaSpan;
+                }
+
+                return time;
+            }
+        }
+        public DateTime plotStartTime
+        {
+            get { return parent.plotInfo.baseTime.Add(absSpan); }
+        }
+        
+        //This will appear in every subclass so object can set time when they are created
+        /*
+    
+        public Plot(float day, float hour, float second)
+        {
+            _day = day;
+            _hour = hour;
+            _second = second;
+        }*/
+
+        //prepare to start the plot before it update
+        public virtual void Init()
+        {
+        }
+
+        public virtual void Start(){}
+        public virtual void Update()
+        {
+        }
+
+        public virtual void Clear()
+        {
+        }
+
+        public virtual void Break(){}
+        public virtual void Save()
+        {
+        }
+
+        public void AddToCalendar()
+        {
+            if (plotState == plotState.isChecking || plotState == plotState.isStandingBy)
+            {
+                parent.Calendar.Add(this,plotStartTime);
+                this.plotState = plotState.isOnCalendar;
+            }
+        }
+
+        public void CheckChild()
+        {
+            foreach (var childPlot in childPlots.Values)
+            {
+                var plotInit = parent.GetOrCreatePlots(childPlot.GetType());
+                if (plotInit.plotState == plotState.isChecking || plotInit.plotState == plotState.isStandingBy)
+                {
+                    bool isLoadable = plotInit.CheckLoad();
+                    if (isLoadable)
+                    {
+                        plotInit.AddToCalendar();
+                    }
+                }
+            }
+        }
+
+        //check if the plot itself is loaded
+        public virtual bool CheckLoad()
+        {
+            return false;
+        }
+
+        public void SetRelatedSpanToZero()
+        {
+            _relaSpan= TimeSpan.Zero;
+        }
+    }
+
+    public class RootPlot : Plot
+    {
+        RootPlot()
+        { 
+            childPlots = new Dictionary<Type, Plot>{{typeof(Day1_Text1),new Day1_Text1()}};; 
+            _referPlot = new RootPlot();
+             _relaSpan = TimeSpan.Zero;
+        }
+
+        public override void Start()
+        {
+            CheckChild();
+            plotState = plotState.isFinished;
+        }
+    }
+    
+    public class Day1_Text1 : Plot{}
 }

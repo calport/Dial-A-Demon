@@ -201,7 +201,7 @@ public class CSM<TContext, V> where TContext : class where V : Info
 
     public abstract class StateBehavior
     {
-        public readonly Enum enumId;
+        public Enum enumId;
 
         protected StateBehavior(Enum enumId)
         {

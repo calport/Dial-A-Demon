@@ -130,7 +130,10 @@ namespace DialADemon.Page
 
         public class MainMenu : PageStatesList
         {
-            public new Enum enumId = BelongedSystem.MainMenu;
+            MainMenu()
+            {
+                enumId = BelongedSystem.MainMenu;
+            }
             public override void OnEnter(){}
 
             public override void OnExit(){}
@@ -140,7 +143,10 @@ namespace DialADemon.Page
         
         public class PhoneCall : PageStatesList
         {
-            public new Enum enumId = BelongedSystem.PhoneCall;
+            PhoneCall()
+            {
+                enumId = BelongedSystem.PhoneCall;
+            }
             public override void OnEnter(){}
 
             public override void OnExit(){}
@@ -150,7 +156,10 @@ namespace DialADemon.Page
         
         public class Text : PageStatesList
         {
-            public new Enum enumId = BelongedSystem.Text;
+            Text()
+            {
+                enumId = BelongedSystem.Text;
+            }
             public override void OnEnter(){}
 
             public override void OnExit(){}
@@ -160,7 +169,10 @@ namespace DialADemon.Page
         
         public class Setting : PageStatesList
         {
-            public new Enum enumId = BelongedSystem.Setting;
+            Setting()
+            {
+                enumId = BelongedSystem.Setting;
+            }
             public override void OnEnter(){}
 
             public override void OnExit(){}
@@ -170,7 +182,10 @@ namespace DialADemon.Page
         
         public class Ritual : PageStatesList
         {
-            public new Enum enumId = BelongedSystem.Ritual;
+            Ritual()
+            {
+                enumId = BelongedSystem.Ritual;
+            }
             public override void OnEnter(){}
 
             public override void OnExit(){}
@@ -180,7 +195,10 @@ namespace DialADemon.Page
         
         public class BackLayer : PageStatesList
         {
-            public new Enum enumId = RenderLayer.BackLayer;
+            BackLayer()
+            {
+                enumId = RenderLayer.BackLayer;
+            }
             public override void OnEnter(){}
 
             public override void OnExit(){}
@@ -190,7 +208,10 @@ namespace DialADemon.Page
         
         public class FrontLayer : PageStatesList
         {
-            public new Enum enumId = RenderLayer.FrontLayer;
+            FrontLayer()
+            {
+                enumId = RenderLayer.FrontLayer;
+            }
             public override void OnEnter(){}
 
             public override void OnExit(){}
@@ -200,7 +221,10 @@ namespace DialADemon.Page
 
         public class PlainLoad : PageStatesList
         {
-            public new Enum enumId = LoadBehavior.Plain;
+            PlainLoad()
+            {
+                enumId = LoadBehavior.Plain;
+            }
             public override void OnEnter()
             {
                 var cav = Parent.CurrentState.relatedObj[typeof(GameObject)].GetComponent<CanvasGroup>();
@@ -221,7 +245,10 @@ namespace DialADemon.Page
         
         public class LoadingLoad : PageStatesList
         {
-            public new Enum enumId = LoadBehavior.Loading;
+            LoadingLoad()
+            {
+                enumId = LoadBehavior.Loading;
+            }
             public override void OnEnter()
             {
                 

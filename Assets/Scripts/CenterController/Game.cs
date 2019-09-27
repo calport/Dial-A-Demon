@@ -32,14 +32,15 @@ public class Game : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (Services.gameSettings.SpeedPlot)
+        Services.plotManager.Update();
+        /*if (Services.gameSettings.SpeedPlot)
         {
             Services.plotManager.SpeedUpdate();
         }
         else
         {
             Services.plotManager.RegularUpdate();
-        }
+        }*/
 
         Services.gameStates.Update();
         Services.textStates.Update();
