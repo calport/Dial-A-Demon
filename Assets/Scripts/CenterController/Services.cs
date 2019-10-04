@@ -14,9 +14,7 @@ public static class Services
     public static PlotManager plotManager;
 
     public static PageState pageState;
-    public static GameStates gameStates;
-    public static TextStates textStates;
-    
+
     public static TextManager textManager;
 
     #endregion

@@ -429,7 +429,7 @@ namespace Yarn.Unity
     public abstract class DialogueUIBehaviour : MonoBehaviour
     {
         //register the recent plot which is now using this DialogRunner;
-        public Plot controlPlot = null;
+        //public Plot controlPlot = null;
         
         /// A conversation has started.
         public virtual IEnumerator DialogueStarted() {

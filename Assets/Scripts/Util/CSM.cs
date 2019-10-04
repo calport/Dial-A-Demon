@@ -2,18 +2,21 @@
 using System.Linq;    
 using System.Collections;
 using System.Collections.Generic;
+using System.Dynamic;
 using System.Reflection;
+using DialADemon.Page;
 using UnityEditor.Animations;
 using UnityEditorInternal;
 using UnityEngine;
+using UnityEngine.Experimental.XR;
 using Object = System.Object;
 
 public abstract class Info
 {
     public int id;
     public string name;
-    public Dictionary<Type, GameObject> relatedObj;
-    public Dictionary<Type, Enum> property;
+    public List<GameObject> relatedObj = new List<GameObject>();
+    public Dictionary<Type, Enum> property = new Dictionary<Type, Enum>();
 }
 
 //V should be a struct
@@ -35,7 +38,7 @@ public class CSM<TContext, V> where TContext : class where V : Info
 
     //This is a list of all the state that the CSM contains, while they are like enums and not functioning as FSM
     //The detail of each state's behavior is according to their properties
-    public dynamic stateList;
+    public dynamic stateList = new ExpandoObject();
     //private List<V> _stateList = new List<V>();
 
     public void AddState(int id, string name, GameObject[] relatedObj, params Enum[] properties)
@@ -46,17 +49,18 @@ public class CSM<TContext, V> where TContext : class where V : Info
         
         foreach (var obj in relatedObj)
         {
-            newState.relatedObj.Add(obj.GetType(),obj);
+            newState.relatedObj.Add(obj);
         }
         
         foreach (var prop in properties)
         {
             Enum defProp;
             if (newState.property.TryGetValue(prop.GetType(), out defProp)) newState.property[prop.GetType()] = prop;
+            else{ newState.property.Add(prop.GetType(),prop);}
         }
         
         IDictionary<string, object> dict = stateList as IDictionary<string, object>;
-        dict.Add(newState.name,newState);
+        dict.Add(newState.name,newState as object);
     }
 
     public Dictionary<Enum, StateBehavior> _stateBehavior = new Dictionary<Enum, StateBehavior>();
@@ -94,16 +98,21 @@ public class CSM<TContext, V> where TContext : class where V : Info
 
     public void Init<TState>(List<Enum> propertyEnums) where TState : StateBehavior
     {
+        
+        
         stateList = new System.Dynamic.ExpandoObject();
         _propertyEnums = propertyEnums;
         
-        var childList = typeof(TState).Assembly.GetTypes().Where(type => type.IsSubclassOf(typeof(TState))).ToList();
+        List<Type> childList = typeof(TState).Assembly.GetTypes().Where(type => type.IsSubclassOf(typeof(TState))).ToList();
+
         foreach (var child in childList)
-        {
+        { 
             TState a = Activator.CreateInstance(child) as TState;
+            a.Parent = this;
             _stateBehavior.Add(a.enumId, a);
         }
         
+        // make sure that the number of state behaviors are the same as the number of the enum properties
          V state = Activator.CreateInstance<V>();
         int i = 0;
         foreach (var propEnum in _propertyEnums)
@@ -147,18 +156,17 @@ public class CSM<TContext, V> where TContext : class where V : Info
     // Actually transition to any pending state
     private void PerformPendingTransition()
     {
-        if (!object.Equals(_pendingState, default))
+        if (!object.Equals(_pendingState, null))
         {
-            if (!object.Equals(CurrentState, default)) CallingMethod(CurrentState, "OnExit");
+            if (!object.Equals(CurrentState, null)) CallingMethod(CurrentState, "OnExit");
             _previousState = CurrentState;
             CurrentState = _pendingState;
-            if (object.Equals(_previousState, default))
+            if (object.Equals(_previousState, null))
             {
                 _previousState = CurrentState;
             }
-
             CallingMethod(CurrentState, "OnEnter");
-            _pendingState = default;
+            _pendingState = null;
         }
     }
 
@@ -177,7 +185,7 @@ public class CSM<TContext, V> where TContext : class where V : Info
             //var newState = Activator.CreateInstance<TState>();
             //newState.Parent = this;
             //newState.Init();
-            if (_stateCache.Count + 1 > newState.id) _stateCache[newState.id] = newState;
+            _stateCache[newState.id] = newState;
             return newState;
         }
     }
@@ -203,12 +211,14 @@ public class CSM<TContext, V> where TContext : class where V : Info
     {
         public Enum enumId;
 
+/*
         protected StateBehavior(Enum enumId)
         {
             this.enumId = enumId;
         }
         
-        protected StateBehavior(){}
+
+        protected StateBehavior(){}*/
 
         internal CSM<TContext, V> Parent { get; set; }
 

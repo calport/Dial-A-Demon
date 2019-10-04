@@ -26,8 +26,6 @@ public class TextManager
         _demonTextBox = "Prefabs/MessageBubble_Demon";
         _playerTextBox = "Prefabs/MessageBubble_Player";
         _demonContract = "Prefabs/DemonContract";
-
-        DialogueSys = DemonTextDialogueUI.Instance.gameObject;
     }
 
     public void Update()

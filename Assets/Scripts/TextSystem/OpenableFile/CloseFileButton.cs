@@ -9,7 +9,7 @@ public class CloseFileButton : MonoBehaviour
 
     public void OnSimpleTap()
     {
-            Services.textStates.ChangeGameState<TextStates.NormalText>(new TextStates.NormalText());
+            //Services.textStates.ChangeGameState<TextStates.NormalText>(new TextStates.NormalText());
             Destroy(File);
     }
 }

@@ -19,10 +19,10 @@ public class OpenFileButton : MonoBehaviour
         closeButton.File = createdFile;
         
         //change text state
-        if (Services.gameStates.GetCurrentState().GetType() == typeof(GameStates.TextingPage))
+        /*if (Services.gameStates.GetCurrentState().GetType() == typeof(GameStates.TextingPage))
         { 
             Services.textStates.ChangeGameState<TextStates.OnFileCheck>(new TextStates.OnFileCheck());
-        }        
+        }    */    
        
     }
 }

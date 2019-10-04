@@ -180,7 +180,7 @@ public class GameStates
                     renderedItem.SetActive(true);
                 }*/
 
-                if(Services.gameStates._fsm.PreviousState.GetType() == typeof(OpeningRitualPage)) Services.textManager.DialogueSys.GetComponent<DialogueRunner>().StartDialogue();
+                //if(Services.gameStates._fsm.PreviousState.GetType() == typeof(OpeningRitualPage)) Services.textManager.DialogueSys.GetComponent<DialogueRunner>().StartDialogue();
             }
         }
         
@@ -335,7 +335,7 @@ public class GameStates
                 }*/
                 
                 //text state start to function
-                Services.textStates.ChangeGameState<TextStates.NormalText>(new TextStates.NormalText());
+                //Services.textStates.ChangeGameState<TextStates.NormalText>(new TextStates.NormalText());
             }
         }
         
@@ -356,7 +356,7 @@ public class GameStates
             */
 
             //text state end function
-            Services.textStates.ChangeGameState<TextStates.NotInText>(new TextStates.NotInText());
+            //Services.textStates.ChangeGameState<TextStates.NotInText>(new TextStates.NotInText());
         }
         
         public override void OnSceneChanged(){}

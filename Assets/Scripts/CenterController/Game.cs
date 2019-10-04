@@ -22,7 +22,7 @@ public class Game : MonoBehaviour
 
     private void Start()
     {
-        Services.gameStates.Start();
+        Services.pageState.Start();
         SceneManager.sceneLoaded += OnSceneLoaded;
         //Services.eventManager.AddHandler<SceneChanged>(OnSceneChange);
 
@@ -32,7 +32,7 @@ public class Game : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        Services.plotManager.Update();
+        //Services.plotManager.Update();
         /*if (Services.gameSettings.SpeedPlot)
         {
             Services.plotManager.SpeedUpdate();
@@ -42,8 +42,7 @@ public class Game : MonoBehaviour
             Services.plotManager.RegularUpdate();
         }*/
 
-        Services.gameStates.Update();
-        Services.textStates.Update();
+        Services.pageState.Update();
     }
 
     void OnDestroy()
@@ -72,16 +71,13 @@ public class Game : MonoBehaviour
         Services.game = this;
         Services.textManager = new TextManager();
         Services.textManager.Init();
-        Services.plotManager = new PlotManager();
+        
         //some logic problem here that doesnt consider the save situation
         //TODO
-        Services.plotManager.Init();
+        Services.plotManager = new PlotManager();
+        //Services.plotManager.Init();
         Services.pageState = new PageState();
         Services.pageState.Init();
-        Services.gameStates = new GameStates();
-        Services.gameStates.Init();
-        Services.textStates = new TextStates();
-        Services.textStates.Init();
     }
     
     public void ReInit()
@@ -97,8 +93,8 @@ public class Game : MonoBehaviour
     void Clear()
     {
         //this place is for save and clear everything
-                Services.gameStates.Clear();
-                Services.gameStates = null;
+                Services.pageState.Clear();
+                Services.pageState = null;
                 Services.plotManager.Clear();
                 Services.plotManager = null;
                 Services.gameSettings.Clear();

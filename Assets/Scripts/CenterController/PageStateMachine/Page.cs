@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using DG.Tweening;
 
@@ -50,6 +51,10 @@ namespace DialADemon.Page
         private readonly List<Enum> _propertyEnums = new List<Enum>{ new BelongedSystem(), new RenderLayer(), new LoadBehavior()};
         private Dictionary<string, GameObject> pageDic = new Dictionary<string, GameObject>();
         private CSM<PageState,Pages> _csm;
+        public CSM<PageState,Pages> CSM
+        {
+            get { return _csm; }
+        }
         private bool CSMInit = false;
 
         public void ChangeGameState(Pages state)
@@ -67,8 +72,10 @@ namespace DialADemon.Page
             return _csm.CurrentState;
         }
 
-        public void AddState(int id, string name, GameObject[] relatedObj,params Enum[] properties)
+        public void AddState(string name, GameObject[] relatedObj,params Enum[] properties)
         {
+            IDictionary<string, object> dict = _csm.stateList as IDictionary<string, object>;
+            int id = dict.Keys.Count;
             _csm.AddState(id, name, relatedObj, properties);
         }
 
@@ -89,8 +96,7 @@ namespace DialADemon.Page
             //SetInitialScene();
             formalState = typeof(MenuPage);*/
             
-            //set the initiate state
-            ChangeGameState(_csm.stateList.MainPage);
+           
 
             //initiate  the propertyEnum and all the behavior state
             _csm.Init<PageStatesList>(_propertyEnums);
@@ -100,10 +106,14 @@ namespace DialADemon.Page
 
         public void Start()
         {
+            //set the initiate state
+            ChangeGameState(_csm.stateList.Menu_Main);
         }
         
         public void Update()
-        {
+        { 
+            if(_csm.CurrentState!=null) Debug.Log(_csm.CurrentState.name);
+            
             _csm.Update();
             /*if (SceneManager.GetActiveScene().isLoaded)
             {
@@ -130,7 +140,7 @@ namespace DialADemon.Page
 
         public class MainMenu : PageStatesList
         {
-            MainMenu()
+            public MainMenu()
             {
                 enumId = BelongedSystem.MainMenu;
             }
@@ -143,7 +153,7 @@ namespace DialADemon.Page
         
         public class PhoneCall : PageStatesList
         {
-            PhoneCall()
+            public PhoneCall()
             {
                 enumId = BelongedSystem.PhoneCall;
             }
@@ -156,7 +166,7 @@ namespace DialADemon.Page
         
         public class Text : PageStatesList
         {
-            Text()
+            public Text()
             {
                 enumId = BelongedSystem.Text;
             }
@@ -169,7 +179,7 @@ namespace DialADemon.Page
         
         public class Setting : PageStatesList
         {
-            Setting()
+            public Setting()
             {
                 enumId = BelongedSystem.Setting;
             }
@@ -182,7 +192,7 @@ namespace DialADemon.Page
         
         public class Ritual : PageStatesList
         {
-            Ritual()
+            public Ritual()
             {
                 enumId = BelongedSystem.Ritual;
             }
@@ -195,7 +205,7 @@ namespace DialADemon.Page
         
         public class BackLayer : PageStatesList
         {
-            BackLayer()
+            public BackLayer()
             {
                 enumId = RenderLayer.BackLayer;
             }
@@ -208,7 +218,7 @@ namespace DialADemon.Page
         
         public class FrontLayer : PageStatesList
         {
-            FrontLayer()
+            public FrontLayer()
             {
                 enumId = RenderLayer.FrontLayer;
             }
@@ -221,21 +231,42 @@ namespace DialADemon.Page
 
         public class PlainLoad : PageStatesList
         {
-            PlainLoad()
+            public PlainLoad()
             {
                 enumId = LoadBehavior.Plain;
             }
             public override void OnEnter()
             {
-                var cav = Parent.CurrentState.relatedObj[typeof(GameObject)].GetComponent<CanvasGroup>();
-                if (cav) Services.canvasEffect.CanvasOn(cav);
+                foreach (var item in Parent.CurrentState.relatedObj)
+                {
+                    if (item.CompareTag("PageObj"))
+                    {
+                        var cav =item.GetComponent<CanvasGroup>(); 
+                        if (cav) Services.canvasEffect.CanvasOn(cav);
+                    }
+
+                    if (item.CompareTag("CameraRenderItem"))
+                    {
+                        item.SetActive(true);
+                    }
+                }
             }
 
             public override void OnExit()
             {
-                var cav = Parent.CurrentState.relatedObj[typeof(GameObject)].GetComponent<CanvasGroup>();
-                if (cav) Services.canvasEffect.CanvasOn(cav);
+                foreach (var item in Parent.CurrentState.relatedObj)
+                {
+                    if (item.CompareTag("PageObj"))
+                    {
+                        var cav =item.GetComponent<CanvasGroup>(); 
+                        if (cav) Services.canvasEffect.CanvasOff(cav);
+                    }
 
+                    if (item.CompareTag("CameraRenderItem"))
+                    {
+                        item.SetActive(false);
+                    }
+                }
             }
 
             public override void OnSceneChanged()
@@ -245,7 +276,7 @@ namespace DialADemon.Page
         
         public class LoadingLoad : PageStatesList
         {
-            LoadingLoad()
+            public LoadingLoad()
             {
                 enumId = LoadBehavior.Loading;
             }
