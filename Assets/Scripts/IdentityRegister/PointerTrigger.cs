@@ -3,10 +3,10 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Pointer : MonoBehaviour
+public class PointerTrigger : MonoBehaviour
 {
     private void Awake()
     {
-        Services.textManager.textRunner.pointer = gameObject;
+        Services.textManager.textRunner.pointerTrigger = gameObject;
     }
 }

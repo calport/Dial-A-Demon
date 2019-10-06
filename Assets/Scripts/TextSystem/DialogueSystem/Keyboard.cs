@@ -14,7 +14,7 @@ public class Keyboard : MonoBehaviour
     public string keyCode = String.Empty;
     public bool isChoice = false;
     
-    [HideInInspector]
+    //[HideInInspector]
     public string content = String.Empty;
     public string Content
     {
@@ -39,7 +39,7 @@ public class Keyboard : MonoBehaviour
     private void Start()
     {
         tr = Services.textManager.textRunner;
-        _pointer = tr.pointer;
+        _pointer = tr.pointerTrigger;
         _sendButton = tr.sendButton;
     }
 
@@ -49,7 +49,7 @@ public class Keyboard : MonoBehaviour
         //change the textbox input when the keyboard is touched 
         if (string.Compare(String.Empty, content)!= 0)
         {
-            if (string.Compare(content, DemonTextDialogueUI.Instance.textBox.text) != 0)
+            if (string.Compare(content, Services.textManager.textRunner.textBox.text) != 0)
             {
                 if (_pointerIn)
                 {
@@ -78,8 +78,10 @@ public class Keyboard : MonoBehaviour
     }
     void OnTriggerEnter2D(Collider2D other)
     {
+        Debug.Log(other.gameObject);
         if (other.gameObject == _pointer)
         {
+            Debug.Log("Triggegrr");
             if (isChoice)
             {
                 tr.textBox.text = content;
@@ -100,7 +102,8 @@ public class Keyboard : MonoBehaviour
             _pointerIn = false;
             if (isChoice)
             {
-                tr.textBox.text = String.Empty;
+                if(string.Compare(tr.textBox.text,content)==0){
+                tr.textBox.text = String.Empty;}
                 _sendButton.onClick.RemoveListener(SendChoice);
             }
         }

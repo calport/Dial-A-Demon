@@ -13,12 +13,8 @@ public class TextRunner : MonoBehaviour
  	public Story currentStory;
  
  	[SerializeField] private Canvas canvas;
- 
- 	// UI Prefabs
- 	[SerializeField] private Text textPrefab;
- 	[SerializeField] private Button buttonPrefab;
- 
- 	// path of the massage bubble prefabs
+    
+    // path of the massage bubble prefabs
  	private string _demonTextBox;
  	private string _playerTextBox;
  	private string _demonContract;
@@ -32,9 +28,6 @@ public class TextRunner : MonoBehaviour
  	//the text box
  	public Text textBox;
  
- 	//the selected choices number;
- 	public int selectedOption = 50;
- 
  	//the send button with tells system players' choices
  	public Button sendButton;
  
@@ -46,11 +39,12 @@ public class TextRunner : MonoBehaviour
  	/// the user selected
  	private Yarn.OptionChooser SetSelectedOption;
  
- 	public AudioSource demonAudio;
+ 	private AudioSource demonAudio;
  
  	private int OptionsCollectionLength;
     
-    public GameObject pointer;
+    [HideInInspector]
+    public GameObject pointerTrigger;
 
 	public void Awake()
 	{
@@ -63,11 +57,17 @@ public class TextRunner : MonoBehaviour
 
 		//finding demon texting audio
 		demonAudio = GameObject.Find("DemonTexted").GetComponent<AudioSource>();
+		
+	}
+
+	public void Start()
+	{
+		StartNewStory(inkJSONAsset);
 	}
 
 	public void StartNewStory(TextAsset newStory)
 	{
-		_ = new Story(inkJSONAsset.text);
+		currentStory = new Story(newStory.text);
 		RefreshView();
 	}
 
@@ -123,8 +123,17 @@ public class TextRunner : MonoBehaviour
 	{
 		//send all the options to the aiming keyboard
 		string text = choice.text.Trim();
-		var firstLetter = text.Substring(0, 1).ToUpper();
-		var key = keyboard[firstLetter];
+
+		int i = 0;
+		string firstLetter = String.Empty;
+		while(!System.Text.RegularExpressions.Regex.IsMatch(firstLetter, @"^[a-zA-Z]$+"))
+		{
+			firstLetter = text.Substring(i, 1).ToUpper();
+			i++;
+		}
+
+		Debug.Log(firstLetter);
+		var key = keyboard[firstLetter.ToUpper()];
 
 		key.isChoice = true;
 		key.content = text;
@@ -152,6 +161,7 @@ public class TextRunner : MonoBehaviour
 
 		//creat the real dialogue
 		GameObject newDemonBox = GameObject.Instantiate(Resources.Load<GameObject>(_demonTextBox), content.transform);
+		Debug.Log(newDemonBox);
 		newDemonBox.GetComponentInChildren<TextMeshProUGUI>().text = text;
 		
 		//create audio whenever the demon sends a message
