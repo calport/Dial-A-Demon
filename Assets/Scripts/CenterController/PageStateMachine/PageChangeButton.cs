@@ -32,7 +32,6 @@ public class PageChangeButton : MonoBehaviour
 
     public void OnClick()
     {
-        Debug.Log("Aa");
         if (!transferToPrevious)
         {
             var csm = Services.pageState.CSM;

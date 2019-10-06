@@ -23,6 +23,7 @@ public class PageRegister : MonoBehaviour
         {
             item.gameObject.tag = "CameraRenderItem";
             objList.Add(item.gameObject);
+            item.gameObject.SetActive(false);
         }
         _relatedObj = objList.ToArray();
         

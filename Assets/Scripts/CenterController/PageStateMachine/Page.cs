@@ -111,9 +111,7 @@ namespace DialADemon.Page
         }
         
         public void Update()
-        { 
-            if(_csm.CurrentState!=null) Debug.Log(_csm.CurrentState.name);
-            
+        {
             _csm.Update();
             /*if (SceneManager.GetActiveScene().isLoaded)
             {
