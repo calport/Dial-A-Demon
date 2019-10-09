@@ -366,16 +366,16 @@ public class PlotManager
             
         }
 
-        public override bool CheckLoad()
-        {
-            return true;
-        }
-
         public override void Clear()
         {
             Services.eventManager.RemoveHandler<TextFinished>(delegate{OnTextFinished();});
         }
-
+        
+        public override bool CheckLoad()
+        {
+            return true;
+        }
+        
         void OnTextFinished()
         {
             CheckChild();
