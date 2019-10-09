@@ -9,5 +9,8 @@ public class SceneChanged : GameEvent
     public SceneChanged(string changeToScene)
     {
         ChangeToScene = changeToScene;
-    }     
     }
+}
+
+
+public class TextFinished : GameEvent{}

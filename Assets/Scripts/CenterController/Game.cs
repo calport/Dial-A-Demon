@@ -32,7 +32,7 @@ public class Game : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        //Services.plotManager.Update();
+        Services.plotManager.Update();
         /*if (Services.gameSettings.SpeedPlot)
         {
             Services.plotManager.SpeedUpdate();
@@ -60,6 +60,7 @@ public class Game : MonoBehaviour
     {
         //import all the library utils
         Services.canvasEffect = new CanvasEffect();
+        
         //import all the data file
         //Services.referenceInfo = FindObjectOfType<ReferenceInfo>();
         Services.easyTouch = FindObjectOfType<EasyTouch>();
@@ -71,11 +72,12 @@ public class Game : MonoBehaviour
         Services.game = this;
         Services.textManager = new TextManager();
         Services.textManager.Init();
+        Services.eventManager = new EventManager();
         
         //some logic problem here that doesnt consider the save situation
         //TODO
         Services.plotManager = new PlotManager();
-        //Services.plotManager.Init();
+        Services.plotManager.Init();
         Services.pageState = new PageState();
         Services.pageState.Init();
     }

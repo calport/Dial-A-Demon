@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using DialADemon.Library;
 using HedgehogTeam.EasyTouch;
 using DialADemon.Page;
 //using UnityEditorInternal;
@@ -16,6 +17,7 @@ public static class Services
     public static PageState pageState;
 
     public static TextManager textManager;
+    public static EventManager eventManager;
 
     #endregion
 

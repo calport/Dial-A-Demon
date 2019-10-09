@@ -62,7 +62,6 @@ public class TextRunner : MonoBehaviour
 
 	public void Start()
 	{
-		StartNewStory(inkJSONAsset);
 	}
 
 	public void StartNewStory(TextAsset newStory)
@@ -106,6 +105,7 @@ public class TextRunner : MonoBehaviour
 		else
 		{
 			//end story
+			Services.eventManager.Fire(new TextFinished());
 			//Button choice = CreateChoiceView("End of story.\nRestart?");
 			//choice.onClick.AddListener(delegate { StartStory(); });
 		}
@@ -132,7 +132,6 @@ public class TextRunner : MonoBehaviour
 			i++;
 		}
 
-		Debug.Log(firstLetter);
 		var key = keyboard[firstLetter.ToUpper()];
 
 		key.isChoice = true;
@@ -161,7 +160,6 @@ public class TextRunner : MonoBehaviour
 
 		//creat the real dialogue
 		GameObject newDemonBox = GameObject.Instantiate(Resources.Load<GameObject>(_demonTextBox), content.transform);
-		Debug.Log(newDemonBox);
 		newDemonBox.GetComponentInChildren<TextMeshProUGUI>().text = text;
 		
 		//create audio whenever the demon sends a message

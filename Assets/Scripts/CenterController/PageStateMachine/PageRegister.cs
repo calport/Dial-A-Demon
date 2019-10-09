@@ -31,8 +31,7 @@ public class PageRegister : MonoBehaviour
         Enum[] prop = new Enum[3];
         prop[0] = _system;
         prop[1] = _layer;
-        prop[2] = _load;
-        Services.pageState.AddState( _name, _relatedObj,prop);
+        prop[2] = _load; Services.pageState.AddState( _name, _relatedObj,prop);
 
         if (gameObject.GetComponent<CanvasGroup>())
         {

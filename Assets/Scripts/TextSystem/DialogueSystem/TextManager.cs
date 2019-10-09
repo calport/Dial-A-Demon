@@ -67,6 +67,10 @@ public class TextManager
         }
     }
 
+    public void StartNewStory(TextAsset ta)
+    {
+        textRunner.StartNewStory(ta);
+    }
     #endregion
    
     
