@@ -17,7 +17,7 @@ public class PlotManagerInfo
 public class PlotManager
 {
     public Dictionary<Plot, DateTime> Calendar = new Dictionary<Plot, DateTime>();
-    public bool isSpeedMode = true;
+    public bool isSpeedMode = false;
     
     private PlotManagerInfo _plotInfo = new PlotManagerInfo();
     //Calendar system
@@ -43,7 +43,7 @@ public class PlotManager
         InitBaseTime();
         InitLeadPlot();
     }
-
+    
     public void Update()
     {
         List<Plot> unusedPlot = new List<Plot>();
@@ -99,7 +99,7 @@ public class PlotManager
                 bool isLoadable;
                 
                 if (!isSpeedMode) isLoadable = plot.CheckLoad();
-                else isLoadable = plot.SpeedUpCheckLoad();
+                else isLoadable = plot.SpeedCheckLoad();
                 
                 if (isLoadable)
                 {
@@ -303,7 +303,7 @@ public class PlotManager
                     bool isLoadable;
                     
                     if (!parent.isSpeedMode) isLoadable = plotInit.CheckLoad();
-                    else isLoadable = plotInit.SpeedUpCheckLoad();
+                    else isLoadable = plotInit.SpeedCheckLoad();
                     
                     if (isLoadable)
                     {
@@ -319,7 +319,7 @@ public class PlotManager
             return false;
         }
 
-        public bool SpeedUpCheckLoad()
+        public bool SpeedCheckLoad()
         {
             int i = 0;
             foreach (var plotType in _requiredPrePlots)
