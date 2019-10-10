@@ -8,20 +8,24 @@ using System.Threading.Tasks;
 using UnityEngine;
 //using UnityEngine.iOS;
 using DialADemon.Library;
- 
+using UnityEngine.Experimental.XR;
+
 public class PlotManagerInfo
 {
     public DateTime baseTime;
 }
 public class PlotManager
 {
-    public PlotManagerInfo plotInfo = new PlotManagerInfo();
-    //Calendar system
-    public Dictionary<Type, Plot> plots = new Dictionary<Type, Plot>();
-    //
-    public Dictionary<Type, Plot> globalCheckPlot = new Dictionary<Type, Plot>();
     public Dictionary<Plot, DateTime> Calendar = new Dictionary<Plot, DateTime>();
-
+    public bool isSpeedMode = true;
+    
+    private PlotManagerInfo _plotInfo = new PlotManagerInfo();
+    //Calendar system
+    private Dictionary<Type, Plot> _plots = new Dictionary<Type, Plot>();
+    //
+    private Dictionary<Type, Plot> _globalCheckPlot = new Dictionary<Type, Plot>();
+    
+    
 
 
     public void Init()
@@ -88,11 +92,15 @@ public class PlotManager
             Calendar.Remove(plot);
         }
         
-        foreach (var plot in globalCheckPlot.Values)
+        foreach (var plot in _globalCheckPlot.Values)
         {
             if (plot.plotState == plotState.isStandingBy || plot.plotState == plotState.isChecking)
             {
-                bool isLoadable = plot.CheckLoad();
+                bool isLoadable;
+                
+                if (!isSpeedMode) isLoadable = plot.CheckLoad();
+                else isLoadable = plot.SpeedUpCheckLoad();
+                
                 if (isLoadable)
                 {
                     plot.AddToCalendar();
@@ -115,14 +123,14 @@ public class PlotManager
         //save TODO
         //clean
         Calendar.Clear();
-        plots.Clear();
+        _plots.Clear();
         
     }
     void InitBaseTime()
     {
         if (!File.Exists(Application.dataPath + "/Resources/Json/Time.json"))
         {
-            plotInfo.baseTime = DateTime.Now;
+            _plotInfo.baseTime = DateTime.Now;
         }
         else
         {
@@ -130,7 +138,7 @@ public class PlotManager
             string json = sr.ReadToEnd();
             if (json.Length > 0)
             {
-                plotInfo = JsonUtility.FromJson<PlotManagerInfo>(json);
+                _plotInfo = JsonUtility.FromJson<PlotManagerInfo>(json);
             }
         }
     }
@@ -144,7 +152,7 @@ public class PlotManager
     public T GetOrCreatePlots<T>() where T : Plot
     {
         Plot outPlot;
-        plots.TryGetValue(typeof(T), out outPlot);
+        _plots.TryGetValue(typeof(T), out outPlot);
         if (outPlot != null)
         {
             return outPlot as T;
@@ -153,19 +161,20 @@ public class PlotManager
         {
             T newPlot = Activator.CreateInstance<T>();
             newPlot.parent = this;
-            CoroutineManager.DoCoroutine(PreInitPlot(newPlot));
+            newPlot.PreInit();
             newPlot.plotState = plotState.isChecking;
-            if(newPlot.isGlobalCheck) globalCheckPlot.Add(newPlot.GetType(),newPlot);
-            plots.Add(typeof(T), newPlot);
+            if(newPlot.isGlobalCheck) _globalCheckPlot.Add(newPlot.GetType(),newPlot);
+            _plots.Add(typeof(T), newPlot);
+            
             return newPlot;
         }
     }
 
-   
+
     public Plot GetOrCreatePlots(Type type)
     {
         Plot outPlot;
-        plots.TryGetValue(type, out outPlot);
+        _plots.TryGetValue(type, out outPlot);
         if (outPlot != null)
         {
             return outPlot;
@@ -174,25 +183,20 @@ public class PlotManager
         {
             Plot newPlot = Activator.CreateInstance(type) as Plot;
             newPlot.parent = this;
-            CoroutineManager.DoCoroutine(PreInitPlot(newPlot));
+            newPlot.PreInit();
             newPlot.plotState = plotState.isChecking;
-            if(newPlot.isGlobalCheck) globalCheckPlot.Add(newPlot.GetType(),newPlot);
-            plots.Add(type, newPlot);
+            if (newPlot.isGlobalCheck) _globalCheckPlot.Add(newPlot.GetType(), newPlot);
+            _plots.Add(type, newPlot);
+            
             return newPlot;
         }
     }
-    
-    IEnumerator PreInitPlot(Plot plot)
-    {
-        yield return null;
-        plot.PreInit();
-    }
-    
+
     public void StartPlot<T>() where T : Plot
     {
         ClearCalendar();
         var newPlot = GetOrCreatePlots<T>();
-        plotInfo.baseTime = DateTime.Now;
+        _plotInfo.baseTime = DateTime.Now;
         newPlot.SetRelatedSpanToZero();
         newPlot.AddToCalendar();
     }
@@ -216,8 +220,10 @@ public class PlotManager
     public abstract class Plot
     {
         public PlotManager parent;
-        protected Dictionary<Type, Plot> parentPlots;
-        protected  Dictionary<Type, Plot> childPlots;
+        protected List<Type> _parentPlots = new List<Type>();
+        //these plots are only important for a special speed-up mode
+        protected List<Type> _requiredPrePlots = new List<Type>();
+        protected List<Type> _childPlots = new List<Type>();
         
         public plotState plotState = plotState.isStandingBy;
         
@@ -227,7 +233,7 @@ public class PlotManager
         public  bool isInstance = false;
         
         //calendar time
-        protected Plot _referPlot;
+        protected Type _referPlot;
         protected TimeSpan _relaSpan;
 
         public TimeSpan absSpan
@@ -238,7 +244,7 @@ public class PlotManager
                 Plot rp = this;
                 while(rp._referPlot!= null)
                 {
-                    rp = parent.GetOrCreatePlots(rp._referPlot.GetType());
+                    rp = parent.GetOrCreatePlots(rp._referPlot);
                     time += rp._relaSpan;
                 }
 
@@ -247,21 +253,17 @@ public class PlotManager
         }
         public DateTime plotStartTime
         {
-            get { return parent.plotInfo.baseTime.Add(absSpan); }
+            get { return parent._plotInfo.baseTime.Add(absSpan); }
         }
-        
-        //This will appear in every subclass so object can set time when they are created
-        /*
-    
-        public Plot(float day, float hour, float second)
-        {
-            _day = day;
-            _hour = hour;
-            _second = second;
-        }*/
 
         //preInit when the plot is created
-        public virtual void PreInit(){}
+        public virtual void PreInit()
+        {
+            //set the refer plot
+            //set the related span, or at least the first version of it
+            //initiate whatever main static variables
+        }
+        
         //int when the plot is added to calendar
         public virtual void Init()
         {
@@ -292,13 +294,17 @@ public class PlotManager
 
         public void CheckChild()
         {
-            foreach (var childPlot in childPlots.Values)
+            foreach (var childPlot in _childPlots)
             {
-                var plotInit = parent.GetOrCreatePlots(childPlot.GetType());
+                var plotInit = parent.GetOrCreatePlots(childPlot);
                 if (plotInit.plotState == plotState.isChecking || plotInit.plotState == plotState.isStandingBy)
                 {
                     plotInit.plotState = plotState.isChecking;
-                    bool isLoadable = plotInit.CheckLoad();
+                    bool isLoadable;
+                    
+                    if (!parent.isSpeedMode) isLoadable = plotInit.CheckLoad();
+                    else isLoadable = plotInit.SpeedUpCheckLoad();
+                    
                     if (isLoadable)
                     {
                         plotInit.AddToCalendar();
@@ -306,19 +312,36 @@ public class PlotManager
                 }
             }
         }
-
-        //for the situation that the plot ends too fast and causes execute problems
-        public IEnumerator DelayCheckChild()
-        {
-            yield return null;
-            CheckChild();
-        }
+        
         //check if the plot itself is loaded
         public virtual bool CheckLoad()
         {
             return false;
         }
 
+        public bool SpeedUpCheckLoad()
+        {
+            int i = 0;
+            foreach (var plotType in _requiredPrePlots)
+            {
+                var plot = parent.GetOrCreatePlots(plotType);
+                if (plot.plotState != plotState.isFinished)
+                {
+                    i++;
+                }
+            }
+            if(i==0)
+            {
+                SetRelatedSpanToZero();
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+
+        }
+        
         public void SetRelatedSpanToZero()
         {
             _relaSpan= TimeSpan.Zero;
@@ -331,55 +354,58 @@ public class PlotManager
         {
             _referPlot = null;
             _relaSpan = TimeSpan.Zero;
-            childPlots = new Dictionary<Type, Plot>{{typeof(Day1_Text1),parent.GetOrCreatePlots<Day1_Text1>()}};
-            AddToCalendar();
+            _childPlots = new List<Type>{typeof(Day1_Text1)};
         }
 
         public override void Start()
         {
-            CoroutineManager.DoCoroutine(DelayCheckChild());
             plotState = plotState.isFinished;
-        }
-    }
-
-    public class Day1_Text1 : Plot
-    {
-        private TextAsset ta;
-        
-        public override void PreInit()
-        {
-            _referPlot = parent.GetOrCreatePlots<RootPlot>();
-            _relaSpan = TimeSpan.FromMinutes(0.5f);
-            childPlots = new Dictionary<Type, Plot>();
-            ta = Resources.Load<TextAsset>(@"InkText/story.json");
-        }
-
-        public override void Init()
-        {
-            
-        }
-
-        public override void Start()
-        {
-            Services.textManager.StartNewStory(ta);
-            Services.eventManager.AddHandler<TextFinished>(delegate{OnTextFinished();});
-            
         }
 
         public override void Clear()
         {
+            CheckChild();
+        }
+    }
+
+    public class TextPlot : Plot
+    {
+        public TextAsset ta;
+        
+        public override void Start()
+        {
+            Services.textManager.StartNewStory(ta);
+            Services.eventManager.AddHandler<TextFinished>(delegate{OnTextFinished();});
+        }
+        
+        public override void Clear()
+        {
+            CheckChild();
             Services.eventManager.RemoveHandler<TextFinished>(delegate{OnTextFinished();});
         }
         
+        public virtual void OnTextFinished()
+        {
+            plotState = plotState.isFinished;
+        }
+
+    }
+    public class Day1_Text1 : TextPlot
+    {
+        
+        
+        public override void PreInit()
+        {
+            _referPlot = typeof(RootPlot);
+            _relaSpan = TimeSpan.FromMinutes(0.5f);
+            ta = Resources.Load<TextAsset>(@"InkText/story.json");
+            _requiredPrePlots = new List<Type>(){typeof(RootPlot)};
+        }
+
         public override bool CheckLoad()
         {
             return true;
         }
         
-        void OnTextFinished()
-        {
-            CheckChild();
-            plotState = plotState.isFinished;
-        }
     }
 }

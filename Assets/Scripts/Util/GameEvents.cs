@@ -14,3 +14,5 @@ public class SceneChanged : GameEvent
 
 
 public class TextFinished : GameEvent{}
+
+public class GameCleanStarted : GameEvent{}
