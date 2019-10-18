@@ -1,12 +1,13 @@
 ﻿using System;
 using System.Collections;
+
 using System.Collections.Generic;
 using DG.Tweening;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using Yarn.Unity;
 
-public class GameStates
+/*public class GameStates
 {
     private Type formalState;
     private Dictionary<string,GameObject> pageDic = new Dictionary<string, GameObject>();
@@ -84,7 +85,7 @@ public class GameStates
             foreach (var button in Services.referenceInfo.ToTextingPage) button.onClick.AddListener(() => { _fsm.TransitionTo<TextingPage>(); });
             foreach (var button in Services.referenceInfo.ToPhoneCallPage) button.onClick.AddListener(() => { _fsm.TransitionTo<DialPage>(); });
             foreach (var button in Services.referenceInfo.ToFinalRitualPage) button.onClick.AddListener(() => { _fsm.TransitionTo<FinalRitualPage>(); });
-            foreach (var button in Services.referenceInfo.ToMainMenuPage) button.onClick.AddListener(() => { _fsm.TransitionTo<MenuPage>(); });*/
+            foreach (var button in Services.referenceInfo.ToMainMenuPage) button.onClick.AddListener(() => { _fsm.TransitionTo<MenuPage>(); });#1#
             
             RegistePage();
             //pull saved infos
@@ -101,32 +102,10 @@ public class GameStates
             {
                 item.SetActive(false);
             }
-        }*/
+        }#1#
         SetInitialScene();        
     }
     
-    /*public void ReInitWhenSceneLoad()
-    {
-        //remove all the listeners to make sure that no other listeners are here
-        //reinit is also mainly only for adding listeners when main page is loaded for the first time
-        //mainly write in this way so the code will be clearer
-        foreach (var button in Services.referenceInfo.ToSettingPage) button.onClick.RemoveAllListeners();
-        foreach (var button in Services.referenceInfo.ToTextingPage) button.onClick.RemoveAllListeners();
-        foreach (var button in Services.referenceInfo.ToPhoneCallPage) button.onClick.RemoveAllListeners();
-        foreach (var button in Services.referenceInfo.ToFinalRitualPage) button.onClick.RemoveAllListeners();
-        foreach (var button in Services.referenceInfo.ToMainMenuPage) button.onClick.RemoveAllListeners();
-        
-        //then add all the listeners back
-        foreach (var button in Services.referenceInfo.ToSettingPage) button.onClick.AddListener(() => { _fsm.TransitionTo<SettingPage>(); });
-        foreach (var button in Services.referenceInfo.ToTextingPage) button.onClick.AddListener(() => { _fsm.TransitionTo<TextPage>(); });
-        foreach (var button in Services.referenceInfo.ToPhoneCallPage) button.onClick.AddListener(() => { _fsm.TransitionTo<DialPage>(); });
-        foreach (var button in Services.referenceInfo.ToFinalRitualPage) button.onClick.AddListener(() => { _fsm.TransitionTo<FinalRitualPage>(); });
-        foreach (var button in Services.referenceInfo.ToMainMenuPage) button.onClick.AddListener(() => { _fsm.TransitionTo<MenuPage>(); });
-        
-        //dont forget to register the page
-        pageDic.Clear();
-        RegistePage();
-    }*/
 
     public void Update()
     {
@@ -178,7 +157,7 @@ public class GameStates
                 /*foreach (var renderedItem in Services.referenceInfo.CameraRenderingItem[global::Page.MainMenu.GetHashCode()])
                 {
                     renderedItem.SetActive(true);
-                }*/
+                }#1#
 
                 //if(Services.gameStates._fsm.PreviousState.GetType() == typeof(OpeningRitualPage)) Services.textManager.DialogueSys.GetComponent<DialogueRunner>().StartDialogue();
             }
@@ -197,7 +176,7 @@ public class GameStates
             /*foreach (var renderedItem in Services.referenceInfo.CameraRenderingItem[global::Page.MainMenu.GetHashCode()])
             {
                 renderedItem.SetActive(false);
-            }*/
+            }#1#
         }
         
         public override void OnSceneChanged(){}
@@ -238,7 +217,7 @@ public class GameStates
                 /*foreach (var renderedItem in Services.referenceInfo.CameraRenderingItem[global::Page.DialPage.GetHashCode()])
                 {
                     renderedItem.SetActive(true);
-                }*/
+                }#1#
             }
         }
         
@@ -255,7 +234,7 @@ public class GameStates
             /*foreach (var renderedItem in Services.referenceInfo.CameraRenderingItem[global::Page.DialPage.GetHashCode()])
             {
                 renderedItem.SetActive(false);
-            }*/
+            }#1#
         }
        
         public override void OnSceneChanged(){}
@@ -286,7 +265,7 @@ public class GameStates
                 /*foreach (var renderedItem in Services.referenceInfo.CameraRenderingItem[global::Page.PhoneCallPage.GetHashCode()])
                 {
                     renderedItem.SetActive(true);
-                }*/
+                }#1#
             }
         }
         
@@ -303,7 +282,7 @@ public class GameStates
             /*foreach (var renderedItem in Services.referenceInfo.CameraRenderingItem[global::Page.PhoneCallPage.GetHashCode()])
             {
                 renderedItem.SetActive(false);
-            }*/
+            }#1#
         }
     }
 
@@ -332,7 +311,7 @@ public class GameStates
                 /*foreach (var renderedItem in Services.referenceInfo.CameraRenderingItem[global::Page.TextingPage.GetHashCode()])
                 {
                     renderedItem.SetActive(true);
-                }*/
+                }#1#
                 
                 //text state start to function
                 //Services.textStates.ChangeGameState<TextStates.NormalText>(new TextStates.NormalText());
@@ -353,7 +332,7 @@ public class GameStates
             {
                 renderedItem.SetActive(false);
             }
-            */
+            #1#
 
             //text state end function
             //Services.textStates.ChangeGameState<TextStates.NotInText>(new TextStates.NotInText());
@@ -389,7 +368,7 @@ public class GameStates
                 /*foreach (var renderedItem in Services.referenceInfo.CameraRenderingItem[global::Page.FinalRitualPage.GetHashCode()])
                 {
                     renderedItem.SetActive(true);
-                }*/
+                }#1#
             }
         }
         
@@ -406,7 +385,7 @@ public class GameStates
             /*foreach (var renderedItem in Services.referenceInfo.CameraRenderingItem[global::Page.FinalRitualPage.GetHashCode()])
             {
                 renderedItem.SetActive(false);
-            }*/
+            }#1#
         }
         public override void OnSceneChanged(){}
     }
@@ -432,7 +411,7 @@ public class GameStates
                 /*foreach (var renderedItem in Services.referenceInfo.CameraRenderingItem[global::Page.SettingPage.GetHashCode()])
                 {
                     renderedItem.SetActive(true);
-                }*/
+                }#1#
             }
         }
         
@@ -445,7 +424,7 @@ public class GameStates
             /*foreach (var renderedItem in Services.referenceInfo.CameraRenderingItem[global::Page.SettingPage.GetHashCode()])
             {
                 renderedItem.SetActive(true);
-            }*/
+            }#1#
         }
 
         public override void OnSceneChanged(){}
@@ -526,3 +505,4 @@ public class GameStates
 }
 
 
+*/

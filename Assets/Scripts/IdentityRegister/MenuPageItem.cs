@@ -19,17 +19,17 @@ public class MenuPageItem : MonoBehaviour
         }
         
         //
-        if (!Services.referenceInfo.MenuPage.ContainsValue(gameObject))
+        /*if (!Services.referenceInfo.MenuPage.ContainsValue(gameObject))
         {
             Services.referenceInfo.MenuPage.Add(_nameOfPage,gameObject);
-        }
+        }*/
     }
 
     private void OnDestroy()
     {
-        if (Services.referenceInfo.MenuPage.ContainsValue(gameObject))
+        /*if (Services.referenceInfo.MenuPage.ContainsValue(gameObject))
         {
             Services.referenceInfo.MenuPage.Remove(_nameOfPage);
-        }
+        }*/
     }
 }

@@ -39,7 +39,6 @@ public class CSM<TContext, V> where TContext : class where V : Info
     //This is a list of all the state that the CSM contains, while they are like enums and not functioning as FSM
     //The detail of each state's behavior is according to their properties
     public dynamic stateList = new ExpandoObject();
-    //private List<V> _stateList = new List<V>();
 
     public void AddState(int id, string name, GameObject[] relatedObj, params Enum[] properties)
     {
@@ -188,6 +187,16 @@ public class CSM<TContext, V> where TContext : class where V : Info
             _stateCache[newState.id] = newState;
             return newState;
         }
+    }
+    
+    public V GetGameState(string stateName)
+    {
+        IDictionary<string, object> dict = stateList as IDictionary<string, object>;
+        Object state;
+        dict.TryGetValue(stateName, out state);
+        V stateInfo = state as V;
+        if (stateInfo != null) return stateInfo;
+        else return null;
     }
     
     private void CallingMethod(V state, string methodName, params Object[] objects)

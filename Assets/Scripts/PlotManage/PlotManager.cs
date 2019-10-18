@@ -7,8 +7,6 @@ using System.Reflection;
 using System.Threading.Tasks;
 using UnityEngine;
 //using UnityEngine.iOS;
-using DialADemon.Library;
-using UnityEngine.Experimental.XR;
 
 public class PlotManagerInfo
 {
@@ -156,7 +154,7 @@ public class PlotManager
         if (outPlot != null)
         {
             return outPlot as T;
-        }
+        }    
         else
         {
             T newPlot = Activator.CreateInstance<T>();
@@ -201,6 +199,42 @@ public class PlotManager
         newPlot.AddToCalendar();
     }
 
+    public void Save()
+    {
+        List<PlotInfo> plotInfos = new List<PlotInfo>();
+        foreach (var plotPair in _plots)
+        {
+            PlotInfo info = new PlotInfo();
+
+            if (Calendar.ContainsKey(plotPair.Value))
+            {
+                info.isOnCalendar = true;
+                DateTime time;
+                Calendar.TryGetValue(plotPair.Value, out time);
+                info.startTime = time;
+            }
+            else info.isOnCalendar = false;
+            
+            info.plotType = plotPair.Value.GetType();
+            info.plotState = plotPair.Value.plotState;
+            info.relaSpan = plotPair.Value.relaSpan;
+            
+            plotInfos.Add(info);
+        }
+        Services.saveManager.plotInfo = plotInfos;
+    }
+
+    public void Load()
+    {
+        var plotInfo = Services.saveManager.plotInfo;
+        foreach (var info in plotInfo)
+        {
+            var plot = GetOrCreatePlots(info.plotType);
+            plot.plotState = info.plotState;
+            plot.relaSpan = info.relaSpan;
+            if(info.isOnCalendar) Calendar.Add(plot,info.startTime);
+        }
+    }
     //when the app quit, save all the info that needed
     //add notification and other stuff to keep track the gameflow
     
@@ -234,18 +268,18 @@ public class PlotManager
         
         //calendar time
         protected Type _referPlot;
-        protected TimeSpan _relaSpan;
+        public TimeSpan relaSpan;
 
         public TimeSpan absSpan
         {
             get
             {
-                TimeSpan time = _relaSpan;
+                TimeSpan time = relaSpan;
                 Plot rp = this;
                 while(rp._referPlot!= null)
                 {
                     rp = parent.GetOrCreatePlots(rp._referPlot);
-                    time += rp._relaSpan;
+                    time += rp.relaSpan;
                 }
 
                 return time;
@@ -344,7 +378,7 @@ public class PlotManager
         
         public void SetRelatedSpanToZero()
         {
-            _relaSpan= TimeSpan.Zero;
+            relaSpan= TimeSpan.Zero;
         }
     }
 
@@ -353,7 +387,7 @@ public class PlotManager
         public override void PreInit()
         {
             _referPlot = null;
-            _relaSpan = TimeSpan.Zero;
+            relaSpan = TimeSpan.Zero;
             _childPlots = new List<Type>{typeof(Day1_Text1)};
         }
 
@@ -390,14 +424,13 @@ public class PlotManager
         }
 
     }
+    
     public class Day1_Text1 : TextPlot
     {
-        
-        
         public override void PreInit()
         {
             _referPlot = typeof(RootPlot);
-            _relaSpan = TimeSpan.FromMinutes(0.5f);
+            relaSpan = TimeSpan.FromMinutes(0.1f);
             ta = Resources.Load<TextAsset>(@"InkText/story.json");
             _requiredPrePlots = new List<Type>(){typeof(RootPlot)};
         }

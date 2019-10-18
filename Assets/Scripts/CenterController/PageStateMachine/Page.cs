@@ -62,6 +62,11 @@ namespace DialADemon.Page
             _csm.TransitionTo(state);
         }
 
+        public Pages GetGameState(string pageName)
+        {
+            return _csm.GetGameState(pageName);
+        }
+
         public void TransitToPreviousState()
         {
             _csm.TransitionToPreviousState();

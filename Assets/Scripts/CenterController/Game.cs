@@ -4,6 +4,7 @@ using DialADemon.Library;
 using DialADemon.Page;
 using HedgehogTeam.EasyTouch;
 using UnityEngine;
+using UnityEditor;
 using UnityEngine.SceneManagement;
 
 public class Game : MonoBehaviour
@@ -43,6 +44,8 @@ public class Game : MonoBehaviour
         }*/
 
         Services.pageState.Update();
+        Services.textSequenceTaskRunner.Update();
+        Services.textManager.Update();
     }
 
     void OnDestroy()
@@ -57,36 +60,29 @@ public class Game : MonoBehaviour
     
     //init must include the start of all the components and the reading of all ths save files
     void Init()
-    {
-        //import all the library utils
-        Services.canvasEffect = new CanvasEffect();
+    {  
+        Services.saveManager.Init();
+        Services.saveManager.LoadGame();
         
         //import all the data file
         //Services.referenceInfo = FindObjectOfType<ReferenceInfo>();
         Services.easyTouch = FindObjectOfType<EasyTouch>();
-        Services.gameSettings = new GameSettings();
         Services.gameSettings.Init();
         Services.dataContract = ScriptableObject.CreateInstance<Data_Contract>();
         Services.dataContract.ResetContract();
         //import the system so it starts working
         Services.game = this;
-        Services.textManager = new TextManager();
         Services.textManager.Init();
-        Services.eventManager = new EventManager();
         
         //some logic problem here that doesnt consider the save situation
         //TODO
-        Services.plotManager = new PlotManager();
         Services.plotManager.Init();
-        Services.pageState = new PageState();
         Services.pageState.Init();
+      
     }
     
     public void ReInit()
     {
-        //update the reference info in specific info files
-        Debug.Log(FindObjectOfType<ReferenceInfo>());
-        Services.referenceInfo = ReferenceInfo.Instance;
         
         //update the reference info in all the system managers
         //Services.gameStates.ReInitWhenSceneLoad();
@@ -96,11 +92,11 @@ public class Game : MonoBehaviour
     {
         //this place is for save and clear everything
                 Services.pageState.Clear();
-                Services.pageState = null;
                 Services.plotManager.Clear();
-                Services.plotManager = null;
                 Services.gameSettings.Clear();
-                Services.gameSettings = null;
+                
+                Services.saveManager.SaveGame();
+                Services.saveManager.Clear();
                 
     }
 

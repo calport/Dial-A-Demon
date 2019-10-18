@@ -11,19 +11,108 @@ public static class Services
     #region Game play reference
 
     public static Game game;
-    public static GameSettings gameSettings;
-    public static PlotManager plotManager;
+    private static GameSettings _gameSettings;
+    public static GameSettings gameSettings
+    {
+        get
+        {
+            if (_gameSettings != null) return _gameSettings;
+            else
+            {
+                _gameSettings = new GameSettings();
+                return _gameSettings;
+            }
+        }
+    }
+    
+    private static PlotManager _plotManager;
+    public static PlotManager plotManager
+    {
+        get
+        {
+            if (_plotManager != null) return _plotManager;
+            else
+            {
+                _plotManager = new PlotManager();
+                return _plotManager;
+            }
+        }
+    }
+    
+    private static PageState _pageState;
+    public static PageState pageState
+    {
+        get
+        {
+            if (_pageState != null) return _pageState;
+            else
+            {
+                _pageState = new PageState();
+                return _pageState;
+            }
+        }
+    }
+    
+    private static TextManager _textManager;
+    public static TextManager textManager
+    {
+        get
+        {
+            if (_textManager != null) return _textManager;
+            else
+            {
+                _textManager = new TextManager();
+                return _textManager;
+            }
+        }
+    }
+    
+    private static EventManager _eventManager;
+    public static EventManager eventManager
+    {
+        get
+        {
+            if (_eventManager != null) return _eventManager;
+            else
+            {
+                _eventManager = new EventManager();
+                return _eventManager;
+            }
+        }
+    }
 
-    public static PageState pageState;
+    private static SequenceTaskRunner _textSequenceTaskRunner;
+    public static SequenceTaskRunner textSequenceTaskRunner{
+        get
+        {
+            if (_textSequenceTaskRunner != null) return _textSequenceTaskRunner;
+            else
+            {
+                _textSequenceTaskRunner = new SequenceTaskRunner();
+                return _textSequenceTaskRunner;
+            }
+        }
+    }
+    
 
-    public static TextManager textManager;
-    public static EventManager eventManager;
+    private static SaveManager _saveManager;
+    public static SaveManager saveManager
+    {
+        get
+        {
+            if (_saveManager != null) return _saveManager;
+            else
+            {
+                _saveManager = new SaveManager();
+                return _saveManager;
+            }
+        }
+    }
 
     #endregion
 
     #region Object & Date reference
 
-    public static ReferenceInfo referenceInfo;
     public static EasyTouch easyTouch;
     public static Data_Contract dataContract;
 
@@ -31,7 +120,19 @@ public static class Services
 
     #region Library reference
 
-    public static CanvasEffect canvasEffect;
+    private static CanvasEffect _canvasEffect;
+    public static CanvasEffect canvasEffect
+    {
+        get
+        {
+            if (_canvasEffect != null) return _canvasEffect;
+            else
+            {
+                _canvasEffect = new CanvasEffect();
+                return _canvasEffect;
+            }
+        }
+    }
 
     #endregion
 }

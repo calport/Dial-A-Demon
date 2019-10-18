@@ -24,8 +24,12 @@ namespace DialADemon.Library
 
         public static void DoOneFrameDelay(DelayDelegate a)
         {
-            
             _CoroutineManagerMonoBehaviour.StartCoroutine(OneFrameDelay(a));
+        }
+        
+        public static void DoDelayCertainSeconds(DelayDelegate a, float delayTime)
+        {
+            _CoroutineManagerMonoBehaviour.StartCoroutine(SetTimeDelay(a,delayTime));
         }
         
         public static void DoYieldCoroutine(IEnumerator routine)
@@ -48,6 +52,12 @@ namespace DialADemon.Library
         private static IEnumerator OneFrameDelay(DelayDelegate a)
         {
             yield return null;
+            a();
+        }
+        
+        private static IEnumerator SetTimeDelay(DelayDelegate a, float delayTime)
+        {
+            yield return new WaitForSeconds(delayTime);
             a();
         }
     }
