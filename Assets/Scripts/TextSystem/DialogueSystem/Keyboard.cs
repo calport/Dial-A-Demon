@@ -23,7 +23,7 @@ public class Keyboard : MonoBehaviour
     
     //private TextInput _textInput;
     private GameObject _pointer;
-    private TextRunner tr;
+    private TextManager tm;
     private Button _sendButton;
     private bool _pointerIn;
 
@@ -33,14 +33,14 @@ public class Keyboard : MonoBehaviour
     void Awake()
     {
         //_textInput = this.transform.parent.GetComponentInChildren<TextInput>();
-        Services.textManager.textRunner.keyboard.Add(keyCode,this);
+        TextRunnerInfo.Instance.keyboard.Add(keyCode,this);
     }
 
     private void Start()
     {
-        tr = Services.textManager.textRunner;
-        _pointer = tr.pointerTrigger;
-        _sendButton = tr.sendButton;
+        tm = Services.textManager;
+        _pointer = tm.pointerTrigger;
+        _sendButton = tm.sendButton;
     }
 
     // Update is called once per frame
@@ -49,7 +49,7 @@ public class Keyboard : MonoBehaviour
         //change the textbox input when the keyboard is touched 
         if (string.Compare(String.Empty, content)!= 0)
         {
-            if (string.Compare(content, Services.textManager.textRunner.textBox.text) != 0)
+            if (string.Compare(content, Services.textManager.textBox.text) != 0)
             {
                 if (_pointerIn)
                 {
@@ -82,7 +82,7 @@ public class Keyboard : MonoBehaviour
         {
             if (isChoice)
             {
-                tr.textBox.text = content;
+                tm.textBox.text = content;
                 _sendButton.onClick.AddListener(SendChoice);
             }
             _pointerIn = true;
@@ -100,8 +100,8 @@ public class Keyboard : MonoBehaviour
             _pointerIn = false;
             if (isChoice)
             {
-                if(string.Compare(tr.textBox.text,content)==0){
-                tr.textBox.text = String.Empty;}
+                if(string.Compare(tm.textBox.text,content)==0){
+                tm.textBox.text = String.Empty;}
                 _sendButton.onClick.RemoveListener(SendChoice);
             }
         }
@@ -110,8 +110,8 @@ public class Keyboard : MonoBehaviour
     void SendChoice()
     {   
         //choice idex goes first
-        tr.currentStory.ChooseChoiceIndex(choiceIdex);
-        tr.CreatePlayerBubble(content);
+        tm.currentStory.ChooseChoiceIndex(choiceIdex);
+        tm.CreatePlayerBubble(content);
 
         _sendButton.onClick.RemoveListener(SendChoice);
     }

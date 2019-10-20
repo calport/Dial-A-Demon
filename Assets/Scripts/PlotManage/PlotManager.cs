@@ -226,13 +226,16 @@ public class PlotManager
 
     public void Load()
     {
-        var plotInfo = Services.saveManager.plotInfo;
-        foreach (var info in plotInfo)
+        if (File.Exists(Services.saveManager.saveJsonPath))
         {
-            var plot = GetOrCreatePlots(info.plotType);
-            plot.plotState = info.plotState;
-            plot.relaSpan = info.relaSpan;
-            if(info.isOnCalendar) Calendar.Add(plot,info.startTime);
+            var plotInfo = Services.saveManager.plotInfo;
+            foreach (var info in plotInfo)
+            {
+                var plot = GetOrCreatePlots(info.plotType);
+                plot.plotState = info.plotState;
+                plot.relaSpan = info.relaSpan;
+                if (info.isOnCalendar) Calendar.Add(plot, info.startTime);
+            }
         }
     }
     //when the app quit, save all the info that needed
@@ -405,10 +408,12 @@ public class PlotManager
     public class TextPlot : Plot
     {
         public TextAsset ta;
+        public string textAssetLocation;
         
         public override void Start()
         {
             Services.textManager.StartNewStory(ta);
+            Services.textManager.textAssetLocation = textAssetLocation;
             Services.eventManager.AddHandler<TextFinished>(delegate{OnTextFinished();});
         }
         
@@ -432,6 +437,7 @@ public class PlotManager
             _referPlot = typeof(RootPlot);
             relaSpan = TimeSpan.FromMinutes(0.1f);
             ta = Resources.Load<TextAsset>(@"InkText/story.json");
+            textAssetLocation = "InkText/story.json";
             _requiredPrePlots = new List<Type>(){typeof(RootPlot)};
         }
 

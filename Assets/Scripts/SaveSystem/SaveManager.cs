@@ -18,7 +18,7 @@ public enum MessageBubbleType
 }
 
 [Serializable]
-public struct MessageContent
+public class MessageContent
 {
     public MessageBubbleType messageType;
     public string content;
@@ -26,7 +26,7 @@ public struct MessageContent
 }
 
 [Serializable]
-public struct PlotInfo
+public class PlotInfo
 {
     public bool isOnCalendar;
     public Type plotType;
@@ -43,17 +43,28 @@ public class SaveManager
         public List<MessageContent> dialogueMessages;
         public bool isLastDialogueFinished;
         public List<PlotInfo> plotInfo;
-        public Story currentStory;
+        public string textAssetLocation;
+        public DateTime lastTimeStamp;
 
     }
     
     private readonly string _saveJsonPath = Application.persistentDataPath + "/save.save";
+    public string saveJsonPath
+    {
+        get { return _saveJsonPath; }
+    }
     private readonly string _inkjsonPath = Application.persistentDataPath + "/ink.save";
+    public string inkjsonPath
+    {
+        get { return _inkjsonPath; }
+    }
 
     public List<MessageContent> plotMessages = new List<MessageContent>();
     private List<MessageContent[]> _dialogueMessages = new List<MessageContent[]>();
     public List<PlotInfo> plotInfo = new List<PlotInfo>();
-    public Story currentStory = null;
+    public string textAssetLocation;
+    public Story currentStory;
+    public DateTime lastTimeStamp;
     
 
     public List<MessageContent[]> dialogueMessages
@@ -110,8 +121,6 @@ public class SaveManager
         SaveTextSystem(save);
         save.plotInfo = plotInfo;
         SerializeManager.SaveToJson(_saveJsonPath,save);
-        
-        
 
     }
    
@@ -133,10 +142,14 @@ public class SaveManager
                 _dialogueMessages.Remove(_dialogueMessages[_dialogueMessages.Count - 1]);
             }
         }
-
-        currentStory = save.currentStory;
+        
+        Debug.Log(save.textAssetLocation);
+        var ta = Resources.Load<TextAsset>(save.textAssetLocation);
+        currentStory = new Story(ta.text);
+        
         var inkJson = SerializeManager.ReadJsonString(_inkjsonPath);
         currentStory.state.LoadJson(inkJson);
+        lastTimeStamp = save.lastTimeStamp;
     }
 
     private void SaveTextSystem(Save save)
@@ -157,8 +170,9 @@ public class SaveManager
             save.dialogueMessages = pair.Value;
         }
 
-        save.currentStory = currentStory;
+        save.textAssetLocation = textAssetLocation;
         SerializeManager.SaveJson(_inkjsonPath, currentStory.state.ToJson());
+        save.lastTimeStamp = lastTimeStamp;
     }
     
 }

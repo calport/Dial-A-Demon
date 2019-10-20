@@ -7,6 +7,6 @@ public class PointerTrigger : MonoBehaviour
 {
     private void Awake()
     {
-        Services.textManager.textRunner.pointerTrigger = gameObject;
+        Services.textManager.pointerTrigger = gameObject;
     }
 }

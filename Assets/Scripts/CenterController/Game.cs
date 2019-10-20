@@ -63,7 +63,8 @@ public class Game : MonoBehaviour
     {  
         Services.saveManager.Init();
         Services.saveManager.LoadGame();
-        
+        Services.textManager.Load();
+        Services.plotManager.Load();
         //import all the data file
         //Services.referenceInfo = FindObjectOfType<ReferenceInfo>();
         Services.easyTouch = FindObjectOfType<EasyTouch>();
@@ -95,6 +96,8 @@ public class Game : MonoBehaviour
                 Services.plotManager.Clear();
                 Services.gameSettings.Clear();
                 
+                Services.plotManager.Save();
+                Services.textManager.Save();
                 Services.saveManager.SaveGame();
                 Services.saveManager.Clear();
                 
