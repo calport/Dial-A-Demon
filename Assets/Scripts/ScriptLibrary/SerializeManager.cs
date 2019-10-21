@@ -1,7 +1,9 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using System.Collections;
 using System.Collections.Generic;
 using System.Text;
+using Newtonsoft.Json;
 using UnityEngine;
 
 public class SerializeManager
@@ -58,7 +60,6 @@ public class SerializeManager
             finalList.Add(list.ToArray());
             lengthLabel += length;
         }
-
         return finalList.ToArray();
     }
     
@@ -87,7 +88,7 @@ public class SerializeManager
         //read the file
         StreamReader sr = new StreamReader(jsonPath);
         var json = sr.ReadToEnd();
-        T file = JsonUtility.FromJson<T>(json);
+        T file = JsonConvert.DeserializeObject<T>(json);
         return file;
     }
     
@@ -95,13 +96,14 @@ public class SerializeManager
     {
         //read the file
         StreamReader sr = new StreamReader(jsonPath);
+        
         var json = sr.ReadToEnd();
         return json;
     }
 
     public static void SaveToJson<T>(string jsonPath,T fileToSave)
     {
-        string json = JsonUtility.ToJson(fileToSave);
+        string json = JsonConvert.SerializeObject(fileToSave);
         Debug.Log(json);
         File.WriteAllText(jsonPath, json, Encoding.UTF8);
     }
@@ -110,4 +112,34 @@ public class SerializeManager
     {
         File.WriteAllText(jsonPath, json, Encoding.UTF8);
     }
+    
+    struct JsonDateTime {
+        public long value;
+        public static implicit operator DateTime(JsonDateTime jdt) {
+            Debug.Log("Converted to time");
+            return DateTime.FromFileTimeUtc(jdt.value);
+        }
+        public static implicit operator JsonDateTime(DateTime dt) {
+            Debug.Log("Converted to JDT");
+            JsonDateTime jdt = new JsonDateTime();
+            jdt.value = dt.ToFileTimeUtc();
+            return jdt;
+        }
+    }
+    
+    struct JsonTimeSpan {
+        public long value;
+        public static implicit operator TimeSpan(JsonTimeSpan jts)
+        {
+            TimeSpan newSpan = TimeSpan.Zero + TimeSpan.FromSeconds(jts.value);
+            return newSpan;
+        }
+        public static implicit operator JsonTimeSpan(TimeSpan ts) {
+            JsonTimeSpan jts = new JsonTimeSpan();
+            jts.value = ts.Seconds;
+            return jts;
+        }
+    }
+    
+    
 }

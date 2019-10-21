@@ -14,8 +14,7 @@ using Yarn.Unity.Example;
 public class TextManager
 {
 	public Story currentStory;
-	//resource load
-	public string textAssetLocation;
+	public string inkJson;
     // path of the massage bubble prefabs
     private string _demonTextBox= "Prefabs/MessageBubble_Demon";
     private string _playerTextBox= "Prefabs/MessageBubble_Player";
@@ -26,7 +25,7 @@ public class TextManager
 
     private bool isReloadingDialogueMute = false;
     private bool isLoadInitDialogueFinished = false;
-    private bool isEndChatShow;
+    private bool isEndChatShow = false;
 
     public Dictionary<string, Keyboard> keyboard
     {
@@ -61,14 +60,13 @@ public class TextManager
 
     public void Init()
     {
-        LoadInitialDialogue();
     }
 
     public void Update()
     {
-        if (_msgScroll.verticalNormalizedPosition == 1f && !isReloadingDialogueMute)
+        if (_msgScroll.verticalNormalizedPosition >1f && !isReloadingDialogueMute)
         {
-            LoadMoreDialogue();
+            if(isLoadInitDialogueFinished) LoadMoreDialogue();
             isReloadingDialogueMute = true;
             CoroutineManager.DoDelayCertainSeconds(delegate { isReloadingDialogueMute = false; },3f );
         }
@@ -148,7 +146,6 @@ public class TextManager
 	{
 		//send all the options to the aiming keyboard
 		string text = choice.text.Trim();
-		Debug.Log(text);
 		int i = 0;
 		string firstLetter = String.Empty;
 		while(!System.Text.RegularExpressions.Regex.IsMatch(firstLetter, @"^[a-zA-Z]$+"))
@@ -313,21 +310,18 @@ public class TextManager
 
 	public void Save()
 	{
-		Services.saveManager.currentStory = currentStory;
-		Services.saveManager.textAssetLocation = textAssetLocation;
-        Services.saveManager.lastTimeStamp = _lastTimeStamp;
+		Services.saveManager.lastTimeStamp = _lastTimeStamp;
     }
 
     public void Load()
     {
 	    if(File.Exists(Services.saveManager.saveJsonPath)){
-		    currentStory = Services.saveManager.currentStory;
 		    _lastTimeStamp = Services.saveManager.lastTimeStamp;
 		    LoadInitialDialogue();
 		    LoadMoreDialogue();
 		    LoadDialogueWhenAPPisOff();
-		    isLoadInitDialogueFinished = true;
 	    }
+	    isLoadInitDialogueFinished = true;
     }
     public void LoadDialogueWhenAPPisOff()
     {
@@ -373,7 +367,7 @@ public class TextManager
     {
         var plotMessage = Services.saveManager.plotMessages;
         var dialogueMessage = Services.saveManager.dialogueMessages;
-        
+
         if(plotMessage.Count!=0) for (int i = plotMessage.Count-1; i>-1; i--)
         {
             var msg = plotMessage[i];
@@ -416,9 +410,9 @@ public class TextManager
 
         if (_dialogueLabel < 0)
         {
-            if (isLoadInitDialogueFinished && !isEndChatShow)
+            if (!isEndChatShow)
             {
-                Services.textSequenceTaskRunner.AddTask(delegate
+                Services.textSequenceTaskRunner.AddSideTask(delegate
                 {
                     GameObject newTimeBox =
                         GameObject.Instantiate(Resources.Load<GameObject>(_endChatBubble), _content.transform);

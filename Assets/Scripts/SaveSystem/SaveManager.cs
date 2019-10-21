@@ -6,6 +6,7 @@ using System.IO;
 using System.Text;
 using Antlr4.Runtime;
 using Ink.Runtime;
+using Newtonsoft.Json;
 using UnityEngine;
 using UnityEngine.Experimental.PlayerLoop;
 using UnityEngine.Serialization;
@@ -43,7 +44,6 @@ public class SaveManager
         public List<MessageContent> dialogueMessages;
         public bool isLastDialogueFinished;
         public List<PlotInfo> plotInfo;
-        public string textAssetLocation;
         public DateTime lastTimeStamp;
 
     }
@@ -61,16 +61,18 @@ public class SaveManager
 
     public List<MessageContent> plotMessages = new List<MessageContent>();
     private List<MessageContent[]> _dialogueMessages = new List<MessageContent[]>();
-    public List<PlotInfo> plotInfo = new List<PlotInfo>();
-    public string textAssetLocation;
-    public Story currentStory;
-    public DateTime lastTimeStamp;
-    
-
     public List<MessageContent[]> dialogueMessages
     {
         get { return _dialogueMessages; }
     }
+
+    public List<PlotInfo> plotInfo = new List<PlotInfo>();
+    public Story currentStory;
+    public DateTime lastTimeStamp;
+    public string inkJson;
+    
+
+    
 
     public void Init()
     {
@@ -101,7 +103,7 @@ public class SaveManager
             
             //Load info from save
             LoadTextSystem(save);
-            plotInfo = save.plotInfo;
+            LoadPlotSystem(save);
 
 
             //TODO: maybe pause the game and then at here unpause it
@@ -119,7 +121,7 @@ public class SaveManager
         Save save = new Save();
         
         SaveTextSystem(save);
-        save.plotInfo = plotInfo;
+        SavePlotSystem(save);
         SerializeManager.SaveToJson(_saveJsonPath,save);
 
     }
@@ -132,7 +134,6 @@ public class SaveManager
         {
             _dialogueMessages.Add(msgArray);
         }
-        
         if(!save.isLastDialogueFinished) 
         {
             if (_dialogueMessages.Count > 0)
@@ -143,12 +144,8 @@ public class SaveManager
             }
         }
         
-        Debug.Log(save.textAssetLocation);
-        var ta = Resources.Load<TextAsset>(save.textAssetLocation);
-        currentStory = new Story(ta.text);
-        
-        var inkJson = SerializeManager.ReadJsonString(_inkjsonPath);
-        currentStory.state.LoadJson(inkJson);
+        inkJson = SerializeManager.ReadJsonString(_inkjsonPath);
+        Services.textManager.inkJson = inkJson;
         lastTimeStamp = save.lastTimeStamp;
     }
 
@@ -170,10 +167,18 @@ public class SaveManager
             save.dialogueMessages = pair.Value;
         }
 
-        save.textAssetLocation = textAssetLocation;
         SerializeManager.SaveJson(_inkjsonPath, currentStory.state.ToJson());
         save.lastTimeStamp = lastTimeStamp;
     }
-    
+
+    private void LoadPlotSystem(Save save)
+    {
+        plotInfo = save.plotInfo;
+    }
+
+    private void SavePlotSystem(Save save)
+    {
+        save.plotInfo = plotInfo;
+    }
 }
 

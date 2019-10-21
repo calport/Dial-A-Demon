@@ -5,6 +5,8 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
+using DialADemon.Page;
+using Ink.Runtime;
 using UnityEngine;
 //using UnityEngine.iOS;
 
@@ -12,7 +14,7 @@ public class PlotManagerInfo
 {
     public DateTime baseTime;
 }
-public class PlotManager
+public class PlotManager 
 {
     public Dictionary<Plot, DateTime> Calendar = new Dictionary<Plot, DateTime>();
     public bool isSpeedMode = false;
@@ -22,8 +24,7 @@ public class PlotManager
     private Dictionary<Type, Plot> _plots = new Dictionary<Type, Plot>();
     //
     private Dictionary<Type, Plot> _globalCheckPlot = new Dictionary<Type, Plot>();
-    
-    
+    private string _currentTextAssetLocation;
 
 
     public void Init()
@@ -159,7 +160,6 @@ public class PlotManager
         {
             T newPlot = Activator.CreateInstance<T>();
             newPlot.parent = this;
-            newPlot.PreInit();
             newPlot.plotState = plotState.isChecking;
             if(newPlot.isGlobalCheck) _globalCheckPlot.Add(newPlot.GetType(),newPlot);
             _plots.Add(typeof(T), newPlot);
@@ -181,7 +181,6 @@ public class PlotManager
         {
             Plot newPlot = Activator.CreateInstance(type) as Plot;
             newPlot.parent = this;
-            newPlot.PreInit();
             newPlot.plotState = plotState.isChecking;
             if (newPlot.isGlobalCheck) _globalCheckPlot.Add(newPlot.GetType(), newPlot);
             _plots.Add(type, newPlot);
@@ -204,6 +203,9 @@ public class PlotManager
         List<PlotInfo> plotInfos = new List<PlotInfo>();
         foreach (var plotPair in _plots)
         {
+            //save each plot
+            plotPair.Value.Save();
+            //build the plot info list
             PlotInfo info = new PlotInfo();
 
             if (Calendar.ContainsKey(plotPair.Value))
@@ -235,6 +237,7 @@ public class PlotManager
                 plot.plotState = info.plotState;
                 plot.relaSpan = info.relaSpan;
                 if (info.isOnCalendar) Calendar.Add(plot, info.startTime);
+                plot.Reload();
             }
         }
     }
@@ -253,6 +256,7 @@ public class PlotManager
         isAbandoned,
         isBreak,
     }
+
 
     public abstract class Plot
     {
@@ -293,14 +297,9 @@ public class PlotManager
             get { return parent._plotInfo.baseTime.Add(absSpan); }
         }
 
+        public virtual void Reload(){}
         //preInit when the plot is created
-        public virtual void PreInit()
-        {
-            //set the refer plot
-            //set the related span, or at least the first version of it
-            //initiate whatever main static variables
-        }
-        
+
         //int when the plot is added to calendar
         public virtual void Init()
         {
@@ -384,10 +383,10 @@ public class PlotManager
             relaSpan= TimeSpan.Zero;
         }
     }
-
+    
     public class RootPlot : Plot
     {
-        public override void PreInit()
+        public RootPlot()
         {
             _referPlot = null;
             relaSpan = TimeSpan.Zero;
@@ -404,16 +403,25 @@ public class PlotManager
             CheckChild();
         }
     }
-
+    
     public class TextPlot : Plot
     {
         public TextAsset ta;
-        public string textAssetLocation;
-        
+        internal string textAssetLocation;
+
+        public override void Reload()
+        {
+            if (plotState == plotState.isPlaying || plotState == plotState.isReadyToPlay)
+            {
+                Services.textManager.currentStory = new Story(ta.text);
+                Services.textManager.currentStory.state.LoadJson(Services.textManager.inkJson);
+                Services.eventManager.AddHandler<TextFinished>(delegate { OnTextFinished(); });
+            }
+        }
+
         public override void Start()
         {
             Services.textManager.StartNewStory(ta);
-            Services.textManager.textAssetLocation = textAssetLocation;
             Services.eventManager.AddHandler<TextFinished>(delegate{OnTextFinished();});
         }
         
@@ -423,22 +431,87 @@ public class PlotManager
             Services.eventManager.RemoveHandler<TextFinished>(delegate{OnTextFinished();});
         }
         
-        public virtual void OnTextFinished()
+        public void OnTextFinished()
         {
             plotState = plotState.isFinished;
         }
 
+        public override bool CheckLoad()
+        {
+            foreach (var plotType in _requiredPrePlots)
+            {
+                if (plotType.IsSubclassOf(typeof(TextPlot)))
+                {
+                    var plot = parent.GetOrCreatePlots(plotType);
+                    if (plot.plotState == plotState.isPlaying || plot.plotState == plotState.isReadyToPlay)
+                        return false;
+                }
+            }
+
+            return true;
+        }
+
+        public override void Save()
+        {
+            Services.saveManager.currentStory = Services.textManager.currentStory;
+        }
     }
+
     
     public class Day1_Text1 : TextPlot
     {
-        public override void PreInit()
+        public Day1_Text1()
         {
+            //this part is for initialize the original properties that related to the plot
             _referPlot = typeof(RootPlot);
             relaSpan = TimeSpan.FromMinutes(0.1f);
-            ta = Resources.Load<TextAsset>(@"InkText/story.json");
-            textAssetLocation = "InkText/story.json";
             _requiredPrePlots = new List<Type>(){typeof(RootPlot)};
+            var fileAddress = new PlotFileAddress().fileAddress;
+            fileAddress.TryGetValue(typeof(Day1_Text1), out textAssetLocation);
+            ta = Resources.Load<TextAsset>(textAssetLocation);
+            _childPlots = new List<Type>{typeof(Day1_Text2)};
+        }
+
+        public override bool CheckLoad()
+        {
+            return true;
+        }
+        
+    }
+    
+    public class Day1_Text2 : TextPlot
+    {
+        public Day1_Text2()
+        {
+            //this part is for initialize the original properties that related to the plot
+            _referPlot = typeof(Day1_Text1);
+            relaSpan = TimeSpan.FromMinutes(0f);
+            _requiredPrePlots = new List<Type>(){typeof(Day1_Text1)};
+            var fileAddress = new PlotFileAddress().fileAddress;
+            fileAddress.TryGetValue(typeof(Day1_Text1), out textAssetLocation);
+            ta = Resources.Load<TextAsset>(textAssetLocation);
+            _childPlots = new List<Type>{typeof(Day1_Text3)};
+        }
+
+        public override bool CheckLoad()
+        {
+            return true;
+        }
+        
+    }
+    
+    public class Day1_Text3 : TextPlot
+    {
+        public Day1_Text3()
+        {
+            //this part is for initialize the original properties that related to the plot
+            _referPlot = typeof(Day1_Text2);
+            relaSpan = TimeSpan.FromMinutes(0f);
+            _requiredPrePlots = new List<Type>(){typeof(Day1_Text2)};
+            var fileAddress = new PlotFileAddress().fileAddress;
+            fileAddress.TryGetValue(typeof(Day1_Text1), out textAssetLocation);
+            ta = Resources.Load<TextAsset>(textAssetLocation);
+            
         }
 
         public override bool CheckLoad()

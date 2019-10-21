@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using DialADemon.Library;
 using DialADemon.Page;
 using HedgehogTeam.EasyTouch;
@@ -63,8 +64,9 @@ public class Game : MonoBehaviour
     {  
         Services.saveManager.Init();
         Services.saveManager.LoadGame();
-        Services.textManager.Load();
         Services.plotManager.Load();
+        Services.textManager.Load();
+        
         //import all the data file
         //Services.referenceInfo = FindObjectOfType<ReferenceInfo>();
         Services.easyTouch = FindObjectOfType<EasyTouch>();
