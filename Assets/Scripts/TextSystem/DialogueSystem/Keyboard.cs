@@ -84,10 +84,11 @@ public class Keyboard : MonoBehaviour
             {
                 tm.textBox.text = content;
                 _sendButton.onClick.AddListener(SendChoice);
+                Handheld.Vibrate();
+                Handheld.Vibrate();
             }
             _pointerIn = true;
-            Handheld.Vibrate();
-            Handheld.Vibrate();
+            
             //testing sound
             optionSound.Play();
         }

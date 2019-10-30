@@ -93,7 +93,22 @@ public static class Services
             }
         }
     }
-    
+
+    private static PhoneManager _phoneManager;
+
+    public static PhoneManager phoneManager
+    {
+        get
+        {
+            if (_phoneManager != null) return _phoneManager;
+            else
+            {
+                _phoneManager = new PhoneManager();
+                return _phoneManager;
+            }
+        }
+    }
+
 
     private static SaveManager _saveManager;
     public static SaveManager saveManager

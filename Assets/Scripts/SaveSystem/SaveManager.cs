@@ -180,5 +180,18 @@ public class SaveManager
     {
         save.plotInfo = plotInfo;
     }
+    
+    public MessageContent FindTheLastMessage()
+    {
+        var pm = Services.saveManager.plotMessages;
+        var dm = Services.saveManager.dialogueMessages;
+
+        if (pm.Count == 0 && dm.Count==0) return new MessageContent();
+        if (pm.Count != 0) return pm[pm.Count - 1];
+        
+        var oldDialogue = dm[dm.Count - 1];
+        if (oldDialogue.Length != 0) return oldDialogue[oldDialogue.Length - 1];
+        return new MessageContent();
+    }
 }
 

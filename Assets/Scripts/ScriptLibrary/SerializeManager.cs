@@ -96,7 +96,6 @@ public class SerializeManager
     {
         //read the file
         StreamReader sr = new StreamReader(jsonPath);
-        
         var json = sr.ReadToEnd();
         return json;
     }
@@ -112,6 +111,7 @@ public class SerializeManager
     {
         File.WriteAllText(jsonPath, json, Encoding.UTF8);
     }
+    
     
     struct JsonDateTime {
         public long value;

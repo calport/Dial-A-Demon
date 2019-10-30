@@ -15,4 +15,15 @@ public class SceneChanged : GameEvent
 
 public class TextFinished : GameEvent{}
 
+public class DemonPhoneCallIn : GameEvent{}
+
+public class PlayerPhoneCallOut : GameEvent{}
+
+public class PhoneStart : GameEvent{}
+
+public class PhoneHangedUp : GameEvent{}
+
+public class PhoneFinished : GameEvent{}
+
 public class GameCleanStarted : GameEvent{}
+

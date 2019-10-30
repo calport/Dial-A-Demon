@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Text;
 using System.Threading.Tasks;
 using DialADemon.Page;
 using Ink.Runtime;
@@ -25,8 +26,10 @@ public class PlotManager
     //
     private Dictionary<Type, Plot> _globalCheckPlot = new Dictionary<Type, Plot>();
     private string _currentTextAssetLocation;
-
-
+    
+    //other quick reference
+    
+    
     public void Init()
     {
 
@@ -52,14 +55,14 @@ public class PlotManager
             KeyValuePair<Plot, DateTime> plotPair = Calendar.ElementAt(i);
             if (plotPair.Value < DateTime.Now && plotPair.Key.plotState == plotState.isOnCalendar)
             {
-                plotPair.Key.plotState = plotState.isReadyToPlay;
+                plotPair.Key.ChangePlotState(plotState.isReadyToPlay);
                 plotPair.Key.Init();
                 continue;
             }
 
             if (plotPair.Key.plotState == plotState.isReadyToPlay)
             {
-                plotPair.Key.plotState = plotState.isPlaying;
+                plotPair.Key.ChangePlotState(plotState.isPlaying);
                 plotPair.Key.Start();
                 continue;
             }
@@ -160,7 +163,7 @@ public class PlotManager
         {
             T newPlot = Activator.CreateInstance<T>();
             newPlot.parent = this;
-            newPlot.plotState = plotState.isChecking;
+            newPlot.ChangePlotState(plotState.isChecking);
             if(newPlot.isGlobalCheck) _globalCheckPlot.Add(newPlot.GetType(),newPlot);
             _plots.Add(typeof(T), newPlot);
             
@@ -181,7 +184,7 @@ public class PlotManager
         {
             Plot newPlot = Activator.CreateInstance(type) as Plot;
             newPlot.parent = this;
-            newPlot.plotState = plotState.isChecking;
+            newPlot.ChangePlotState(plotState.isChecking);
             if (newPlot.isGlobalCheck) _globalCheckPlot.Add(newPlot.GetType(), newPlot);
             _plots.Add(type, newPlot);
             
@@ -193,9 +196,13 @@ public class PlotManager
     {
         ClearCalendar();
         var newPlot = GetOrCreatePlots<T>();
-        _plotInfo.baseTime = DateTime.Now;
-        newPlot.SetRelatedSpanToZero();
-        newPlot.AddToCalendar();
+        newPlot.AddToCalendarWithSetTime(DateTime.Now);
+    }
+
+    public void AddPlot<T>(DateTime startTime) where T : Plot
+    {
+        var newPlot = GetOrCreatePlots<T>();
+        newPlot.AddToCalendarWithSetTime(startTime);
     }
 
     public void Save()
@@ -234,12 +241,17 @@ public class PlotManager
             foreach (var info in plotInfo)
             {
                 var plot = GetOrCreatePlots(info.plotType);
-                plot.plotState = info.plotState;
+                plot.ChangePlotState(info.plotState);
                 plot.relaSpan = info.relaSpan;
                 if (info.isOnCalendar) Calendar.Add(plot, info.startTime);
                 plot.Reload();
             }
         }
+    }
+
+    public void CheckCapableTextWhenLoad()
+    {
+        
     }
     //when the app quit, save all the info that needed
     //add notification and other stuff to keep track the gameflow
@@ -266,8 +278,17 @@ public class PlotManager
         protected List<Type> _requiredPrePlots = new List<Type>();
         protected List<Type> _childPlots = new List<Type>();
         
-        public plotState plotState = plotState.isStandingBy;
-        
+        protected plotState _plotState = plotState.isStandingBy;
+        public plotState plotState
+        {
+            get { return _plotState; }
+        }
+
+        public void ChangePlotState(plotState ps)
+        {
+            _plotState = ps;
+        }
+
         //true when the checking 
         public  bool isGlobalCheck = false;
 
@@ -314,17 +335,34 @@ public class PlotManager
         {
         }
 
-        public virtual void Break(){}
-        public virtual void Save()
+        public virtual bool isBreak()
         {
+            return false;
         }
+
+        public virtual bool isBreak(DateTime lastMessage)
+        {
+            return false;
+        }
+        public virtual void Break(){}
+        public virtual void Save(){}
+        
 
         public void AddToCalendar()
         {
-            if (plotState == plotState.isChecking || plotState == plotState.isStandingBy)
+            if (_plotState == plotState.isChecking || _plotState == plotState.isStandingBy)
             {
                 parent.Calendar.Add(this,plotStartTime);
-                this.plotState = plotState.isOnCalendar;
+                this._plotState = plotState.isOnCalendar;
+            }
+        }
+        
+        public void AddToCalendarWithSetTime(DateTime startTime)
+        {
+            if (_plotState == plotState.isChecking || _plotState == plotState.isStandingBy)
+            {
+                parent.Calendar.Add(this,startTime);
+                this._plotState = plotState.isOnCalendar;
             }
         }
 
@@ -333,9 +371,9 @@ public class PlotManager
             foreach (var childPlot in _childPlots)
             {
                 var plotInit = parent.GetOrCreatePlots(childPlot);
-                if (plotInit.plotState == plotState.isChecking || plotInit.plotState == plotState.isStandingBy)
+                if (plotInit._plotState == plotState.isChecking || plotInit._plotState == plotState.isStandingBy)
                 {
-                    plotInit.plotState = plotState.isChecking;
+                    plotInit._plotState = plotState.isChecking;
                     bool isLoadable;
                     
                     if (!parent.isSpeedMode) isLoadable = plotInit.CheckLoad();
@@ -361,7 +399,7 @@ public class PlotManager
             foreach (var plotType in _requiredPrePlots)
             {
                 var plot = parent.GetOrCreatePlots(plotType);
-                if (plot.plotState != plotState.isFinished)
+                if (plot._plotState != plotState.isFinished)
                 {
                     i++;
                 }
@@ -395,7 +433,7 @@ public class PlotManager
 
         public override void Start()
         {
-            plotState = plotState.isFinished;
+            _plotState = plotState.isFinished;
         }
 
         public override void Clear()
@@ -406,23 +444,38 @@ public class PlotManager
     
     public class TextPlot : Plot
     {
-        public TextAsset ta;
-        internal string textAssetLocation;
-
+        public Story story;
+        protected TextManager tm = Services.textManager;
+        
         public override void Reload()
         {
-            if (plotState == plotState.isPlaying || plotState == plotState.isReadyToPlay)
+            if (_plotState == plotState.isPlaying || _plotState == plotState.isReadyToPlay)
             {
-                Services.textManager.currentStory = new Story(ta.text);
-                Services.textManager.currentStory.state.LoadJson(Services.textManager.inkJson);
+                tm.currentTextPlot = this;
+                tm.currentStory.state.LoadJson(tm.inkJson);
                 Services.eventManager.AddHandler<TextFinished>(delegate { OnTextFinished(); });
+            }
+        }
+
+        public override void Init()
+        {
+            // make sure no two text plots run in the same time
+            if (tm.currentTextPlot != null && this != tm.currentTextPlot)
+            {
+                tm.currentTextPlot.ChangePlotState(plotState.isBreak);
+                tm.MuteAllKeyboard();
             }
         }
 
         public override void Start()
         {
-            Services.textManager.StartNewStory(ta);
+            tm.currentTextPlot = this;
+            tm.StartNewStory(story);
             Services.eventManager.AddHandler<TextFinished>(delegate{OnTextFinished();});
+            
+            DateTime startTime;
+            parent.Calendar.TryGetValue(this, out startTime);
+            tm.LoadDialogueForNewPlotWhenAPPisOff(startTime);
         }
         
         public override void Clear()
@@ -433,7 +486,7 @@ public class PlotManager
         
         public void OnTextFinished()
         {
-            plotState = plotState.isFinished;
+            _plotState = plotState.isFinished;
         }
 
         public override bool CheckLoad()
@@ -453,10 +506,51 @@ public class PlotManager
 
         public override void Save()
         {
-            Services.saveManager.currentStory = Services.textManager.currentStory;
+            Services.saveManager.currentStory = tm.currentStory;
+        }
+        
+        public override bool isBreak()
+        {
+            if (!tm.isLoadInitDialogueFinished)
+            {
+                var msg = Services.saveManager.FindTheLastMessage();
+                if ((DateTime.Now - msg.shootTime) > TimeSpan.FromHours(0.2f))
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        public override void Break()
+        {
+            if(tm.currentTextPlot == this) tm.MuteAllKeyboard();
+                CheckChild();
+            Services.eventManager.RemoveHandler<TextFinished>(delegate{OnTextFinished();});
+        }
+
+        protected void InitStory()
+        {
+            string textAssetLocation;
+            var fileAddress = new PlotFileAddress().fileAddress;
+            fileAddress.TryGetValue(this.GetType(), out textAssetLocation);
+            var ta = SerializeManager.ReadJsonString(Application.dataPath + "/Resources/InkText/" + textAssetLocation);
+            Debug.Log(ta);
+            //var ta = Resources.Load<TextAsset>(textAssetLocation);
+            story = new Story(ta);
+        }
+        
+        protected void InitStory(Type storyDictType)
+        {
+            string textAssetLocation;
+            var fileAddress = new PlotFileAddress().fileAddress;
+            fileAddress.TryGetValue(storyDictType, out textAssetLocation);
+            var ta = SerializeManager.ReadJsonString(Application.dataPath + "/Resources/InkText/" + textAssetLocation);
+            //var ta = Resources.Load<TextAsset>(textAssetLocation);
+            story = new Story(ta);
+            Debug.Log(ta);
         }
     }
-
     
     public class Day1_Text1 : TextPlot
     {
@@ -464,19 +558,16 @@ public class PlotManager
         {
             //this part is for initialize the original properties that related to the plot
             _referPlot = typeof(RootPlot);
-            relaSpan = TimeSpan.FromMinutes(0.1f);
+            relaSpan = TimeSpan.FromMinutes(0.5f);
             _requiredPrePlots = new List<Type>(){typeof(RootPlot)};
-            var fileAddress = new PlotFileAddress().fileAddress;
-            fileAddress.TryGetValue(typeof(Day1_Text1), out textAssetLocation);
-            ta = Resources.Load<TextAsset>(textAssetLocation);
             _childPlots = new List<Type>{typeof(Day1_Text2)};
+            InitStory();
         }
 
         public override bool CheckLoad()
         {
             return true;
         }
-        
     }
     
     public class Day1_Text2 : TextPlot
@@ -484,13 +575,11 @@ public class PlotManager
         public Day1_Text2()
         {
             //this part is for initialize the original properties that related to the plot
-            _referPlot = typeof(Day1_Text1);
-            relaSpan = TimeSpan.FromMinutes(0f);
+            _referPlot = typeof(RootPlot);
+            relaSpan = TimeSpan.FromMinutes(0.5f);
             _requiredPrePlots = new List<Type>(){typeof(Day1_Text1)};
-            var fileAddress = new PlotFileAddress().fileAddress;
-            fileAddress.TryGetValue(typeof(Day1_Text1), out textAssetLocation);
-            ta = Resources.Load<TextAsset>(textAssetLocation);
             _childPlots = new List<Type>{typeof(Day1_Text3)};
+            InitStory(typeof(Day1_Text1));
         }
 
         public override bool CheckLoad()
@@ -508,10 +597,7 @@ public class PlotManager
             _referPlot = typeof(Day1_Text2);
             relaSpan = TimeSpan.FromMinutes(0f);
             _requiredPrePlots = new List<Type>(){typeof(Day1_Text2)};
-            var fileAddress = new PlotFileAddress().fileAddress;
-            fileAddress.TryGetValue(typeof(Day1_Text1), out textAssetLocation);
-            ta = Resources.Load<TextAsset>(textAssetLocation);
-            
+            InitStory(typeof(Day1_Text1));
         }
 
         public override bool CheckLoad()
@@ -519,5 +605,191 @@ public class PlotManager
             return true;
         }
         
+    }
+    
+    public class PhonePlot : Plot
+    {
+        public enum PhoneCallState
+        {
+            NotStart,
+            Calling,
+            Hanged,
+            End
+        }
+        protected PhoneManager pm = Services.phoneManager;
+        public AudioClip callContent;
+        public PhoneCallState phoneCallState = PhoneCallState.NotStart;
+        protected List<VoiceMailPlot> _relatedVoiceMail = new List<VoiceMailPlot>();
+        public Dictionary<VoiceMailPlot, DateTime> loadedVoiceMail = new Dictionary<VoiceMailPlot, DateTime>();
+
+        public TimeSpan callTimeSpan
+        {
+            get{return  TimeSpan.FromSeconds(callContent.length);}
+        }
+
+        public bool isDemonCall
+        {
+            get
+            {
+                if (this.GetType().IsSubclassOf(typeof(DemonPhoneCallPlot))) return true;
+                if (this.GetType().IsSubclassOf(typeof(PlayerPhoneCallPlot))) return false;
+                return false;
+            }
+        }
+
+        public override void Init()
+        {
+            Services.eventManager.AddHandler<PhoneFinished>(delegate{ OnPhoneFinished();});
+            Services.eventManager.AddHandler<PhoneHangedUp>(delegate{ OnPhoneHangedUp();});
+        }
+
+        public override void Reload()
+        {
+            if (_plotState == plotState.isPlaying || _plotState == plotState.isReadyToPlay)
+            {
+            }
+        }
+        
+        public override void Clear()
+        {
+            CheckChild();
+            
+            Services.eventManager.RemoveHandler<PhoneFinished>(delegate{ OnPhoneFinished();});
+            Services.eventManager.RemoveHandler<PhoneHangedUp>(delegate{ OnPhoneHangedUp();});
+        }
+
+        public override bool CheckLoad()
+        {
+            foreach (var plotType in _requiredPrePlots)
+            {
+                if (plotType.IsSubclassOf(typeof(TextPlot)))
+                {
+                    var plot = parent.GetOrCreatePlots(plotType);
+                    if (plot.plotState == plotState.isPlaying || plot.plotState == plotState.isReadyToPlay)
+                        return false;
+                }
+            }
+
+            return true;
+        }
+
+        public override void Save()
+        {
+            if (plotState == plotState.isOnCalendar)
+            {
+                //TODO send notification
+            }
+        }
+
+        public override void Break()
+        {
+            CheckChild();
+        }
+
+        protected void OnPhoneHangedUp()
+        {
+            if (pm.currrentPhonePlot == this)
+            {
+                _plotState = plotState.isFinished;
+                phoneCallState = PhoneCallState.Hanged;
+                pm.currrentPhonePlot = null;
+            }
+        }
+
+        protected void OnPhoneFinished()
+        {
+            if (pm.currrentPhonePlot == this)
+            {
+                _plotState = plotState.isFinished;
+                phoneCallState = PhoneCallState.End;
+                pm.currrentPhonePlot = null;
+            }
+        }
+        
+        protected void LoadRelatedVoiceMail(){}
+    }
+
+    public class DemonPhoneCallPlot : PhonePlot
+    {
+        public override void Start()
+        {
+            Services.eventManager.Fire(new DemonPhoneCallIn());
+            pm.currrentPhonePlot = this;
+            phoneCallState = PhoneCallState.Calling;
+        }
+    }
+    
+    public class PlayerPhoneCallPlot : PhonePlot
+    {
+        
+        public override void Start()
+        {
+            Services.eventManager.Fire(new PlayerPhoneCallOut());
+            pm.currrentPhonePlot = this;
+            phoneCallState = PhoneCallState.Calling;
+        }
+    }
+    public class VoiceMailPlot : Plot
+    {
+        protected PhoneManager pm = Services.phoneManager;
+
+        public override void Reload()
+        {
+            if (_plotState == plotState.isPlaying || _plotState == plotState.isReadyToPlay)
+            {
+            }
+        }
+   
+        public override void Init()
+        {
+    
+        }
+
+        public override void Start()
+        {
+        }
+        
+        public override void Clear()
+        {
+            CheckChild();
+            Services.eventManager.RemoveHandler<TextFinished>(delegate{OnTextFinished();});
+        }
+        
+        public void OnTextFinished()
+        {
+            _plotState = plotState.isFinished;
+        }
+
+        public override bool CheckLoad()
+        {
+            foreach (var plotType in _requiredPrePlots)
+            {
+                if (plotType.IsSubclassOf(typeof(TextPlot)))
+                {
+                    var plot = parent.GetOrCreatePlots(plotType);
+                    if (plot.plotState == plotState.isPlaying || plot.plotState == plotState.isReadyToPlay)
+                        return false;
+                }
+            }
+
+            return true;
+        }
+
+        public override void Save()
+        {
+            if (plotState == plotState.isOnCalendar)
+            {
+                //TODO send notification
+            }
+        }
+        
+        public override bool isBreak()
+        {
+            return false;
+        }
+
+        public override void Break()
+        {
+        }
     }
 }

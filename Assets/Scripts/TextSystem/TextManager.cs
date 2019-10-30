@@ -13,9 +13,18 @@ using Yarn.Unity.Example;
 
 public class TextManager
 {
-	public Story currentStory;
+	public Story currentStory
+	{
+		get
+		{
+			if (currentTextPlot != null) return currentTextPlot.story;
+			else return null;
+		}
+	}
 	public string inkJson;
-    // path of the massage bubble prefabs
+	public PlotManager.TextPlot currentTextPlot;
+
+	// path of the massage bubble prefabs
     private string _demonTextBox= "Prefabs/MessageBubble_Demon";
     private string _playerTextBox= "Prefabs/MessageBubble_Player";
     private string _demonContract= "Prefabs/DemonContract";
@@ -24,7 +33,7 @@ public class TextManager
     private string _typingDotBubble = "Prefabs/MessageBubble_TypingDot";
 
     private bool isReloadingDialogueMute = false;
-    private bool isLoadInitDialogueFinished = false;
+    public bool isLoadInitDialogueFinished = false;
     private bool isEndChatShow = false;
 
     public Dictionary<string, Keyboard> keyboard
@@ -85,9 +94,8 @@ public class TextManager
 	{
 	}
 
-	public void StartNewStory(TextAsset newStory)
+	public void StartNewStory(Story newStory)
 	{
-		currentStory = new Story(newStory.text);
 		RefreshView();
 	}
 
@@ -102,11 +110,13 @@ public class TextManager
 	// Continues over all the lines of text, then displays all the choices. If there are no choices, the story is finished!
 	private void RefreshView()
 	{
+		
 		// Read all the content until we can't continue any more
 		if (currentStory.canContinue)
 		{
 			// Continue gets the next line of the story
 			string text = currentStory.Continue();
+			Debug.Log(text);
 			// This removes any white space from the text.
 			text = text.Trim();
 			var behaviorType = CheckTypingBehavior(currentStory.currentTags);
@@ -177,10 +187,7 @@ public class TextManager
 		// clear the text box
 		textBox.text = String.Empty;
 		//reset all the keyboard to null
-		foreach (var key in keyboard.Values)
-		{
-			key.isChoice = false;
-		}
+		MuteAllKeyboard();
 	}
 	
 	private void AddNewMessage(MessageBubbleType msgType, string text, DateTime shootTime)
@@ -319,13 +326,13 @@ public class TextManager
 		    _lastTimeStamp = Services.saveManager.lastTimeStamp;
 		    LoadInitialDialogue();
 		    LoadMoreDialogue();
-		    LoadDialogueWhenAPPisOff();
+		    LoadDialogueForOldPlotWhenAPPisOff();
 	    }
 	    isLoadInitDialogueFinished = true;
     }
-    public void LoadDialogueWhenAPPisOff()
+    private void LoadDialogueForOldPlotWhenAPPisOff()
     {
-	    var lastMsg = FindTheLastMessage();
+	    var lastMsg = Services.saveManager.FindTheLastMessage();
 	    var startTime = lastMsg.shootTime;
 	    while (currentStory.canContinue)
 	    {
@@ -348,6 +355,50 @@ public class TextManager
 		    AddNewMessage(MessageBubbleType.Demon,text,shootTime);
 		    startTime += dotSpan;
 	    }
+
+	    if (currentTextPlot.isBreak()) currentTextPlot.ChangePlotState(PlotManager.plotState.isBreak);
+	    
+	    if (currentStory.currentChoices.Count > 0)
+	    {
+		    for (int i = 0; i < currentStory.currentChoices.Count; i++)
+		    {
+			    Choice choice = currentStory.currentChoices[i];
+			    CreateChoiceView(choice);
+		    }
+	    }
+	    else
+	    {
+		    //end story
+		    Services.eventManager.Fire(new TextFinished());
+	    }
+    }
+
+    public void LoadDialogueForNewPlotWhenAPPisOff(DateTime originalStartTime)
+    {
+	    var startTime = originalStartTime;
+	    while (currentStory.canContinue)
+	    {
+		    var text = currentStory.Continue();
+		    text = text.Trim();
+		    var behaviorType = CheckTypingBehavior(currentStory.currentTags);
+		    var dotSpan = ReturnTypingBehaviorTotalSpan(behaviorType);
+		    var shootTime = startTime + dotSpan;
+		    if (shootTime > DateTime.Now)
+		    {
+			    dotSpan = AddTypingBehaviorAndReturnTotalSpan(behaviorType);
+			    AddNewMessage(MessageBubbleType.Demon,text,shootTime);
+			    Services.textSequenceTaskRunner.AddTask(delegate
+			    {
+				    RefreshView();
+			    },shootTime);
+			    return;
+		    }
+		    
+		    AddNewMessage(MessageBubbleType.Demon,text,shootTime);
+		    startTime += dotSpan;
+	    }
+
+	    if (currentTextPlot.isBreak()) currentTextPlot.ChangePlotState(PlotManager.plotState.isBreak);
 	    
 	    if (currentStory.currentChoices.Count > 0)
 	    {
@@ -403,7 +454,7 @@ public class TextManager
 
         _dialogueLabel = dialogueMessage.Count - 1;
     }
-
+    
     private void LoadMoreDialogue()
     {
         var dialogueMessage = Services.saveManager.dialogueMessages;
@@ -460,21 +511,18 @@ public class TextManager
         _dialogueLabel--;
     }
 
-    private MessageContent FindTheLastMessage()
-    {
-        var pm = Services.saveManager.plotMessages;
-        var dm = Services.saveManager.dialogueMessages;
-
-        if (pm.Count == 0 && dm.Count==0) return new MessageContent();
-        if (pm.Count != 0) return pm[pm.Count - 1];
-        
-        var oldDialogue = dm[dm.Count - 1];
-        if (oldDialogue.Length != 0) return oldDialogue[oldDialogue.Length - 1];
-        return new MessageContent();
-    }
-    
     
     #endregion
-   
-    
+
+    #region ExtraFunc
+
+    public void MuteAllKeyboard()
+    {
+	    foreach (var key in keyboard.Values)
+	    {
+		    key.isChoice = false;
+	    }
+    }
+
+    #endregion
 }
