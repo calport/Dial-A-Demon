@@ -47,6 +47,8 @@ public class Game : MonoBehaviour
         Services.pageState.Update();
         Services.textSequenceTaskRunner.Update();
         Services.textManager.Update();
+        Services.phoneManager.Update();
+        Services.plotManager.Update();
     }
 
     void OnDestroy()
@@ -66,6 +68,7 @@ public class Game : MonoBehaviour
         Services.saveManager.LoadGame();
         Services.plotManager.Load();
         Services.textManager.Load();
+        Services.phoneManager.Load();
         
         //import all the data file
         //Services.referenceInfo = FindObjectOfType<ReferenceInfo>();
@@ -81,6 +84,7 @@ public class Game : MonoBehaviour
         //TODO
         Services.plotManager.Init();
         Services.pageState.Init();
+        Services.phoneManager.Init();
       
     }
     
@@ -94,15 +98,19 @@ public class Game : MonoBehaviour
     void Clear()
     {
         //this place is for save and clear everything
-                Services.pageState.Clear();
-                Services.plotManager.Clear();
-                Services.gameSettings.Clear();
-                
-                Services.plotManager.Save();
-                Services.textManager.Save();
-                Services.saveManager.SaveGame();
-                Services.saveManager.Clear();
-                
+        Services.phoneManager.Clear();
+        Services.pageState.Clear();
+        Services.plotManager.Clear();
+        Services.gameSettings.Clear(); 
+        Services.saveManager.Clear();
+        
+        Services.phoneManager.Save();
+        Services.textManager.Save();
+        Services.plotManager.Save();
+        Services.saveManager.SaveGame();
+        
+        
+
     }
 
     #endregion

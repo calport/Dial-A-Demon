@@ -34,6 +34,8 @@ public class PlotInfo
     public PlotManager.plotState plotState;
     public TimeSpan relaSpan;
     public DateTime startTime;
+    //for phone plot
+    public PlotManager.PhonePlot.PhoneCallState phoneCallState;
 }
 public class SaveManager
 {
@@ -43,6 +45,7 @@ public class SaveManager
         public List<int> dialogueLengthInfo;
         public List<MessageContent> dialogueMessages;
         public bool isLastDialogueFinished;
+        public DateTime plotBaseTime;
         public List<PlotInfo> plotInfo;
         public DateTime lastTimeStamp;
 
@@ -66,6 +69,7 @@ public class SaveManager
         get { return _dialogueMessages; }
     }
 
+    public DateTime plotBaseTime;
     public List<PlotInfo> plotInfo = new List<PlotInfo>();
     public Story currentStory;
     public DateTime lastTimeStamp;
@@ -173,11 +177,13 @@ public class SaveManager
 
     private void LoadPlotSystem(Save save)
     {
+        plotBaseTime = save.plotBaseTime; 
         plotInfo = save.plotInfo;
     }
 
     private void SavePlotSystem(Save save)
     {
+        save.plotBaseTime = plotBaseTime;
         save.plotInfo = plotInfo;
     }
     

@@ -17,9 +17,9 @@ namespace DialADemon.Library
             Init();
         }
 
-        public static void DoCoroutine(IEnumerator routine)
+        public static Coroutine DoCoroutine(IEnumerator routine)
         {
-            _CoroutineManagerMonoBehaviour.StartCoroutine(routine);
+            return _CoroutineManagerMonoBehaviour.StartCoroutine(routine);
         }
 
         public static void DoOneFrameDelay(DelayDelegate a)
@@ -27,9 +27,9 @@ namespace DialADemon.Library
             _CoroutineManagerMonoBehaviour.StartCoroutine(OneFrameDelay(a));
         }
         
-        public static void DoDelayCertainSeconds(DelayDelegate a, float delayTime)
+        public static Coroutine DoDelayCertainSeconds(DelayDelegate a, float delayTime)
         {
-            _CoroutineManagerMonoBehaviour.StartCoroutine(SetTimeDelay(a,delayTime));
+            return _CoroutineManagerMonoBehaviour.StartCoroutine(SetTimeDelay(a,delayTime));
         }
         
         public static void DoYieldCoroutine(IEnumerator routine)

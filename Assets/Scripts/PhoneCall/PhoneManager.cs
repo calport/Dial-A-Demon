@@ -1,55 +1,57 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using DialADemon.Library;
 using DialADemon.Page;
 using UnityEngine;
 using UnityEngine.UI;
 
 public class PhoneManager
 {
-    public bool isWaitingForPickingUp;
-    public bool isHavingPhoneCall
-    {
-        get { return currrentPhonePlot!=null; }
-    }
     public PlotManager.PhonePlot currrentPhonePlot;
     private PageState ps = Services.pageState;
-    private PlotManager pm = Services.plotManager;
-    private Pages currentPage
-    {
-        get { return ps.GetCurrentState(); }
-    }
+    private Pages previousPage;
+    public Coroutine waitForPickingUp;
     
     //these are for checking phone call states and making events
     private bool _isPhonePlayLastFrame;
     private readonly AudioSource _phoneAudioSource = AudioManager.audioSources[DefaultAudioSource.PhoneCall];
-    private DateTime _phoneStartTime;
+    public DateTime phoneStartTime;
 
     // Start is called before the first frame update
     public void Init()
     {
-        Services.eventManager.AddHandler<DemonPhoneCallIn>(delegate{ OnDemonPhoneCallIn();});
-        Services.eventManager.AddHandler<PlayerPhoneCallOut>(delegate{ OnPlayerPhoneCallOut();});
+        Services.eventManager.AddHandler<PhoneStart>(delegate{ OnPhoneStart();});
+        Services.eventManager.AddHandler<PhonePickedUp>(delegate{ OnPhonePickedUp();});
+        Services.eventManager.AddHandler<PhoneHangedUp>(delegate{ OnPhoneFinished();});
+        Services.eventManager.AddHandler<PhoneFinished>(delegate{ OnPhoneFinished();});
     }
 
     // Update is called once per frame
     public void Update()
     {
-        if (isWaitingForPickingUp)
-        {
-            if(currrentPhonePlot.isDemonCall) ps.ChangeGameState(Services.pageState.CSM.stateList.Phone_DemonCall);
-            else ps.ChangeGameState(Services.pageState.CSM.stateList.Phone_PlayerCall);
-        }
-        
         //this part is for phone call event
-        if (_isPhonePlayLastFrame == false && _phoneAudioSource.isPlaying == true)
+/*        if (!_isPhonePlayLastFrame && _phoneAudioSource.isPlaying)
         {
             _phoneStartTime = DateTime.Now;
-            Services.eventManager.Fire(new PhoneStart());
-        }
-        if (_isPhonePlayLastFrame == true && _phoneAudioSource.isPlaying == false)
+            Services.eventManager.Fire(new PhonePickedUp());
+        }*/
+        if (_isPhonePlayLastFrame && !_phoneAudioSource.isPlaying )
         {
-            var timeRatio = (DateTime.Now - _phoneStartTime).TotalSeconds / currrentPhonePlot.callContent.length;
+            if (currrentPhonePlot != null && currrentPhonePlot.plotState != PlotManager.plotState.isBreak &&
+                currrentPhonePlot.plotState != PlotManager.plotState.isFinished)
+            {
+                Services.eventManager.Fire(new PhoneFinished());
+            }
+        }
+        _isPhonePlayLastFrame = _phoneAudioSource.isPlaying;
+    }
+
+    public void Clear()
+    {
+        if (currrentPhonePlot != null)
+        {
+            var timeRatio = (DateTime.Now - phoneStartTime).TotalSeconds / currrentPhonePlot.callContent.length;
             if (timeRatio > 0.95)
             {
                 Services.eventManager.Fire(new PhoneFinished());
@@ -59,28 +61,44 @@ public class PhoneManager
                 Services.eventManager.Fire(new PhoneHangedUp());
             }
         }
-        _isPhonePlayLastFrame = _phoneAudioSource.isPlaying;
+        Services.eventManager.RemoveHandler<PhoneStart>(delegate{ OnPhoneStart();});
+        Services.eventManager.RemoveHandler<PhonePickedUp>(delegate{ OnPhonePickedUp();});
+        Services.eventManager.RemoveHandler<PhoneHangedUp>(delegate{ OnPhoneFinished();});
+        Services.eventManager.RemoveHandler<PhoneFinished>(delegate{ OnPhoneFinished();});
     }
 
-    public void Clear()
+    #region Save
+    public void Load(){}
+
+    public void Save()
     {
-        Services.eventManager.RemoveHandler<DemonPhoneCallIn>(delegate{ OnDemonPhoneCallIn();});
-        Services.eventManager.RemoveHandler<PlayerPhoneCallOut>(delegate{ OnPlayerPhoneCallOut();});
+        
     }
-
+     #endregion
+    
     #region Events
 
-    private void OnPlayerPhoneCallOut()
+    private void OnPhoneStart()
     {
-        if(currrentPhonePlot.isDemonCall) ps.ChangeGameState(Services.pageState.CSM.stateList.Phone_DemonCall);
-        else ps.ChangeGameState(Services.pageState.CSM.stateList.Phone_PlayerCall);
+        previousPage = ps.GetCurrentState();
+        if(currrentPhonePlot.isDemonCall) ps.ChangeGameState(ps.CSM.stateList.Phone_DemonCall);
+        else ps.ChangeGameState(ps.CSM.stateList.Phone_PlayerCall);
     }
-    
-    private void OnDemonPhoneCallIn()
+
+    private void OnPhonePickedUp()
     {
-        if(currrentPhonePlot.isDemonCall) ps.ChangeGameState(Services.pageState.CSM.stateList.Phone_DemonCall);
-        else ps.ChangeGameState(Services.pageState.CSM.stateList.Phone_PlayerCall);
+        Debug.Assert(currrentPhonePlot!= null,"The current phone plot is not assigned properly");
+        ps.ChangeGameState(ps.CSM.stateList.Phone_OnCall);
+        phoneStartTime = DateTime.Now;
+        AudioManager.PlaySound(DefaultAudioSource.PhoneCall,currrentPhonePlot.callContent);
     }
+
+    private void OnPhoneFinished()
+    {
+        ps.ChangeGameState(previousPage);
+        previousPage = null;
+    }
+
 
     #endregion
     
@@ -90,6 +108,7 @@ public class PhoneManager
     public class DialButton : MonoBehaviour
     {
         private PhoneManager pm = Services.phoneManager;
+        private EventManager em = Services.eventManager;
         void OnEnable ()
         {
             var btn = gameObject.GetComponent<Button>();
@@ -111,15 +130,25 @@ public class PhoneManager
 
         private void OnClick()
         {
+            
             //TODO create new dial plot for plot manager
-            pm.isWaitingForPickingUp = true;
+            Debug.Assert(pm.currrentPhonePlot!= null && pm.currrentPhonePlot.GetType().IsSubclassOf(typeof(PlotManager.PlayerPhoneCallPlot)),"the current phone call should be a ");
+                        
+            em.Fire(new PhoneStart());
+            PlotManager.PlayerPhoneCallPlot playerCall = pm.currrentPhonePlot as PlotManager.PlayerPhoneCallPlot;
+            pm.waitForPickingUp = CoroutineManager.DoDelayCertainSeconds(
+                delegate { em.Fire(new PhonePickedUp()); },
+                playerCall.playerWaitTime.Seconds);
         }
+
     }
 
     [RequireComponent(typeof(Button))]
      public class PickButton : MonoBehaviour
      {
          private PhoneManager pm = Services.phoneManager;
+         private PageState ps = Services.pageState;
+         private EventManager em = Services.eventManager;
          void OnEnable ()
          {
              var btn = gameObject.GetComponent<Button>();
@@ -141,8 +170,12 @@ public class PhoneManager
  
          private void OnClick()
          {
-             pm.isWaitingForPickingUp = false;
+             if (pm.currrentPhonePlot != null)
+             {
+                 em.Fire(new PhonePickedUp());
+             }
          }
+         
      }
      
      [RequireComponent(typeof(Button))]
@@ -170,8 +203,16 @@ public class PhoneManager
 
          private void OnClick()
          {
-             pm.isWaitingForPickingUp = false;
-             Services.eventManager.Fire(new PhoneHangedUp());
+             StopCoroutine(pm.waitForPickingUp);
+             var timeRatio = (DateTime.Now - pm.phoneStartTime).TotalSeconds / pm.currrentPhonePlot.callContent.length;
+             if (timeRatio > 0.95)
+             {
+                 Services.eventManager.Fire(new PhoneFinished());
+             }
+             else
+             {
+                 Services.eventManager.Fire(new PhoneHangedUp());
+             }
          }
      }
     #endregion
