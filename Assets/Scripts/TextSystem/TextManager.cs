@@ -119,8 +119,14 @@ public class TextManager
 			Debug.Log(text);
 			// This removes any white space from the text.
 			text = text.Trim();
+			//check all the tags and use them to rich the text and texting behaviors
+			if (isSentenceFileType(currentStory.currentTags))
+			{
+				
+			}
 			var behaviorType = CheckTypingBehavior(currentStory.currentTags);
 			
+			//add text
 			var dotSpan = AddTypingBehaviorAndReturnTotalSpan(behaviorType);
 			AddNewMessage(MessageBubbleType.Demon,text,DateTime.Now + dotSpan);
 			Services.textSequenceTaskRunner.AddTask(delegate
@@ -264,6 +270,16 @@ public class TextManager
 				return TypingBehavior.Delay;
 		}
 		return TypingBehavior.Default;
+	}
+
+	private bool isSentenceFileType(List<string> tagList)
+	{
+		foreach (var tag in tagList)
+		{
+			if (string.Compare(tag, "File") == 0 || string.Compare(tag, "file") == 0) return true;
+		}
+
+		return false;
 	}
 
 	private TimeSpan AddTypingBehaviorAndReturnTotalSpan(TypingBehavior behavior)

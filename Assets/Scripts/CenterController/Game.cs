@@ -73,7 +73,6 @@ public class Game : MonoBehaviour
         //import all the data file
         //Services.referenceInfo = FindObjectOfType<ReferenceInfo>();
         Services.easyTouch = FindObjectOfType<EasyTouch>();
-        Services.gameSettings.Init();
         Services.dataContract = ScriptableObject.CreateInstance<Data_Contract>();
         Services.dataContract.ResetContract();
         //import the system so it starts working
@@ -101,7 +100,6 @@ public class Game : MonoBehaviour
         Services.phoneManager.Clear();
         Services.pageState.Clear();
         Services.plotManager.Clear();
-        Services.gameSettings.Clear(); 
         Services.saveManager.Clear();
         
         Services.phoneManager.Save();

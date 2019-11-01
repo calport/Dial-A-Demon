@@ -11,19 +11,6 @@ public static class Services
     #region Game play reference
 
     public static Game game;
-    private static GameSettings _gameSettings;
-    public static GameSettings gameSettings
-    {
-        get
-        {
-            if (_gameSettings != null) return _gameSettings;
-            else
-            {
-                _gameSettings = new GameSettings();
-                return _gameSettings;
-            }
-        }
-    }
     
     private static PlotManager _plotManager;
     public static PlotManager plotManager

@@ -6,16 +6,7 @@ using DialADemon.Page;
 using UnityEngine;
 using UnityEngine.Experimental.PlayerLoop;
 
-internal class AudioManagerMonoBehaviour : MonoBehaviour
-{
-    public delegate void AudioDelegate();
-    public AudioDelegate updateDele;
-
-    private void Update()
-    {
-        updateDele.Invoke();
-    }
-}
+internal class AudioManagerMonoBehaviour : MonoBehaviour{}
 
 public enum DefaultAudioSource
 {
@@ -26,7 +17,7 @@ public enum DefaultAudioSource
 public class AudioManager
 {
     private static AudioManagerMonoBehaviour _AudioManagerMonoBehaviour;
-    public static Dictionary<DefaultAudioSource, AudioSource> audioSources;
+    public static Dictionary<DefaultAudioSource, AudioSource> audioSources = new Dictionary<DefaultAudioSource, AudioSource>();
     static AudioManager()
     {
         Init();

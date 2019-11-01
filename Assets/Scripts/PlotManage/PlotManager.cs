@@ -532,7 +532,6 @@ public class PlotManager
             var fileAddress = new PlotFileAddress().fileAddress;
             fileAddress.TryGetValue(this.GetType(), out textAssetLocation);
             var ta = SerializeManager.ReadJsonString(Application.dataPath + "/Resources/InkText/" + textAssetLocation);
-            Debug.Log(ta);
             //var ta = Resources.Load<TextAsset>(textAssetLocation);
             story = new Story(ta);
         }
@@ -545,7 +544,6 @@ public class PlotManager
             var ta = SerializeManager.ReadJsonString(Application.dataPath + "/Resources/InkText/" + textAssetLocation);
             //var ta = Resources.Load<TextAsset>(textAssetLocation);
             story = new Story(ta);
-            Debug.Log(ta);
         }
     }
     
@@ -558,7 +556,7 @@ public class PlotManager
             relaSpan = TimeSpan.FromMinutes(0.5f);
             _requiredPrePlots = new List<Type>(){typeof(RootPlot)};
             _childPlots = new List<Type>{typeof(Day1_Text2)};
-            InitStory();
+            InitStory(typeof(Day1_Text2));
         }
 
         public override bool CheckLoad()
