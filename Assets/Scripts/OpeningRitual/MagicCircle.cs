@@ -78,7 +78,8 @@ public class MagicCircle : MonoBehaviour
         if (startFade)
         {
             GameObject openingRitual;
-            Services.referenceInfo.BigPage.TryGetValue("OpeningRitual",out openingRitual);
+            var openRitualPage = Services.pageState.GetGameState("Ritual_Open");
+            openingRitual = openRitualPage.relatedObj[0];
             var pic = openingRitual.transform.Find("Background").Find("Pic").gameObject;
             Color c = pic.GetComponent<SpriteRenderer>().color;
             c.a = Mathf.Lerp(c.a,0,0.8f*Time.deltaTime);
@@ -89,7 +90,7 @@ public class MagicCircle : MonoBehaviour
             gameObject.GetComponent<SpriteRenderer>().color = c;
             if (c.a <0.02f)
             {
-                Services.gameStates.ChangeGameState<GameStates.MenuPage>(new GameStates.MenuPage());
+                Services.pageState.ChangeGameState(Services.pageState.CSM.stateList.Menu_Main);
             }
         }
        

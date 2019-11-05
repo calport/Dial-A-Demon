@@ -7,7 +7,7 @@ using UnityEngine.UI;
 
 public class TextInputManager : MonoSingleton<TextInputManager>
 {
-    public Dictionary<string, KeyboardInput> keyboardArray = new Dictionary<string, KeyboardInput>();
+    public Dictionary<string, Keyboard> keyboardArray = new Dictionary<string, Keyboard>();
     public Dictionary<string, int> linesChooseDic = new Dictionary<string, int>();
     public Text textBox;
     public Button sendButton;
@@ -101,7 +101,7 @@ public class TextInputManager : MonoSingleton<TextInputManager>
                         {
                             string _firstLetter = _loadFileString[i][5];
                             _firstLetter = _firstLetter.Substring(0, 1).ToUpper();
-                            KeyboardInput key = keyboardArray[_firstLetter];
+                            Keyboard key = keyboardArray[_firstLetter];
                             key.content = _loadFileString[i][5];
                             linesChooseDic.Add(_firstLetter, Convert.ToInt32(_loadFileString[i][0]));
                         }
@@ -178,8 +178,8 @@ public class TextInputManager : MonoSingleton<TextInputManager>
     }
     void ResetInfo()
     {
-        Dictionary<string, KeyboardInput>.ValueCollection valueCol = keyboardArray.Values;
-                foreach (KeyboardInput key in valueCol)
+        Dictionary<string, Keyboard>.ValueCollection valueCol = keyboardArray.Values;
+                foreach (Keyboard key in valueCol)
                 {
                     key.content = String.Empty;
                 }

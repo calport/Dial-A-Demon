@@ -9,5 +9,19 @@ public class SceneChanged : GameEvent
     public SceneChanged(string changeToScene)
     {
         ChangeToScene = changeToScene;
-    }     
     }
+}
+
+
+public class TextFinished : GameEvent{}
+
+public class PhoneStart : GameEvent{}
+
+public class PhonePickedUp : GameEvent{}
+
+public class PhoneHangedUp : GameEvent{}
+
+public class PhoneFinished : GameEvent{}
+
+public class GameCleanStarted : GameEvent{}
+

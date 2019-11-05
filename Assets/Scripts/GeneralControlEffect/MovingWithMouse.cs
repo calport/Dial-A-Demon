@@ -9,14 +9,13 @@ public class MovingWithMouse : MonoBehaviour, IPointerEnterHandler, IPointerExit
     private Touch _touch;
     private bool _pointerIn;
     
-    void ChangePos(Touch touch)
+    void ChangePosWithTouch(Touch touch)
     {
-        
         Vector3 posChange = touch.position;
+        Debug.Log(posChange);
         var posLength = posChange.magnitude;
-        var plantPos = new Vector3(posChange.x, posChange.y, 0)    ;
+        var plantPos = new Vector3(posChange.x, posChange.y, -1)    ;
         var plantLength = plantPos.magnitude;
-        transform.position = plantPos * 0.7f;
     }
     
     public void OnPointerEnter(PointerEventData pointerEventData)
@@ -28,23 +27,12 @@ public class MovingWithMouse : MonoBehaviour, IPointerEnterHandler, IPointerExit
     {
         _pointerIn = false;
     }
-
-    private void Update()
-    {
-        if (Input.GetMouseButtonDown(0))
-        {
-            //Debug.Log("true");
-            //var curScreenSpace = new Vector3(Input.mousePosition.x, Input.mousePosition.y, 0f);
-            //transform.position = curScreenSpace;
-        }
-    }
-
     public void OnDrag(PointerEventData eventData)
-    {
-        if(Input.touchCount>0) ChangePos(Input.GetTouch(0));
+    { 
+        if(Input.touchCount>0) ChangePosWithTouch(Input.GetTouch(0));
         
-        Vector2 mouseDrag = eventData.position;
-        transform.position = mouseDrag;
+        Vector2 mouseDrag = Camera.main.ScreenToWorldPoint(eventData.position);
+        transform.position = new Vector3(mouseDrag.x, mouseDrag.y,-1);
         if (Input.GetMouseButtonDown(0))
         {
             Debug.Log("true");
