@@ -504,6 +504,10 @@ public class PlotManager
         public override void Save()
         {
             if(tm.currentTextPlot == this) Services.saveManager.currentStory = story;
+            if (_plotState == plotState.isOnCalendar)
+            {
+                
+            }
         }
         
         public override bool isBreak()

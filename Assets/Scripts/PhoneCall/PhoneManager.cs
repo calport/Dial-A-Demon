@@ -66,7 +66,7 @@ public class PhoneManager
         Services.eventManager.RemoveHandler<PhoneHangedUp>(delegate{ OnPhoneFinished();});
         Services.eventManager.RemoveHandler<PhoneFinished>(delegate{ OnPhoneFinished();});
     }
-
+    
     #region Save
     public void Load(){}
 

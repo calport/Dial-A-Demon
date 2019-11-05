@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using DialADemon.Library;
@@ -10,14 +11,12 @@ using UnityEngine.SceneManagement;
 
 public class Game : MonoBehaviour
 {
-    private bool clearDestroy = true;
     #region Life circle
 
     void Awake()
     {
         if (Services.game == null) Init();
         //when scene switch, reinit some of the game system to let them find the items that only shows in the present scene
-        else if (Services.game != this) { clearDestroy = false; Destroy(gameObject);}
         
         DontDestroyOnLoad(gameObject);
     }
@@ -25,7 +24,6 @@ public class Game : MonoBehaviour
     private void Start()
     {
         Services.pageState.Start();
-        SceneManager.sceneLoaded += OnSceneLoaded;
         //Services.eventManager.AddHandler<SceneChanged>(OnSceneChange);
 
         Input.simulateMouseWithTouches = true;
@@ -51,10 +49,18 @@ public class Game : MonoBehaviour
         Services.plotManager.Update();
     }
 
-    void OnDestroy()
-    {   
-        if(clearDestroy) Clear();
-        SceneManager.sceneLoaded -= OnSceneLoaded;
+    private void OnApplicationPause(bool paused)
+    {
+        if (paused)
+        {
+            Save();
+        }
+    }
+
+    private void OnApplicationQuit()
+    {
+        Clear();
+        Save();
     }
 
     #endregion
@@ -86,13 +92,6 @@ public class Game : MonoBehaviour
         Services.phoneManager.Init();
       
     }
-    
-    public void ReInit()
-    {
-        
-        //update the reference info in all the system managers
-        //Services.gameStates.ReInitWhenSceneLoad();
-    }
 
     void Clear()
     {
@@ -101,24 +100,21 @@ public class Game : MonoBehaviour
         Services.pageState.Clear();
         Services.plotManager.Clear();
         Services.saveManager.Clear();
-        
+    }
+
+    void Save()
+    {
         Services.phoneManager.Save();
         Services.textManager.Save();
         Services.plotManager.Save();
         Services.saveManager.SaveGame();
-        
-        
-
     }
-
-    #endregion
     
-    #region Event
-    
-    void OnSceneLoaded(Scene scene, LoadSceneMode mode)
+    public void ReLoad()
     {
-        ReInit();
+        
+        //update the reference info in all the system managers
+        //Services.gameStates.ReInitWhenSceneLoad();
     }
-    
     #endregion
 }
