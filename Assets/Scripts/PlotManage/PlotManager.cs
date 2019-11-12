@@ -551,16 +551,17 @@ public class PlotManager
         }
     }
     
-    public class Day1_Text1 : TextPlot
+    public class Day1_Text1 : TextPlot //contract text
+    
     {
         public Day1_Text1()
         {
             //this part is for initialize the original properties that related to the plot
             _referPlot = typeof(RootPlot);
-            relaSpan = TimeSpan.FromMinutes(0.5f);
+            relaSpan = TimeSpan.FromMinutes(0.1f);
             _requiredPrePlots = new List<Type>(){typeof(RootPlot)};
-            _childPlots = new List<Type>{typeof(Day1_Text2)};
-            InitStory(typeof(Day1_Text2));
+            _childPlots = new List<Type>{typeof(Day2_Text1)};
+            InitStory();
         }
 
         public override bool CheckLoad()
@@ -569,16 +570,16 @@ public class PlotManager
         }
     }
     
-    public class Day1_Text2 : TextPlot
+    public class Day2_Text1 : TextPlot //day 2 good morning
     {
-        public Day1_Text2()
+        public Day2_Text1()
         {
             //this part is for initialize the original properties that related to the plot
             _referPlot = typeof(RootPlot);
             relaSpan = TimeSpan.FromMinutes(0.5f);
             _requiredPrePlots = new List<Type>(){typeof(Day1_Text1)};
-            _childPlots = new List<Type>{typeof(Day1_Text3)};
-            InitStory(typeof(Day1_Text1));
+            _childPlots = new List<Type>{typeof(Day2_Text2)};
+            InitStory();
         }
 
         public override bool CheckLoad()
@@ -586,25 +587,64 @@ public class PlotManager
             return true;
         }
         
+    }
+
+    public class Day2_Text2 : TextPlot //how are you
+    {
+        public Day2_Text2()
+        {
+            //initialize properties
+            _referPlot = typeof(RootPlot);
+            relaSpan = TimeSpan.FromMinutes(0.5f);
+            _requiredPrePlots = new List<Type>() {typeof(Day2_Text1)};
+            _childPlots = new List<Type>{typeof(Day3_Text3)};
+            InitStory();
+
+        }
+    }
+
+    public class Day3_Text3 : TextPlot //Never have I ever
+    {
+        public Day3_Text3()
+        {
+            //initialize properties
+            _referPlot = typeof(RootPlot);
+            relaSpan = TimeSpan.FromMinutes(0.5f);
+            _requiredPrePlots = new List<Type>() {typeof(Day2_Text2)};
+            _childPlots = new List<Type>{typeof(Day4_Text1)};
+            InitStory();
+
+        }
     }
     
-    public class Day1_Text3 : TextPlot
+    public class Day4_Text1 : TextPlot //Day 4 Morning
     {
-        public Day1_Text3()
+        public Day4_Text1()
         {
-            //this part is for initialize the original properties that related to the plot
-            _referPlot = typeof(Day1_Text2);
-            relaSpan = TimeSpan.FromMinutes(0f);
-            _requiredPrePlots = new List<Type>(){typeof(Day1_Text2)};
-            InitStory(typeof(Day1_Text1));
-        }
+            //initialize properties
+            _referPlot = typeof(RootPlot);
+            relaSpan = TimeSpan.FromMinutes(0.5f);
+            _requiredPrePlots = new List<Type>() {typeof(Day3_Text3)};
+            _childPlots = new List<Type>{typeof(Day6_Text2)};
+            InitStory();
 
-        public override bool CheckLoad()
-        {
-            return true;
         }
-        
     }
+    
+    public class Day6_Text2 : TextPlot //Day 6 Gifting
+    {
+        public Day6_Text2()
+        {
+            //initialize properties
+            _referPlot = typeof(RootPlot);
+            relaSpan = TimeSpan.FromMinutes(0.5f);
+            _requiredPrePlots = new List<Type>() {typeof(Day4_Text1)};
+            //_childPlots = new List<Type>{typeof(Day4_Text1)};
+            InitStory();
+
+        }
+    }
+
     
     public class PhonePlot : Plot
     {
