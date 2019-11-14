@@ -178,22 +178,30 @@ public class TextManager
 	}
 	
 	// called by the sent button to make a selection
-	public void CreatePlayerBubble(string text)
+	public void CreatePlayerBubble(string text = null)
 	{
-		// show text
-		AddNewMessage(MessageBubbleType.Player,text,DateTime.Now);
-		Services.textSequenceTaskRunner.AddTask(delegate
-			{
-				RefreshView();
-			},DateTime.Now);
-		//send the text to text manager as a record
-		Services.textManager.FinishedLog.Add(textBox.text);
-		Services.textManager.Speaker.Add(1);
+		Debug.Assert(!(!currentStory.canContinue && text == null),"A empty player bubble has been created");
 		
+		if (currentStory.canContinue && text == null)
+		{
+			// Continue gets the next line of the story
+			text = currentStory.Continue();
+			// This removes any white space from the text.
+			text = text.Trim();
+		}
+
+		// show text
+		AddNewMessage(MessageBubbleType.Player, text, DateTime.Now);
+		Services.textSequenceTaskRunner.AddTask(delegate { RefreshView(); }, DateTime.Now);
+		//send the text to text manager as a record
+		FinishedLog.Add(textBox.text);
+		Speaker.Add(1);
+
 		// clear the text box
 		textBox.text = String.Empty;
 		//reset all the keyboard to null
 		MuteAllKeyboard();
+
 	}
 	
 	private void AddNewMessage(MessageBubbleType msgType, string text, DateTime shootTime)
@@ -348,6 +356,9 @@ public class TextManager
     }
     private void LoadDialogueForOldPlotWhenAPPisOff()
     {
+	    //protect when currentStory doesnt exist
+	    if(currentTextPlot== null) return;
+	    
 	    var lastMsg = Services.saveManager.FindTheLastMessage();
 	    var startTime = lastMsg.shootTime;
 	    while (currentStory.canContinue)
@@ -391,6 +402,9 @@ public class TextManager
 
     public void LoadDialogueForNewPlotWhenAPPisOff(DateTime originalStartTime)
     {
+	    //protect when currentStory doesnt exist
+	    if(currentTextPlot== null) return;
+	    
 	    var startTime = originalStartTime;
 	    while (currentStory.canContinue)
 	    {

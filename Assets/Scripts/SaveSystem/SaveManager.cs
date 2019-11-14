@@ -171,7 +171,9 @@ public class SaveManager
             save.dialogueMessages = pair.Value;
         }
 
-        SerializeManager.SaveJson(_inkjsonPath, currentStory.state.ToJson());
+        if(currentStory!= null) SerializeManager.SaveJson(_inkjsonPath, currentStory.state.ToJson());
+        else SerializeManager.SaveJson(_inkjsonPath, "");
+        
         save.lastTimeStamp = lastTimeStamp;
     }
 
