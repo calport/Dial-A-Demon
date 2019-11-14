@@ -1,6 +1,6 @@
 //How are you feeling  
 VAR PlayerFeeling = ""
-Hey, how are you feeling? 
+- Hey, how are you feeling? 
 *   i'm fine
     you sure? 
     **  maybe i'm a bit too stressed
@@ -28,6 +28,7 @@ Hey, how are you feeling?
                         ******  can you feel this? -> SetBoundaries
 *   great! -> HadAFeeling.Positive
 
+-> END
 
 === SetBoundaries ===
 -> DONE
@@ -36,31 +37,33 @@ Hey, how are you feeling?
 = Positive 
 -> DONE
 
-= Negative
-how exciting! 
-*   exciting?
-    yes! 
-    I mean no
-    you being {PlayerFeeling} is not the exciting part
-    but that means i'm getting attuned to ever inch of you. 
-    and that's exciting isn't it?! 
-    **  is there a limit? -> LastFeeling.Limit
+    = Negative
+    -   how exciting! 
+    *   exciting?
+        yes! 
+        I mean no
+        you being {PlayerFeeling} is not the exciting part
+        but that means i'm getting attuned to ever inch of you. 
+        and that's exciting isn't it?! 
+        **  is there a limit? -> LastFeeling.Limit
+    -> DONE
 
 === LastFeeling ===
-=Exciting
-yes! 
-I mean no
-you being {PlayerFeeling} is not the exciting part
-but that means i'm getting attuned to ever inch of you. 
-and that's exciting isn't it?! 
-*[is there a limit?] -> Limit
-
-= Limit
-that's a good point
-maybe we should set some boundaries
-I'm sure it wouldn't be good for me to be commenting on every change you body goes through. 
-*   Rule 1! Don't make it sound like a weird puberty thing
-    okay okay
-    being serious, I think it's a good idea to talk about this, I would hate to say something that makes you feel uncomfortable. 
-    hmmm give me a few minutes.   
+    =Exciting
+    -   yes! 
+    -   I mean no
+    -   you being {PlayerFeeling} is not the exciting part
+    -   but that means i'm getting attuned to ever inch of you. 
+    -   and that's exciting isn't it?! 
+    *   is there a limit? -> Limit
+    -> DONE
+    
+    = Limit
+    -   that's a good point
+    -   maybe we should set some boundaries
+    -   I'm sure it wouldn't be good for me to be commenting on every change you body goes through. 
+    *   Rule 1! Don't make it sound like a weird puberty thing
+        okay okay
+        being serious, I think it's a good idea to talk about this, I would hate to say something that makes you feel uncomfortable. 
+        hmmm give me a few minutes.   
     -> DONE
