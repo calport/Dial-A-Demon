@@ -420,156 +420,157 @@ public class PlotManager
     }
     
     public class RootPlot : Plot
-    {
-        public RootPlot()
         {
-            _referPlot = null;
-            relaSpan = TimeSpan.Zero;
-            _childPlots = new List<Type>{typeof(Day1_Text1)};
-        }
-
-        public override void Start()
-        {
-            _plotState = plotState.isFinished;
-        }
-
-        public override void Clear()
-        {
-            CheckChild();
-        }
-    }
+            public RootPlot()
+            {
+                _referPlot = null;
+                relaSpan = TimeSpan.Zero;
+                _childPlots = new List<Type>{typeof(Day1_Text1)};
+            }
     
-    public class TextPlot : Plot
-    {
-        public Story story;
-        protected TextManager tm = Services.textManager;
+            public override void Start()
+            {
+                _plotState = plotState.isFinished;
+            }
+    
+            public override void Clear()
+            {
+                CheckChild();
+            }
+        }
         
-        public override void Reload()
+    public class TextPlot : Plot
         {
-            if (_plotState == plotState.isPlaying || _plotState == plotState.isReadyToPlay)
+            public Story story;
+            protected TextManager tm = Services.textManager;
+            
+            public override void Reload()
+            {
+                if (_plotState == plotState.isPlaying || _plotState == plotState.isReadyToPlay)
+                {
+                    tm.currentTextPlot = this;
+                    if(tm.inkJson!= "") tm.currentStory.state.LoadJson(tm.inkJson);
+                    Services.eventManager.AddHandler<TextFinished>(delegate { OnTextFinished(); });
+                }
+            }
+    
+            public override void Init()
+            {
+                // make sure no two text plots run in the same time
+                if (tm.currentTextPlot != null && this != tm.currentTextPlot)
+                {
+                    tm.currentTextPlot.ChangePlotState(plotState.isBreak);
+                    tm.MuteAllKeyboard();
+                }
+            }
+    
+            public override void Start()
             {
                 tm.currentTextPlot = this;
-                tm.currentStory.state.LoadJson(tm.inkJson);
-                Services.eventManager.AddHandler<TextFinished>(delegate { OnTextFinished(); });
-            }
-        }
-
-        public override void Init()
-        {
-            // make sure no two text plots run in the same time
-            if (tm.currentTextPlot != null && this != tm.currentTextPlot)
-            {
-                tm.currentTextPlot.ChangePlotState(plotState.isBreak);
-                tm.MuteAllKeyboard();
-            }
-        }
-
-        public override void Start()
-        {
-            tm.currentTextPlot = this;
-            tm.StartNewStory(story);
-            Services.eventManager.AddHandler<TextFinished>(delegate{OnTextFinished();});
-            
-            DateTime startTime;
-            parent.Calendar.TryGetValue(this, out startTime);
-            tm.LoadDialogueForNewPlotWhenAPPisOff(startTime);
-        }
-        
-        public override void Clear()
-        {
-            CheckChild();
-            Services.eventManager.RemoveHandler<TextFinished>(delegate{OnTextFinished();});
-        }
-        
-        public void OnTextFinished()
-        {
-            _plotState = plotState.isFinished;
-        }
-
-        public override bool CheckLoad()
-        {
-            foreach (var plotType in _requiredPrePlots)
-            {
-                if (plotType.IsSubclassOf(typeof(TextPlot)))
-                {
-                    var plot = parent.GetOrCreatePlots(plotType);
-                    if (plot.plotState == plotState.isPlaying || plot.plotState == plotState.isReadyToPlay)
-                        return false;
-                }
-            }
-
-            return true;
-        }
-
-        public override void Save()
-        {
-            if(tm.currentTextPlot == this) Services.saveManager.currentStory = story;
-            if (_plotState == plotState.isOnCalendar)
-            {
+                Services.eventManager.AddHandler<TextFinished>(delegate{OnTextFinished();});
                 
+                DateTime startTime;
+                parent.Calendar.TryGetValue(this, out startTime);
+                tm.LoadDialogueForNewPlotWhenAPPisOff(startTime);
+                
+                //tm.StartNewStory(story);
             }
-        }
-        
-        public override bool isBreak()
-        {
-            if (!tm.isLoadInitDialogueFinished)
+            
+            public override void Clear()
             {
-                var msg = Services.saveManager.FindTheLastMessage();
-                if ((DateTime.Now - msg.shootTime) > TimeSpan.FromHours(0.2f))
+                CheckChild();
+                tm.currentTextPlot = null;
+                Services.eventManager.RemoveHandler<TextFinished>(delegate{OnTextFinished();});
+            }
+            
+            public void OnTextFinished()
+            {
+                _plotState = plotState.isFinished;
+            }
+    
+            public override bool CheckLoad()
+            {
+                foreach (var plotType in _requiredPrePlots)
                 {
-                    return true;
+                    if (plotType.IsSubclassOf(typeof(TextPlot)))
+                    {
+                        var plot = parent.GetOrCreatePlots(plotType);
+                        if (plot.plotState == plotState.isPlaying || plot.plotState == plotState.isReadyToPlay)
+                            return false;
+                    }
+                }
+    
+                return true;
+            }
+    
+            public override void Save()
+            {
+                if(tm.currentTextPlot == this) Services.saveManager.currentStory = story;
+                if (_plotState == plotState.isOnCalendar)
+                {
+                    
                 }
             }
-            return false;
+            
+            public override bool isBreak()
+            {
+                if (!tm.isLoadInitDialogueFinished)
+                {
+                    var msg = Services.saveManager.FindTheLastMessage();
+                    if ((DateTime.Now - msg.shootTime) > TimeSpan.FromHours(0.2f))
+                    {
+                        return true;
+                    }
+                }
+                return false;
+            }
+    
+            public override void Break()
+            {
+                if(tm.currentTextPlot == this) tm.MuteAllKeyboard();
+                    CheckChild();
+                Services.eventManager.RemoveHandler<TextFinished>(delegate{OnTextFinished();});
+            }
+    
+            protected void InitStory()
+            {
+                string textAssetLocation;
+                var fileAddress = new PlotFileAddress().fileAddress;
+                fileAddress.TryGetValue(this.GetType(), out textAssetLocation);
+                var ta = SerializeManager.ReadJsonString(Application.dataPath + "/Resources/InkText/" + textAssetLocation);
+                //var ta = Resources.Load<TextAsset>(textAssetLocation);
+                story = new Story(ta);
+            }
+            
+            protected void InitStory(Type storyDictType)
+            {
+                string textAssetLocation;
+                var fileAddress = new PlotFileAddress().fileAddress;
+                fileAddress.TryGetValue(storyDictType, out textAssetLocation);
+                var ta = SerializeManager.ReadJsonString(Application.dataPath + "/Resources/InkText/" + textAssetLocation);
+                //var ta = Resources.Load<TextAsset>(textAssetLocation);
+                story = new Story(ta);
+            }
         }
-
-        public override void Break()
-        {
-            if(tm.currentTextPlot == this) tm.MuteAllKeyboard();
-                CheckChild();
-            Services.eventManager.RemoveHandler<TextFinished>(delegate{OnTextFinished();});
-        }
-
-        protected void InitStory()
-        {
-            string textAssetLocation;
-            var fileAddress = new PlotFileAddress().fileAddress;
-            fileAddress.TryGetValue(this.GetType(), out textAssetLocation);
-            var ta = SerializeManager.ReadJsonString(Application.dataPath + "/Resources/InkText/" + textAssetLocation);
-            //var ta = Resources.Load<TextAsset>(textAssetLocation);
-            story = new Story(ta);
-        }
-        
-        protected void InitStory(Type storyDictType)
-        {
-            string textAssetLocation;
-            var fileAddress = new PlotFileAddress().fileAddress;
-            fileAddress.TryGetValue(storyDictType, out textAssetLocation);
-            var ta = SerializeManager.ReadJsonString(Application.dataPath + "/Resources/InkText/" + textAssetLocation);
-            //var ta = Resources.Load<TextAsset>(textAssetLocation);
-            story = new Story(ta);
-        }
-    }
     
     public class Day1_Text1 : TextPlot //contract text
-    
     {
-        public Day1_Text1()
-        {
-            //this part is for initialize the original properties that related to the plot
-            _referPlot = typeof(RootPlot);
-            relaSpan = TimeSpan.FromMinutes(0.1f);
-            _requiredPrePlots = new List<Type>(){typeof(RootPlot)};
-            _childPlots = new List<Type>{typeof(Day2_Text1)};
-            InitStory();
-        }
-
-        public override bool CheckLoad()
-        {
-            return true;
-        }
-    }
+            public Day1_Text1()
+            {
+                //this part is for initialize the original properties that related to the plot
+                _referPlot = typeof(RootPlot);
+                relaSpan = TimeSpan.FromMinutes(0.1f);
+                _requiredPrePlots = new List<Type>(){typeof(RootPlot)};
+                _childPlots = new List<Type>{typeof(Day2_Text1)};
+                InitStory();
+            }
     
+            public override bool CheckLoad()
+            {
+                return true;
+            }
+        }
+        
     public class Day2_Text1 : TextPlot //day 2 good morning
     {
         public Day2_Text1()
@@ -645,7 +646,6 @@ public class PlotManager
         }
     }
 
-    
     public class PhonePlot : Plot
     {
         public enum PhoneCallState
@@ -777,4 +777,5 @@ public class PlotManager
             return false;
         }
     }
+    
 }
