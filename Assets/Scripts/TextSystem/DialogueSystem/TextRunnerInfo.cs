@@ -12,9 +12,9 @@ public class TextRunnerInfo : MonoSingleton<TextRunnerInfo>
 	public Dictionary<string, Keyboard> keyboard = new Dictionary<string, Keyboard>();
 	//the text box
 	[SerializeField]
- 	private Text _textBox;
+ 	private TextMeshProUGUI _textBox;
     [HideInInspector]
-    public Text textBox
+    public TextMeshProUGUI textBox
     {
 	    get { return _textBox; }
     }

@@ -41,6 +41,8 @@ public class Keyboard : MonoBehaviour
         tm = Services.textManager;
         _pointer = tm.pointerTrigger;
         _sendButton = tm.sendButton;
+        var SoundObject = GameObject.Find("NeonSound");
+        var neonLight = SoundObject.GetComponent<AudioSource>();
     }
 
     // Update is called once per frame
@@ -86,11 +88,13 @@ public class Keyboard : MonoBehaviour
                 _sendButton.onClick.AddListener(SendChoice);
                 Handheld.Vibrate();
                 Handheld.Vibrate();
+               // neonLight.Play(0);
+                optionSound.Play();
             }
             _pointerIn = true;
             
             //testing sound
-            optionSound.Play();
+            
         }
     }
 

@@ -41,7 +41,7 @@ public class TextManager
 	    get { return TextRunnerInfo.Instance.keyboard; }
     }
     public GameObject pointerTrigger;
-    public Text textBox
+    public TextMeshProUGUI textBox
     {
 	    get { return TextRunnerInfo.Instance.textBox; }
     }
