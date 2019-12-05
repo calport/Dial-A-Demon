@@ -6,6 +6,7 @@ using UnityEngine.UI;
 using UnityEngine.EventSystems;
 using Yarn.Unity.Example;
 
+[RequireComponent(typeof(AudioSource))]
 public class Keyboard : MonoBehaviour
 {
     //the number of the options of this keyboard
@@ -41,8 +42,6 @@ public class Keyboard : MonoBehaviour
         tm = Services.textManager;
         _pointer = tm.pointerTrigger;
         _sendButton = tm.sendButton;
-        var SoundObject = GameObject.Find("NeonSound");
-        var neonLight = SoundObject.GetComponent<AudioSource>();
     }
 
     // Update is called once per frame

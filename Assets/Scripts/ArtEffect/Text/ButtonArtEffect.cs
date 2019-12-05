@@ -1,10 +1,11 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using DG.Tweening;
 using UnityEngine;
 
 [RequireComponent(typeof(PageChangeButton))]
-public class CrossTwist : MonoBehaviour
+public class ButtonArtEffect : MonoBehaviour
 {
     // Start is called before the first frame update
     void Start()
@@ -14,6 +15,8 @@ public class CrossTwist : MonoBehaviour
 
     private void Twist()
     {
-        transform.DORotate(new Vector3(0f, 0f, 180f), 1f);
+        var pcb = gameObject.GetComponent<PageChangeButton>();
+        transform.DORotate(new Vector3(0f, 0f, 180f), 1f).onComplete = pcb.OnClick;
+        Debug.Log("dkjflekjoiwea");
     }
 }
