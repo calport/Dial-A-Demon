@@ -6,7 +6,7 @@
     **  i didn't know demons could get tired?
 
 -   I think there's a lot you don't know about me. 
-*   Oh really? Maybe you should show me
+*   Ohhh so mysterious... maybe you should show me then
 *   tall, dark and mysterious
 *   didn't we just meet
 
@@ -14,10 +14,10 @@
 -   we should probably get to know each other. 
 *   I'd like that.
     Well, what would you like to know? 
-    **  Demons have need? Like you need to sleep and eat?
+    **  Demons have needs? Like you need to sleep and eat?
         I don’t have all the same needs
-        but if we’re in a contract we get empathetic needs, so that we can align our schedules.
-        *** So, right now you're sleepy?
+        but now that I'm in this contract my body takes on the same needs as my mortal- I mean you. 
+        *** So, right now you're sleepy too?
             I can feel every time you yawn... 
             // create a pause
             Feels like we could both go for some coffee. 
@@ -25,7 +25,11 @@
                     They don’t call it ‘the devil’s cup’ for no reason. 
                     Anyway, that’s probably enough questions for the morning
                   ->DONE
-*   you have any questions? ->DONE
+*   any questions? 
+    many 
+    what's being a mortal like? 
+    
+->DONE
 
 =TallDarkMysterious
 ->DONE
