@@ -10,6 +10,10 @@ public class PageChangeButton : MonoBehaviour
 {
     [SerializeField] string pageName;
     [SerializeField] private bool transferToPrevious = false;
+    
+    [HideInInspector] public delegate void ArtEffect();
+    [HideInInspector]public ArtEffect artEffect;
+    
     // Use this for initialization
     void OnEnable ()
     {
@@ -32,6 +36,8 @@ public class PageChangeButton : MonoBehaviour
 
     public void OnClick()
     {
+        artEffect.Invoke();
+        
         if (!transferToPrevious)
         {
             var csm = Services.pageState.CSM;
