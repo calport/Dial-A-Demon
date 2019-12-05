@@ -534,22 +534,12 @@ public class PlotManager
     
             protected void InitStory()
             {
-                string textAssetLocation;
-                var fileAddress = new PlotFileAddress().fileAddress;
-                fileAddress.TryGetValue(this.GetType(), out textAssetLocation);
-                var ta = SerializeManager.ReadJsonString(Application.dataPath + "/Resources/InkText/" + textAssetLocation);
-                //var ta = Resources.Load<TextAsset>(textAssetLocation);
-                story = new Story(ta);
+                story = PlotFileAddress.GetStory(GetType());
             }
             
             protected void InitStory(Type storyDictType)
             {
-                string textAssetLocation;
-                var fileAddress = new PlotFileAddress().fileAddress;
-                fileAddress.TryGetValue(storyDictType, out textAssetLocation);
-                var ta = SerializeManager.ReadJsonString(Application.dataPath + "/Resources/InkText/" + textAssetLocation);
-                //var ta = Resources.Load<TextAsset>(textAssetLocation);
-                story = new Story(ta);
+                story = PlotFileAddress.GetStory(storyDictType);
             }
         }
     
