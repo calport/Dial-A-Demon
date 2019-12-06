@@ -28,7 +28,6 @@ VAR PlayerFeeling = ""
                         ******  can you feel this? -> SetBoundaries
 *   great! -> HadAFeeling.Positive
 
--> END
 
 === SetBoundaries ===
 -> DONE

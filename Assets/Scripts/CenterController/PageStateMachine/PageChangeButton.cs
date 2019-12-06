@@ -36,7 +36,7 @@ public class PageChangeButton : MonoBehaviour
 
     public void OnClick()
     {
-        artEffect.Invoke();
+        //artEffect.Invoke();
         
         if (!transferToPrevious)
         {
