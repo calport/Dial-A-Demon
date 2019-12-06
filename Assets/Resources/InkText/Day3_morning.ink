@@ -20,8 +20,23 @@ VAR DemonName= ""
                 *****   little too hot on the 5th layer? ->7Layer
                 
 === CallTonight === 
-I hope you'll pick up 
+I hope you'll pick up <sprite=2> 
+have a good morning, don't forget to eat a good breakfast!
+I'm off! 
+* bye! 
+-> DONE
+* thanks
 -> DONE 
 
 === 7Layer ===
--> DONE
+good guess, but I'm actually on the 7th layer
+*   can hell be missing a demon tonight. 
+    <sprites=2> 
+    I can't go completely missing
+    but I'll call you later tonight. 
+    ->CallTonight
+*   that's 7 layers too far 
+    I like the way you think {PlayerNickname} 
+    Maybe a little later we can commit a few sins together 
+    talk to you soon 
+    -> DONE

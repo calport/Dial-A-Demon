@@ -1,4 +1,5 @@
-﻿using System;
+﻿
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
@@ -588,9 +589,22 @@ public class PlotManager
             _referPlot = typeof(RootPlot);
             relaSpan = TimeSpan.FromMinutes(0.5f);
             _requiredPrePlots = new List<Type>() {typeof(Day2_Text1)};
-            _childPlots = new List<Type>{typeof(Day3_Text3)};
+            _childPlots = new List<Type>{typeof(Day3_Text1)};
             InitStory();
 
+        }
+    }
+
+    public class Day3_Text1 : TextPlot
+    {
+        public Day3_Text1()
+        {
+            //initialize properties
+            _referPlot = typeof(RootPlot);
+            relaSpan = TimeSpan.FromMinutes(0.5f);
+            _requiredPrePlots = new List<Type>() {typeof(Day2_Text2)};
+            _childPlots = new List<Type>{typeof(Day3_Text3)};
+            InitStory();
         }
     }
 
@@ -601,7 +615,7 @@ public class PlotManager
             //initialize properties
             _referPlot = typeof(RootPlot);
             relaSpan = TimeSpan.FromMinutes(0.5f);
-            _requiredPrePlots = new List<Type>() {typeof(Day2_Text2)};
+            _requiredPrePlots = new List<Type>() {typeof(Day3_Text1)};
             _childPlots = new List<Type>{typeof(Day4_Text1)};
             InitStory();
 
