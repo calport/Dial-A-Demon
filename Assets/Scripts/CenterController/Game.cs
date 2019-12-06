@@ -24,6 +24,7 @@ public class Game : MonoBehaviour
     private void Start()
     {
         Services.pageState.Start();
+        Services.phoneManager.Start();
         //Services.eventManager.AddHandler<SceneChanged>(OnSceneChange);
 
         Input.simulateMouseWithTouches = true;

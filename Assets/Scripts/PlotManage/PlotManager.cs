@@ -425,7 +425,7 @@ public class PlotManager
             {
                 _referPlot = null;
                 relaSpan = TimeSpan.Zero;
-                _childPlots = new List<Type>{typeof(Day1_Text1)};
+                _childPlots = new List<Type>{typeof(Day1_Text1),typeof(Day1_Phone1)};
             }
     
             public override void Start()
@@ -672,9 +672,9 @@ public class PlotManager
         
         public override void Start()
         {
-            Services.eventManager.Fire(new PhoneStart());
             pm.currrentPhonePlot = this;
             phoneCallState = PhoneCallState.Calling;
+            Services.eventManager.Fire(new PhoneStart());
         }
 
         public override void Clear()
@@ -724,7 +724,12 @@ public class PlotManager
                 _plotState = plotState.isFinished;
             }
         }
-        
+
+        protected void InitPhoneClip(Type plotType = null)
+        {
+            if(plotType == null) callContent = PhoneFileAddress.GetPhoneClip(GetType());
+            else callContent = PhoneFileAddress.GetPhoneClip(plotType);
+        }
     }
 
     public class DemonPhoneCallPlot : PhonePlot
@@ -734,6 +739,19 @@ public class PlotManager
     public class PlayerPhoneCallPlot : PhonePlot
     {
         public TimeSpan playerWaitTime = TimeSpan.FromSeconds(5f);
+    }
+
+    public class Day1_Phone1 : DemonPhoneCallPlot
+    {
+        public Day1_Phone1()
+        {
+            //this part is for initialize the original properties that related to the plot
+            _referPlot = typeof(RootPlot);
+            relaSpan = TimeSpan.FromSeconds(0.1f);
+            _requiredPrePlots = new List<Type>(){typeof(RootPlot)};
+            _childPlots = new List<Type>();
+            InitPhoneClip();
+        }
     }
     public class VoiceMailPlot : Plot
     {

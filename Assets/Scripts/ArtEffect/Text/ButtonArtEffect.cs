@@ -16,7 +16,10 @@ public class ButtonArtEffect : MonoBehaviour
     private void Twist()
     {
         var pcb = gameObject.GetComponent<PageChangeButton>();
-        transform.DORotate(new Vector3(0f, 0f, 180f), 1f).onComplete = pcb.OnClick;
-        Debug.Log("dkjflekjoiwea");
+        transform.DORotate(new Vector3(0f, 0f, 180f), 1f).onComplete = delegate
+        {
+            pcb.OnClick();
+            transform.DORotate(new Vector3(0f, 0f, 0f), 0.1f);
+        };
     }
 }

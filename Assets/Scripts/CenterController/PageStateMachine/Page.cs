@@ -77,11 +77,11 @@ namespace DialADemon.Page
             return _csm.CurrentState;
         }
 
-        public void AddState(string name, GameObject[] relatedObj,params Enum[] properties)
+        public void AddState(string name, bool isValid, GameObject[] relatedObj,params Enum[] properties)
         {
             IDictionary<string, object> dict = _csm.stateList as IDictionary<string, object>;
             int id = dict.Keys.Count;
-            _csm.AddState(id, name, relatedObj, properties);
+            _csm.AddState(id, name, isValid, relatedObj, properties);
         }
 
         #region Class state dynamic

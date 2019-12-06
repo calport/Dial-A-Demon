@@ -12,19 +12,26 @@ public class PhoneManager
     private PageState ps = Services.pageState;
     private Pages previousPage;
     public Coroutine waitForPickingUp;
+    private AudioSource _phoneCallAudio;
     
     //these are for checking phone call states and making events
     private bool _isPhonePlayLastFrame;
-    private readonly AudioSource _phoneAudioSource = AudioManager.audioSources[DefaultAudioSource.PhoneCall];
+    private AudioSource _phoneAudioSource;
     public DateTime phoneStartTime;
 
     // Start is called before the first frame update
     public void Init()
     {
+        _phoneAudioSource = AudioManager.audioSources[DefaultAudioSource.PhoneCall];
         Services.eventManager.AddHandler<PhoneStart>(delegate{ OnPhoneStart();});
         Services.eventManager.AddHandler<PhonePickedUp>(delegate{ OnPhonePickedUp();});
         Services.eventManager.AddHandler<PhoneHangedUp>(delegate{ OnPhoneFinished();});
         Services.eventManager.AddHandler<PhoneFinished>(delegate{ OnPhoneFinished();});
+    }
+
+    public void Start()
+    {
+        _phoneCallAudio = ps.GetGameState("Phone_OnCall").relatedObj[1].GetComponent<AudioSource>();
     }
 
     // Update is called once per frame
@@ -36,7 +43,7 @@ public class PhoneManager
             _phoneStartTime = DateTime.Now;
             Services.eventManager.Fire(new PhonePickedUp());
         }*/
-        if (_isPhonePlayLastFrame && !_phoneAudioSource.isPlaying )
+        if (_isPhonePlayLastFrame && !_phoneCallAudio.isPlaying )
         {
             if (currrentPhonePlot != null && currrentPhonePlot.plotState != PlotManager.plotState.isBreak &&
                 currrentPhonePlot.plotState != PlotManager.plotState.isFinished)
@@ -44,7 +51,7 @@ public class PhoneManager
                 Services.eventManager.Fire(new PhoneFinished());
             }
         }
-        _isPhonePlayLastFrame = _phoneAudioSource.isPlaying;
+        _isPhonePlayLastFrame = _phoneCallAudio.isPlaying;
     }
 
     public void Clear()
@@ -90,11 +97,14 @@ public class PhoneManager
         Debug.Assert(currrentPhonePlot!= null,"The current phone plot is not assigned properly");
         ps.ChangeGameState(ps.CSM.stateList.Phone_OnCall);
         phoneStartTime = DateTime.Now;
-        AudioManager.PlaySound(DefaultAudioSource.PhoneCall,currrentPhonePlot.callContent);
+        _phoneCallAudio.clip = currrentPhonePlot.callContent;
+        _phoneCallAudio.Play();
+        //AudioManager.PlaySound(DefaultAudioSource.PhoneCall,currrentPhonePlot.callContent);
     }
 
     private void OnPhoneFinished()
     {
+        _phoneCallAudio.Stop();
         ps.ChangeGameState(previousPage);
         previousPage = null;
     }
@@ -102,119 +112,4 @@ public class PhoneManager
 
     #endregion
     
-    #region Phone Related Buttons
-
-    [RequireComponent(typeof(Button))]
-    public class DialButton : MonoBehaviour
-    {
-        private PhoneManager pm = Services.phoneManager;
-        private EventManager em = Services.eventManager;
-        void OnEnable ()
-        {
-            var btn = gameObject.GetComponent<Button>();
-            if (btn)
-            {
-                btn.onClick.AddListener(delegate() { OnClick(); });
-            }
-
-        }
-
-        private void OnDisable()
-        {
-            var btn = gameObject.GetComponent<Button>();
-            if (btn)
-            {
-                btn.onClick.RemoveListener(delegate() { OnClick(); });
-            }
-        }
-
-        private void OnClick()
-        {
-            
-            //TODO create new dial plot for plot manager
-            Debug.Assert(pm.currrentPhonePlot!= null && pm.currrentPhonePlot.GetType().IsSubclassOf(typeof(PlotManager.PlayerPhoneCallPlot)),"the current phone call should be a ");
-                        
-            em.Fire(new PhoneStart());
-            PlotManager.PlayerPhoneCallPlot playerCall = pm.currrentPhonePlot as PlotManager.PlayerPhoneCallPlot;
-            pm.waitForPickingUp = CoroutineManager.DoDelayCertainSeconds(
-                delegate { em.Fire(new PhonePickedUp()); },
-                playerCall.playerWaitTime.Seconds);
-        }
-
-    }
-
-    [RequireComponent(typeof(Button))]
-     public class PickButton : MonoBehaviour
-     {
-         private PhoneManager pm = Services.phoneManager;
-         private PageState ps = Services.pageState;
-         private EventManager em = Services.eventManager;
-         void OnEnable ()
-         {
-             var btn = gameObject.GetComponent<Button>();
-             if (btn)
-             {
-                 btn.onClick.AddListener(delegate() { OnClick(); });
-             }
- 
-         }
- 
-         private void OnDisable()
-         {
-             var btn = gameObject.GetComponent<Button>();
-             if (btn)
-             {
-                 btn.onClick.RemoveListener(delegate() { OnClick(); });
-             }
-         }
- 
-         private void OnClick()
-         {
-             if (pm.currrentPhonePlot != null)
-             {
-                 em.Fire(new PhonePickedUp());
-             }
-         }
-         
-     }
-     
-     [RequireComponent(typeof(Button))]
-     public class HangButton : MonoBehaviour
-     {
-         private PhoneManager pm = Services.phoneManager;
-         void OnEnable ()
-         {
-             var btn = gameObject.GetComponent<Button>();
-             if (btn)
-             {
-                 btn.onClick.AddListener(delegate() { OnClick(); });
-             }
-
-         }
-
-         private void OnDisable()
-         {
-             var btn = gameObject.GetComponent<Button>();
-             if (btn)
-             {
-                 btn.onClick.RemoveListener(delegate() { OnClick(); });
-             }
-         }
-
-         private void OnClick()
-         {
-             StopCoroutine(pm.waitForPickingUp);
-             var timeRatio = (DateTime.Now - pm.phoneStartTime).TotalSeconds / pm.currrentPhonePlot.callContent.length;
-             if (timeRatio > 0.95)
-             {
-                 Services.eventManager.Fire(new PhoneFinished());
-             }
-             else
-             {
-                 Services.eventManager.Fire(new PhoneHangedUp());
-             }
-         }
-     }
-    #endregion
-
 }
