@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 using DialADemon.Page;
@@ -444,6 +445,7 @@ public class PlotManager
         {
             public Story story;
             protected TextManager tm = Services.textManager;
+            public List<TextFilePlot> attachedFile = new List<TextFilePlot>();
             
             public override void Reload()
             {
@@ -451,7 +453,7 @@ public class PlotManager
                 {
                     tm.currentTextPlot = this;
                     if(tm.inkJson!= "") tm.currentStory.state.LoadJson(tm.inkJson);
-                    Services.eventManager.AddHandler<TextFinished>(delegate { OnTextFinished(); });
+                    Services.eventManager.AddHandler<TextFinished>(OnTextFinished);
                 }
             }
     
@@ -468,7 +470,7 @@ public class PlotManager
             public override void Start()
             {
                 tm.currentTextPlot = this;
-                Services.eventManager.AddHandler<TextFinished>(delegate{OnTextFinished();});
+                Services.eventManager.AddHandler<TextFinished>(OnTextFinished);
                 
                 DateTime startTime;
                 parent.Calendar.TryGetValue(this, out startTime);
@@ -481,11 +483,15 @@ public class PlotManager
             {
                 CheckChild();
                 tm.currentTextPlot = null;
-                Services.eventManager.RemoveHandler<TextFinished>(delegate{OnTextFinished();});
+                Services.eventManager.RemoveHandler<TextFinished>(OnTextFinished);
             }
             
-            public void OnTextFinished()
+            public void OnTextFinished(TextFinished e)
             {
+                foreach (var filePlot in attachedFile)
+                {
+                    filePlot.AttachFile(e.ShootTime);
+                }
                 _plotState = plotState.isFinished;
             }
     
@@ -530,7 +536,7 @@ public class PlotManager
             {
                 if(tm.currentTextPlot == this) tm.MuteAllKeyboard();
                     CheckChild();
-                Services.eventManager.RemoveHandler<TextFinished>(delegate{OnTextFinished();});
+                Services.eventManager.RemoveHandler<TextFinished>(OnTextFinished);
             }
     
             protected void InitStory()
@@ -797,6 +803,50 @@ public class PlotManager
             }
 
             return false;
+        }
+    }
+
+    /// <summary>
+    /// Special Class
+    /// This class will not be hanged in the calender
+    /// </summary>
+    public class TextFilePlot : Plot
+    {
+        private Type importDocumentPairBelongedPlot = null;
+        private GameObject _bubble;
+        public GameObject bubble
+        {
+            get
+            {
+                if (importDocumentPairBelongedPlot == null) importDocumentPairBelongedPlot = GetType();
+                if (!_bubble)
+                {
+                    _bubble = PlotFileAddress.GetBubble(importDocumentPairBelongedPlot);
+                    _bubble.GetComponentInChildren<OpenFileButton>().plotType = GetType();
+                }
+                return _bubble;
+            }
+        }
+
+        private GameObject _document;
+        public GameObject document
+        {
+            get
+            {
+                if (importDocumentPairBelongedPlot == null) importDocumentPairBelongedPlot = GetType();
+                if (!_document)
+                {
+                    _document = PlotFileAddress.GetBubble(importDocumentPairBelongedPlot);
+                    _bubble.GetComponentInChildren<OpenFileButton>().plotType = GetType();
+                }
+                return _document;
+            }
+        }
+        protected TextManager tm = Services.textManager;
+
+        public void AttachFile(DateTime shootTime)
+        {
+            tm.AddNewFileMessage(GetType(),shootTime);
         }
     }
     

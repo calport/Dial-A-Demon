@@ -15,7 +15,8 @@ public enum MessageBubbleType
 {
     Demon,
     Player,
-    TimeStamp
+    TimeStamp,
+    Prefab
 }
 
 [Serializable]
@@ -24,6 +25,7 @@ public class MessageContent
     public MessageBubbleType messageType;
     public string content;
     public DateTime shootTime;
+    public Type prefabType;
 }
 
 [Serializable]

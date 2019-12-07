@@ -1,29 +1,48 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
+using DG.Tweening;
+using DialADemon.Page;
 using HedgehogTeam.EasyTouch;
 using UnityEngine;
 
 public class OpenFileButton : MonoBehaviour
 {
-    [SerializeField] private string OpenFilePrefabAddrass;
-    private GameObject createdFile;
+    public Type plotType;
+
+    public GameObject document
+    {
+        get
+        {
+            PlotManager.TextFilePlot tfp = Services.plotManager.GetOrCreatePlots(plotType) as PlotManager.TextFilePlot;
+            return tfp.document;
+        }
+    }
+
+    PlotManager.TextFilePlot tfp
+    {
+        get
+        {
+            return Services.plotManager.GetOrCreatePlots(plotType) as PlotManager.TextFilePlot;
+        }
+    }
+
+    private PageState ps;
 
     public void OnSimpleTap()
     {
-        //create a new prefab on front layer
-        GameObject parent = new GameObject();
-        //Services.referenceInfo.MenuPage.TryGetValue("FrontLayer", out parent);
-        //TODO get parent
-        createdFile = Instantiate(Resources.Load<GameObject>(OpenFilePrefabAddrass), parent.transform);
-        //set this gameobject a reference to close button
-        var closeButton = createdFile.transform.GetComponentInChildren<CloseFileButton>();
-        closeButton.File = createdFile;
-        
-        //change text state
-        /*if (Services.gameStates.GetCurrentState().GetType() == typeof(GameStates.TextingPage))
-        { 
-            Services.textStates.ChangeGameState<TextStates.OnFileCheck>(new TextStates.OnFileCheck());
-        }    */    
-       
+        ps.ChangeGameState(ps.CSM.stateList.Front_Main);
+        document.transform.localScale = new Vector3(0.1f,0.1f,0.1f);
+        PlotManager.TextFilePlot tfp =
+            Services.plotManager.GetOrCreatePlots(plotType) as PlotManager.TextFilePlot;
+        foreach (var item in ps.GetGameState("Front_Main").relatedObj)
+        {
+            if (item.CompareTag("PageObj"))
+            {
+                document.transform.parent = item.transform;
+            }
+        }
+
+        document.transform.DOScale(1f, 1f);
     }
 }

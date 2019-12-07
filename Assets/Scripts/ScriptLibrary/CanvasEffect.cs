@@ -43,6 +43,20 @@ public class CanvasEffect
         canvas.alpha = 0;
     }
 
+    public void CanvasShow(CanvasGroup canvas)
+    {
+        //TODO
+        //someswitching effect can be added here
+        canvas.alpha = 1;
+    }
+    
+    public void CanvasHide(CanvasGroup canvas)
+    {
+        //TODO
+        //someswitching effect can be added here
+        canvas.alpha = 0;
+    }
+    
     public void CanvasDistroy(GameObject obj)
     {
 

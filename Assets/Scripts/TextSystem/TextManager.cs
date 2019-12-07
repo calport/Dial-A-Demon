@@ -150,7 +150,7 @@ public class TextManager
 		else
 		{
 			//end story
-			Services.eventManager.Fire(new TextFinished());
+			Services.eventManager.Fire(new TextFinished(DateTime.Now));
 			//Button choice = CreateChoiceView("End of story.\nRestart?");
 			//choice.onClick.AddListener(delegate { StartStory(); });
 		}
@@ -193,9 +193,6 @@ public class TextManager
 		// show text
 		AddNewMessage(MessageBubbleType.Player, text, DateTime.Now);
 		Services.textSequenceTaskRunner.AddTask(delegate { RefreshView(); }, DateTime.Now);
-		//send the text to text manager as a record
-		FinishedLog.Add(textBox.text);
-		Speaker.Add(1);
 
 		// clear the text box
 		textBox.text = String.Empty;
@@ -206,7 +203,7 @@ public class TextManager
 	
 	private void AddNewMessage(MessageBubbleType msgType, string text, DateTime shootTime)
     {
-        if ((shootTime - _lastTimeStamp) > TimeSpan.FromMinutes(0.5f))
+        if ((shootTime - _lastTimeStamp) > TimeSpan.FromMinutes(10f))
         {
             CreateNewTimeStamp(shootTime);
             _lastTimeStamp = shootTime;
@@ -243,9 +240,45 @@ public class TextManager
                     newTimeBox.GetComponentInChildren<TextMeshProUGUI>().text = text;
                 },shootTime);
                 break;
+            case MessageBubbleType.Prefab:
+	            Debug.Log("Change to use AddNewFileMessage to initiate a prefab msg.");
+	            break;
         }
     }
+
+	/// <summary>
+	/// This func is for the plot manager specifically to create new file bubbles
+	/// It is only called by outside managers and doesn't belongs to the automatic text manager
+	/// </summary>
+	/// <param name="prefabType"></param>
+	/// <param name="shootTime"></param>
+	public void AddNewFileMessage(Type prefabType, DateTime shootTime)
+	{
+		if ((shootTime - _lastTimeStamp) > TimeSpan.FromMinutes(10f))
+		{
+			CreateNewTimeStamp(shootTime);
+			_lastTimeStamp = shootTime;
+		}
+		
+		var msg = new MessageContent();
+		msg.messageType = MessageBubbleType.Prefab;
+		msg.prefabType = prefabType;
+		msg.shootTime = shootTime;
+		Services.saveManager.plotMessages.Add(msg);
+		
+		Services.textSequenceTaskRunner.AddTask(delegate
+		{
+			if (prefabType.IsSubclassOf(typeof(PlotManager.TextFilePlot)))
+			{
+				PlotManager.TextFilePlot tfp =
+					Services.plotManager.GetOrCreatePlots(prefabType) as PlotManager.TextFilePlot;
+				var bubble = tfp.bubble;
+				bubble.transform.parent = _content.transform;
+			}
+		},shootTime);
+	}
 	
+
 	private void CreateNewTimeStamp(DateTime time)
 	{
 		MessageContent msg= new MessageContent();
@@ -376,7 +409,6 @@ public class TextManager
 				    {
 					    RefreshView();
 				    },shootTime);
-			    return;
 		    }
 		    
 		    AddNewMessage(MessageBubbleType.Demon,text,shootTime);
@@ -396,7 +428,7 @@ public class TextManager
 	    else
 	    {
 		    //end story
-		    Services.eventManager.Fire(new TextFinished());
+		    Services.eventManager.Fire(new TextFinished(startTime));
 	    }
     }
 
@@ -441,7 +473,7 @@ public class TextManager
 	    else
 	    {
 		    //end story
-		    Services.eventManager.Fire(new TextFinished());
+		    Services.eventManager.Fire(new TextFinished(startTime));
 	    }
     }
     private void LoadInitialDialogue()
