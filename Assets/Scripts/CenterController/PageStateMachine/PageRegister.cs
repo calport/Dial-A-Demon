@@ -8,10 +8,12 @@ using UnityEngine;
 public class PageRegister : MonoBehaviour
 {
     [SerializeField] private string _name = nameof(gameObject);
+    [SerializeField] private bool _isValidPage = true;
     [SerializeField] private GameObject[] _relatedObj;
     [SerializeField] private BelongedSystem _system;
     [SerializeField] private RenderLayer _layer;
     [SerializeField] private LoadBehavior _load;
+    
 
     private List<GameObject> cameraRenderItem = new List<GameObject>();
     void Awake()
@@ -31,7 +33,8 @@ public class PageRegister : MonoBehaviour
         Enum[] prop = new Enum[3];
         prop[0] = _system;
         prop[1] = _layer;
-        prop[2] = _load; Services.pageState.AddState( _name, _relatedObj,prop);
+        prop[2] = _load; 
+        Services.pageState.AddState( _name, _isValidPage,_relatedObj,prop);
 
         if (gameObject.GetComponent<CanvasGroup>())
         {
