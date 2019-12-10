@@ -15,6 +15,7 @@ public abstract class Info
 {
     public int id;
     public string name;
+    public bool isValid;
     public List<GameObject> relatedObj = new List<GameObject>();
     public Dictionary<Type, Enum> property = new Dictionary<Type, Enum>();
 }
@@ -40,11 +41,12 @@ public class CSM<TContext, V> where TContext : class where V : Info
     //The detail of each state's behavior is according to their properties
     public dynamic stateList = new ExpandoObject();
 
-    public void AddState(int id, string name, GameObject[] relatedObj, params Enum[] properties)
+    public void AddState(int id, string name, bool isValid, GameObject[] relatedObj, params Enum[] properties)
     {
         V newState = Activator.CreateInstance<V>();
         newState.id = id;
         newState.name = name;
+        newState.isValid = isValid;
         
         foreach (var obj in relatedObj)
         {
@@ -158,7 +160,7 @@ public class CSM<TContext, V> where TContext : class where V : Info
         if (!object.Equals(_pendingState, null))
         {
             if (!object.Equals(CurrentState, null)) CallingMethod(CurrentState, "OnExit");
-            _previousState = CurrentState;
+            if (!object.Equals(CurrentState, null) && CurrentState.isValid) _previousState = CurrentState;
             CurrentState = _pendingState;
             if (object.Equals(_previousState, null))
             {

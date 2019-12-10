@@ -14,7 +14,8 @@ namespace DialADemon.Page
         Text,
         PhoneCall,
         Setting,
-        Ritual
+        Ritual,
+        ArtEffect
     }
 
     public enum RenderLayer
@@ -26,6 +27,7 @@ namespace DialADemon.Page
     public enum LoadBehavior
     {
         Plain,
+        TransparentLoad,
         Loading
     }
 
@@ -77,11 +79,11 @@ namespace DialADemon.Page
             return _csm.CurrentState;
         }
 
-        public void AddState(string name, GameObject[] relatedObj,params Enum[] properties)
+        public void AddState(string name, bool isValid, GameObject[] relatedObj,params Enum[] properties)
         {
             IDictionary<string, object> dict = _csm.stateList as IDictionary<string, object>;
             int id = dict.Keys.Count;
-            _csm.AddState(id, name, relatedObj, properties);
+            _csm.AddState(id, name, isValid, relatedObj, properties);
         }
 
         #region Class state dynamic
@@ -268,6 +270,97 @@ namespace DialADemon.Page
                     if (item.CompareTag("CameraRenderItem"))
                     {
                         item.SetActive(false);
+                    }
+                }
+            }
+
+            public override void OnSceneChanged()
+            {
+            }
+        }
+        
+        public class TransparentLoad : PageStatesList
+        {
+            public TransparentLoad()
+            {
+                enumId = LoadBehavior.TransparentLoad;
+            }
+            public override void OnEnter()
+            {
+                foreach (var item in Parent.CurrentState.relatedObj)
+                {
+                    if (item.CompareTag("PageObj"))
+                    {
+                        var cav =item.GetComponent<CanvasGroup>(); 
+                        if (cav) Services.canvasEffect.CanvasOn(cav);
+                    }
+
+                    if (item.CompareTag("CameraRenderItem"))
+                    {
+                        item.SetActive(true);
+                    }
+                }
+                
+                foreach (var item in Parent.PreviousState.relatedObj)
+                {
+                    if (item.CompareTag("PageObj"))
+                    {
+                        var cav =item.GetComponent<CanvasGroup>(); 
+                        if (cav) Services.canvasEffect.CanvasShow(cav);
+                    }
+
+                    if (item.CompareTag("CameraRenderItem"))
+                    {
+                        item.SetActive(true);
+                    }
+                }
+
+                foreach (var item in Parent.GetGameState("Mask_Black").relatedObj)
+                {
+                    if (item.CompareTag("PageObj"))
+                    {
+                        var cav =item.GetComponent<CanvasGroup>(); 
+                        if (cav) Services.canvasEffect.CanvasShow(cav);
+                    }
+                }
+            }
+
+            public override void OnExit()
+            {
+                foreach (var item in Parent.CurrentState.relatedObj)
+                {
+                    if (item.CompareTag("PageObj"))
+                    {
+                        var cav =item.GetComponent<CanvasGroup>(); 
+                        if (cav) Services.canvasEffect.CanvasOff(cav);
+                    }
+
+                    if (item.CompareTag("CameraRenderItem"))
+                    {
+                        item.SetActive(false);
+                    }
+                }
+                
+                foreach (var item in Parent.PreviousState.relatedObj)
+                {
+                    if (item.CompareTag("PageObj"))
+                    {
+                        var cav =item.GetComponent<CanvasGroup>(); 
+                        if (cav) Services.canvasEffect.CanvasHide(cav);
+                    }
+
+                    if (item.CompareTag("CameraRenderItem"))
+                    {
+                        item.SetActive(false);
+                    }
+                }
+                
+                foreach (var item in Parent.GetGameState("Mask_Black").relatedObj)
+                {
+                    if (item.CompareTag("PageObj"))
+                    {
+                        var cav =item.GetComponent<CanvasGroup>(); 
+                        if (cav) Services.canvasEffect.CanvasHide(cav);
                     }
                 }
             }

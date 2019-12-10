@@ -1,11 +1,28 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using UnityEditor;
 using UnityEngine;
 using UnityEngine.Experimental.XR;
 
 public static class PhoneFileAddress
 {
-    public static Dictionary<Type, string> phoneFileAddress = new Dictionary<Type, string>();
+    public static Dictionary<Type, string> phoneFileAddress = new Dictionary<Type, string>{{typeof(PlotManager.Day1_Phone1), "DemonCall3.wav"},};
     public static Dictionary<Type, string> voiceMailAddress = new Dictionary<Type, string>();
+    
+    public static AudioClip GetPhoneClip(Type plotType = null)
+    {
+        string textAssetLocation;
+        phoneFileAddress.TryGetValue(plotType, out textAssetLocation);
+        AudioClip ac = AssetDatabase.LoadAssetAtPath("Assets/Sounds/" + textAssetLocation, typeof(AudioClip)) as AudioClip;
+        return ac;
+    }
+    
+    public static AudioClip GetVoiceMailClip(Type plotType)
+    {
+        string textAssetLocation;
+        voiceMailAddress.TryGetValue(plotType, out textAssetLocation);
+        var ac = AssetDatabase.LoadAssetAtPath<AudioClip>( "Assets/Sounds/" + textAssetLocation);
+        return ac;
+    }
 }

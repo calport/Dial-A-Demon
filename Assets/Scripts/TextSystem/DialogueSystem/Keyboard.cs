@@ -6,6 +6,7 @@ using UnityEngine.UI;
 using UnityEngine.EventSystems;
 using Yarn.Unity.Example;
 
+[RequireComponent(typeof(AudioSource))]
 public class Keyboard : MonoBehaviour
 {
     //the number of the options of this keyboard
@@ -23,6 +24,7 @@ public class Keyboard : MonoBehaviour
     
     //private TextInput _textInput;
     private GameObject _pointer;
+    private GameObject _pointedFont;
     private TextManager tm;
     private Button _sendButton;
     private bool _pointerIn;
@@ -41,8 +43,7 @@ public class Keyboard : MonoBehaviour
         tm = Services.textManager;
         _pointer = tm.pointerTrigger;
         _sendButton = tm.sendButton;
-        var SoundObject = GameObject.Find("NeonSound");
-        var neonLight = SoundObject.GetComponent<AudioSource>();
+        //_pointedFont = GetComponent<Transform>().GetChild(0).gameObject;
     }
 
     // Update is called once per frame
@@ -80,8 +81,10 @@ public class Keyboard : MonoBehaviour
     }
     void OnTriggerEnter2D(Collider2D other)
     {
+        _sendButton.onClick.RemoveAllListeners();
         if (other.gameObject == _pointer)
         {
+            //_pointedFont.SetActive(true);
             if (isChoice)
             {
                 tm.textBox.text = content;
@@ -102,6 +105,7 @@ public class Keyboard : MonoBehaviour
     {
         if (other.gameObject == _pointer)
         {
+            //_pointedFont.SetActive(false);
             _pointerIn = false;
             if (isChoice)
             {

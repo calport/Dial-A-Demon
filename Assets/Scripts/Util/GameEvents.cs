@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -13,7 +14,15 @@ public class SceneChanged : GameEvent
 }
 
 
-public class TextFinished : GameEvent{}
+public class TextFinished : GameEvent
+{
+    public DateTime ShootTime = DateTime.MinValue;
+
+    public TextFinished(DateTime shootTime)
+    {
+        ShootTime = shootTime;
+    }
+}
 
 public class PhoneStart : GameEvent{}
 

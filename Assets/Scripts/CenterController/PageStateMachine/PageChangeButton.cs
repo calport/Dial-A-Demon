@@ -6,38 +6,38 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
+[RequireComponent(typeof(Button))]
 public class PageChangeButton : MonoBehaviour
 {
     [SerializeField] string pageName;
     [SerializeField] private bool transferToPrevious = false;
+    [SerializeField] private bool isWithEffect = false;
     
     [HideInInspector] public delegate void ArtEffect();
-    [HideInInspector]public ArtEffect artEffect;
+    [HideInInspector] public ArtEffect artEffect = new ArtEffect(() => {});
     
     // Use this for initialization
     void OnEnable ()
     {
-        var btn = gameObject.GetComponent<Button>();
-        if (btn)
-        {
-            btn.onClick.AddListener(delegate() { OnClick(); });
-        }
+        var btn = gameObject.GetComponent<Button>(); 
+        btn.onClick.AddListener(delegate() { OnClickEffect(); });
 
-    }
+        }
 
     private void OnDisable()
     {
         var btn = gameObject.GetComponent<Button>();
-        if (btn)
-        {
-            btn.onClick.RemoveListener(delegate() { OnClick(); });
-        }
+        btn.onClick.RemoveListener(delegate() { OnClickEffect(); });
     }
 
+    public void OnClickEffect()
+    {
+        if(isWithEffect) artEffect.Invoke();
+        else OnClick();
+    }
+    
     public void OnClick()
     {
-        //artEffect.Invoke();
-        
         if (!transferToPrevious)
         {
             var csm = Services.pageState.CSM;
@@ -52,5 +52,5 @@ public class PageChangeButton : MonoBehaviour
             Services.pageState.TransitToPreviousState();
         }
     }
-
 }
+  
