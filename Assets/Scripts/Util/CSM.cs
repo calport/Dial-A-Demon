@@ -135,6 +135,7 @@ public class CSM<TContext, V> where TContext : class where V : Info
     public void TransitionTo(V newState)
     {
         // We do the actual transtion
+        
         _pendingState = GetOrCreateState(newState);
     }
 

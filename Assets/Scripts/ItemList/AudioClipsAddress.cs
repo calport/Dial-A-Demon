@@ -11,7 +11,7 @@ public static class AudioClipsAddress
     {
         string textAssetLocation;
         audioClipsAddress.TryGetValue(clipName, out textAssetLocation);
-        var ac = Resources.Load("Sounds/" + textAssetLocation) as AudioClip;
+        var ac = Resources.Load<AudioClip>("Sounds/" + textAssetLocation);
         return ac;
     }
 }
