@@ -1,7 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEditor;
-using UnityEditor.VersionControl;
 using UnityEngine;
 
 public static class AudioClipsAddress
@@ -12,7 +11,7 @@ public static class AudioClipsAddress
     {
         string textAssetLocation;
         audioClipsAddress.TryGetValue(clipName, out textAssetLocation);
-        var ac = AssetDatabase.LoadAssetAtPath<AudioClip>(Application.dataPath + "/Sounds/" + textAssetLocation);
+        var ac = Resources.Load("Sounds/" + textAssetLocation) as AudioClip;
         return ac;
     }
 }

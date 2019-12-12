@@ -14,7 +14,7 @@ public static class PhoneFileAddress
     {
         string textAssetLocation;
         phoneFileAddress.TryGetValue(plotType, out textAssetLocation);
-        AudioClip ac = AssetDatabase.LoadAssetAtPath("Assets/Sounds/" + textAssetLocation, typeof(AudioClip)) as AudioClip;
+        var ac = Resources.Load("Sounds/" + textAssetLocation) as AudioClip;
         return ac;
     }
     
@@ -22,7 +22,7 @@ public static class PhoneFileAddress
     {
         string textAssetLocation;
         voiceMailAddress.TryGetValue(plotType, out textAssetLocation);
-        var ac = AssetDatabase.LoadAssetAtPath<AudioClip>( "Assets/Sounds/" + textAssetLocation);
+        var ac = Resources.Load("Sounds/" + textAssetLocation) as AudioClip;
         return ac;
     }
 }
