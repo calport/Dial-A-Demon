@@ -88,14 +88,14 @@ public class PhoneManager
     private void OnPhoneStart()
     {
         previousPage = ps.GetCurrentState();
-        if(currrentPhonePlot.isDemonCall) ps.ChangeGameState(ps.CSM.stateList.Phone_DemonCall);
-        else ps.ChangeGameState(ps.CSM.stateList.Phone_PlayerCall);
+        if(currrentPhonePlot.isDemonCall) ps.ChangeGameState("Phone_DemonCall");
+        else ps.ChangeGameState("Phone_PlayerCall");
     }
 
     private void OnPhonePickedUp()
     {
         Debug.Assert(currrentPhonePlot!= null,"The current phone plot is not assigned properly");
-        ps.ChangeGameState(ps.CSM.stateList.Phone_OnCall);
+        ps.ChangeGameState("Phone_OnCall");
         phoneStartTime = DateTime.Now;
         _phoneCallAudio.clip = currrentPhonePlot.callContent;
         _phoneCallAudio.Play();

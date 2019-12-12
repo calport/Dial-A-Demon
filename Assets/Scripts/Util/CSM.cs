@@ -30,12 +30,12 @@ public class CSM<TContext, V> where TContext : class where V : Info
 
     // We cache the machine's states in a dictionary in case we need to use them again.
     // This bit is entirely optional though...
-    // int id & V itself
+
     private readonly Dictionary<int, V> _stateCache = new Dictionary<int, V>();
 
     //This is a list of all the state that the CSM contains, while they are like enums and not functioning as FSM
     //The detail of each state's behavior is according to their properties
-    public dynamic stateList = new ExpandoObject();
+    public Dictionary<string, object> stateList = new Dictionary<string, object>();
 
     public void AddState(int id, string name, bool isValid, GameObject[] relatedObj, params Enum[] properties)
     {
@@ -56,8 +56,7 @@ public class CSM<TContext, V> where TContext : class where V : Info
             else{ newState.property.Add(prop.GetType(),prop);}
         }
         
-        IDictionary<string, object> dict = stateList as IDictionary<string, object>;
-        dict.Add(newState.name,newState as object);
+        stateList.Add(newState.name,newState as object);
     }
 
     public Dictionary<Enum, StateBehavior> _stateBehavior = new Dictionary<Enum, StateBehavior>();
@@ -95,9 +94,6 @@ public class CSM<TContext, V> where TContext : class where V : Info
 
     public void Init<TState>(List<Enum> propertyEnums) where TState : StateBehavior
     {
-        
-        
-        stateList = new System.Dynamic.ExpandoObject();
         _propertyEnums = propertyEnums;
         
         List<Type> childList = typeof(TState).Assembly.GetTypes().Where(type => type.IsSubclassOf(typeof(TState))).ToList();
@@ -189,9 +185,8 @@ public class CSM<TContext, V> where TContext : class where V : Info
     
     public V GetGameState(string stateName)
     {
-        IDictionary<string, object> dict = stateList as IDictionary<string, object>;
         Object state;
-        dict.TryGetValue(stateName, out state);
+        stateList.TryGetValue(stateName, out state);
         V stateInfo = state as V;
         if (stateInfo != null) return stateInfo;
         else return null;

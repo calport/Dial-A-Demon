@@ -90,7 +90,7 @@ public class MagicCircle : MonoBehaviour
             gameObject.GetComponent<SpriteRenderer>().color = c;
             if (c.a <0.02f)
             {
-                Services.pageState.ChangeGameState(Services.pageState.CSM.stateList.Menu_Main);
+                Services.pageState.ChangeGameState("Menu_Main");
             }
         }
        
