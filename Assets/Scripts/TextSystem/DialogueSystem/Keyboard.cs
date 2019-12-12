@@ -81,7 +81,6 @@ public class Keyboard : MonoBehaviour
     }
     void OnTriggerEnter2D(Collider2D other)
     {
-        _sendButton.onClick.RemoveAllListeners();
         if (other.gameObject == _pointer)
         {
             //_pointedFont.SetActive(true);
@@ -89,6 +88,7 @@ public class Keyboard : MonoBehaviour
             {
                 tm.textBox.text = content;
                 _sendButton.onClick.AddListener(SendChoice);
+                Debug.Log(_sendButton);
                 Handheld.Vibrate();
                 Handheld.Vibrate();
                // neonLight.Play(0);

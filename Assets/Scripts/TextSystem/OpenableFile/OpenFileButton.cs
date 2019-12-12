@@ -15,7 +15,7 @@ public class OpenFileButton : MonoBehaviour
         get
         {
             PlotManager.TextFilePlot tfp = Services.plotManager.GetOrCreatePlots(plotType) as PlotManager.TextFilePlot;
-            return tfp.document;
+            return tfp.documentPre;
         }
     }
 
@@ -27,22 +27,17 @@ public class OpenFileButton : MonoBehaviour
         }
     }
 
-    private PageState ps;
+    private PageState ps
+    {
+        get
+        {
+            return Services.pageState;
+        }
+    }
 
     public void OnSimpleTap()
     {
         ps.ChangeGameState(ps.CSM.stateList.Front_Main);
-        document.transform.localScale = new Vector3(0.1f,0.1f,0.1f);
-        PlotManager.TextFilePlot tfp =
-            Services.plotManager.GetOrCreatePlots(plotType) as PlotManager.TextFilePlot;
-        foreach (var item in ps.GetGameState("Front_Main").relatedObj)
-        {
-            if (item.CompareTag("PageObj"))
-            {
-                document.transform.parent = item.transform;
-            }
-        }
-
-        document.transform.DOScale(1f, 1f);
+        tfp.CreateDocument();
     }
 }

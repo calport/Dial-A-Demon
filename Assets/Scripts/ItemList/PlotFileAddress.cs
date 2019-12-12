@@ -10,7 +10,7 @@ public static class PlotFileAddress
     //all based on resources
     internal static Dictionary<Type, string> inkFileAddress = new Dictionary<Type, string>
     {
-        {typeof(PlotManager.Day1_Text1), "Day1_Contract.json"},
+        {typeof(PlotManager.Day1_Text1), "Test.ink.json"},
         {typeof(PlotManager.Day2_Text1), "Day2_Morning.json"}, 
         {typeof(PlotManager.Day2_Text2), "Day2_Feeling.json"},
         {typeof(PlotManager.Day3_Text1), "Day3_morning.json"},
@@ -19,8 +19,14 @@ public static class PlotFileAddress
         {typeof(PlotManager.Day6_Text2), "Day6_Gifting.json"}
         //
     };
-    internal static Dictionary<Type, string> textBubblePrefabAddress = new Dictionary<Type, string>();
-    internal static Dictionary<Type, string> textDocumentsAddress = new Dictionary<Type, string>();
+    internal static Dictionary<Type, string> textBubblePrefabAddress = new Dictionary<Type, string>
+    {
+        {typeof(PlotManager.Day1_ContractFile), "MessageBubble_DemonContract"}
+    };
+    internal static Dictionary<Type, string> textDocumentsAddress = new Dictionary<Type, string>
+    {
+        {typeof(PlotManager.Day1_ContractFile),"Contract" }
+    };
     
     public static Story GetStory(Type plotType)
     {
@@ -31,19 +37,17 @@ public static class PlotFileAddress
         return new Story(ta);
     }
     
-    public static GameObject GetBubble(Type plotType)
+    public static GameObject GetBubblePrefab(Type plotType)
     {
         string textAssetLocation;
         textBubblePrefabAddress.TryGetValue(plotType, out textAssetLocation);
-        var bubble = AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Resources/Prefabs/" + textAssetLocation);
-        return bubble;
+        return Resources.Load<GameObject>("Prefabs/" + textAssetLocation);
     }
     
-    public static GameObject GetDocument(Type plotType)
+    public static GameObject GetDocumentPrefab(Type plotType)
     {
         string textAssetLocation;
         textDocumentsAddress.TryGetValue(plotType, out textAssetLocation);
-        var file = AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Resources/Prefabs/" + textAssetLocation);
-        return file;
+        return Resources.Load<GameObject>("Prefabs/" + textAssetLocation);
     }
 }

@@ -20,7 +20,6 @@ public class TextingSounds : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D other)
     {
-        Debug.Log("Collision detected");
         keyboardSound.Play();
     }
 }
