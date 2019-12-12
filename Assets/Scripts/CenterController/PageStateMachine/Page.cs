@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using DG.Tweening;
+using DialADemon.Library;
 
 
 namespace DialADemon.Page
@@ -231,9 +232,31 @@ namespace DialADemon.Page
             {
                 enumId = RenderLayer.FrontLayer;
             }
-            public override void OnEnter(){}
 
-            public override void OnExit(){}
+            public override void OnEnter()
+            {
+                foreach (var item in Parent.CurrentState.relatedObj)
+                {
+                    if (item.CompareTag("PageObj"))
+                    {
+                        item.transform.parent.gameObject.SetActive(true);
+                    }
+                }
+            }
+
+            public override void OnExit()
+            {
+                foreach (var item in Parent.CurrentState.relatedObj)
+                {
+                    if (item.CompareTag("PageObj"))
+                    {
+                        CoroutineManager.DoOneFrameDelay(delegate
+                        {
+                            item.transform.parent.gameObject.SetActive(false);
+                        });
+                    }
+                }
+            }
 
             public override void OnSceneChanged(){}
         }

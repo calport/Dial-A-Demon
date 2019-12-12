@@ -41,5 +41,11 @@ public class PageRegister : MonoBehaviour
             var cp = gameObject.GetComponent<CanvasGroup>();
             Services.canvasEffect.CanvasOff(cp);
         }
+
+        if (gameObject.transform.parent.gameObject.name == "FrontUI")
+        {
+            Debug.Log("dfjleajif");
+            gameObject.transform.parent.gameObject.SetActive(false);
+        }
     }
 }
