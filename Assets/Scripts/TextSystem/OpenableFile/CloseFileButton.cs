@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using DG.Tweening;
+using DialADemon.Page;
 using HedgehogTeam.EasyTouch;
 using UnityEngine;
 
@@ -24,11 +25,25 @@ public class CloseFileButton : MonoBehaviour
             return tfp.document;
         }
     }
-    
+    private PageState ps
+    {
+        get
+        {
+            return Services.pageState;
+        }
+    }
+    private PlotManager.TextFilePlot tfp
+    {
+        get
+        {
+            return Services.plotManager.GetOrCreatePlots(plotType) as PlotManager.TextFilePlot;
+        }
+    }
 
     public void OnSimpleTap()
     {
-            //Services.textStates.ChangeGameState<TextStates.NormalText>(new TextStates.NormalText());
-            document.transform.DOScale(0.1f, 1f).onComplete = delegate { Destroy(document); };
+        Destroy(document);
+        ps.TransitToPreviousState();
+            
     }
 }

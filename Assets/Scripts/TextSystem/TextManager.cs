@@ -51,7 +51,7 @@ public class TextManager
     private ScrollRect _msgScroll{
 	    get { return TextRunnerInfo.Instance.msgScroll; }
     }
-    private GameObject _content
+    public GameObject content
         {
             get { return _msgScroll.content.gameObject; }
         }
@@ -222,7 +222,7 @@ public class TextManager
                 //create the bubble
                 Services.textSequenceTaskRunner.AddTask(delegate
                 {
-                     GameObject newTimeBox = GameObject.Instantiate(Resources.Load<GameObject>(_playerTextBox), _content.transform);
+                     GameObject newTimeBox = GameObject.Instantiate(Resources.Load<GameObject>(_playerTextBox), content.transform);
 	                 newTimeBox.GetComponentInChildren<TextMeshProUGUI>().text = text;
                 },shootTime);
                 break;
@@ -236,7 +236,7 @@ public class TextManager
                 
                 Services.textSequenceTaskRunner.AddTask(delegate
                 {
-                    GameObject newTimeBox = GameObject.Instantiate(Resources.Load<GameObject>(_demonTextBox), _content.transform);
+                    GameObject newTimeBox = GameObject.Instantiate(Resources.Load<GameObject>(_demonTextBox), content.transform);
                     newTimeBox.GetComponentInChildren<TextMeshProUGUI>().text = text;
                 },shootTime);
                 break;
@@ -272,8 +272,7 @@ public class TextManager
 			{
 				PlotManager.TextFilePlot tfp =
 					Services.plotManager.GetOrCreatePlots(prefabType) as PlotManager.TextFilePlot;
-				var bubble = tfp.bubble;
-				bubble.transform.parent = _content.transform;
+				tfp.CreateBubble();
 			}
 		},shootTime);
 	}
@@ -289,7 +288,7 @@ public class TextManager
         
 		Services.textSequenceTaskRunner.AddTask(delegate
 		{
-			GameObject newTimeBox = GameObject.Instantiate(Resources.Load<GameObject>(_timeStampBubble), _content.transform);
+			GameObject newTimeBox = GameObject.Instantiate(Resources.Load<GameObject>(_timeStampBubble), content.transform);
 			newTimeBox.GetComponentInChildren<TextMeshProUGUI>().text = TimeStamp.GetTimeStamp(time);
 		},time);
 	}
@@ -359,7 +358,7 @@ public class TextManager
 	}
 	private void AddDot()
 	{
-		GameObject newBox = GameObject.Instantiate(Resources.Load<GameObject>(_typingDotBubble), _content.transform);
+		GameObject newBox = GameObject.Instantiate(Resources.Load<GameObject>(_typingDotBubble), content.transform);
 		_dot = newBox;
 	}
 
@@ -409,6 +408,7 @@ public class TextManager
 				    {
 					    RefreshView();
 				    },shootTime);
+			    return;
 		    }
 		    
 		    AddNewMessage(MessageBubbleType.Demon,text,shootTime);
@@ -480,7 +480,7 @@ public class TextManager
     {
         var plotMessage = Services.saveManager.plotMessages;
         var dialogueMessage = Services.saveManager.dialogueMessages;
-
+        _dialogueLabel = dialogueMessage.Count;
         if(plotMessage.Count!=0) for (int i = plotMessage.Count-1; i>-1; i--)
         {
             var msg = plotMessage[i];
@@ -489,7 +489,7 @@ public class TextManager
                 case MessageBubbleType.Demon:
                     Services.textSequenceTaskRunner.AddTask(delegate
                      {
-                         GameObject newTimeBox = GameObject.Instantiate(Resources.Load<GameObject>(_demonTextBox), _content.transform);
+                         GameObject newTimeBox = GameObject.Instantiate(Resources.Load<GameObject>(_demonTextBox), content.transform);
                          newTimeBox.GetComponentInChildren<TextMeshProUGUI>().text = msg.content;
                          newTimeBox.transform.SetSiblingIndex(0);
                      }, msg.shootTime);
@@ -497,7 +497,7 @@ public class TextManager
                 case MessageBubbleType.Player:
                     Services.textSequenceTaskRunner.AddTask(delegate
                     {
-                        GameObject newTimeBox = GameObject.Instantiate(Resources.Load<GameObject>(_playerTextBox), _content.transform);
+                        GameObject newTimeBox = GameObject.Instantiate(Resources.Load<GameObject>(_playerTextBox), content.transform);
                         newTimeBox.GetComponentInChildren<TextMeshProUGUI>().text = msg.content;
                         newTimeBox.transform.SetSiblingIndex(0);
                     },msg.shootTime);
@@ -505,16 +505,29 @@ public class TextManager
                 case MessageBubbleType.TimeStamp:
                     Services.textSequenceTaskRunner.AddTask(delegate
                     {
-                        GameObject newTimeBox = GameObject.Instantiate(Resources.Load<GameObject>(_timeStampBubble), _content.transform);
+                        GameObject newTimeBox = GameObject.Instantiate(Resources.Load<GameObject>(_timeStampBubble), content.transform);
                         newTimeBox.GetComponentInChildren<TextMeshProUGUI>().text = TimeStamp.GetTimeStamp(msg.shootTime);
                         newTimeBox.transform.SetSiblingIndex(0);
                     },msg.shootTime);
                     break;
+                case MessageBubbleType.Prefab:
+	                Services.textSequenceTaskRunner.AddTask(delegate
+	                {
+		                Debug.Log("the msg was read");
+		                var prefabType = msg.prefabType;
+		                if (prefabType.IsSubclassOf(typeof(PlotManager.TextFilePlot)))
+		                {
+			                PlotManager.TextFilePlot tfp =
+				                Services.plotManager.GetOrCreatePlots(prefabType) as PlotManager.TextFilePlot;
+			                tfp.CreateBubble();
+		                }
+	                },msg.shootTime);
+	                break;
             }
             
         }
 
-        _dialogueLabel = dialogueMessage.Count - 1;
+        _dialogueLabel --;
     }
     
     private void LoadMoreDialogue()
@@ -528,7 +541,7 @@ public class TextManager
                 Services.textSequenceTaskRunner.AddSideTask(delegate
                 {
                     GameObject newTimeBox =
-                        GameObject.Instantiate(Resources.Load<GameObject>(_endChatBubble), _content.transform);
+                        GameObject.Instantiate(Resources.Load<GameObject>(_endChatBubble), content.transform);
                     newTimeBox.transform.SetSiblingIndex(0);
                 },DateTime.Now);
                 isEndChatShow = true;
@@ -546,7 +559,7 @@ public class TextManager
                 case MessageBubbleType.Demon:
                     Services.textSequenceTaskRunner.AddTask(delegate
                     {
-                        GameObject newTimeBox = GameObject.Instantiate(Resources.Load<GameObject>(_demonTextBox), _content.transform);
+                        GameObject newTimeBox = GameObject.Instantiate(Resources.Load<GameObject>(_demonTextBox), content.transform);
                         newTimeBox.GetComponentInChildren<TextMeshProUGUI>().text = msg.content;
                         newTimeBox.transform.SetSiblingIndex(0);
                     },msg.shootTime);
@@ -554,7 +567,7 @@ public class TextManager
                 case MessageBubbleType.Player:
                     Services.textSequenceTaskRunner.AddTask(delegate
                     {
-                        GameObject newTimeBox = GameObject.Instantiate(Resources.Load<GameObject>(_playerTextBox), _content.transform);
+                        GameObject newTimeBox = GameObject.Instantiate(Resources.Load<GameObject>(_playerTextBox), content.transform);
                         newTimeBox.GetComponentInChildren<TextMeshProUGUI>().text = msg.content;
                         newTimeBox.transform.SetSiblingIndex(0);
                     },msg.shootTime);
@@ -562,11 +575,23 @@ public class TextManager
                 case MessageBubbleType.TimeStamp:
                     Services.textSequenceTaskRunner.AddTask(delegate
                     {
-                        GameObject newTimeBox = GameObject.Instantiate(Resources.Load<GameObject>(_timeStampBubble), _content.transform);
+                        GameObject newTimeBox = GameObject.Instantiate(Resources.Load<GameObject>(_timeStampBubble), content.transform);
                         newTimeBox.GetComponentInChildren<TextMeshProUGUI>().text = TimeStamp.GetTimeStamp(msg.shootTime);
                         newTimeBox.transform.SetSiblingIndex(0);
                     },msg.shootTime);
                     break;
+                case MessageBubbleType.Prefab:
+	                Services.textSequenceTaskRunner.AddTask(delegate
+	                {
+		                var prefabType = msg.prefabType;
+		                if (prefabType.IsSubclassOf(typeof(PlotManager.TextFilePlot)))
+		                {
+			                PlotManager.TextFilePlot tfp =
+				                Services.plotManager.GetOrCreatePlots(prefabType) as PlotManager.TextFilePlot;
+			                tfp.CreateBubble();
+		                }
+	                },msg.shootTime);
+	                break;
             }
             
         }

@@ -8,6 +8,7 @@ using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
+using DG.Tweening;
 using DialADemon.Page;
 using Ink.Runtime;
 using UnityEngine;
@@ -445,7 +446,7 @@ public class PlotManager
         {
             public Story story;
             protected TextManager tm = Services.textManager;
-            public List<TextFilePlot> attachedFile = new List<TextFilePlot>();
+            protected List<Type> _attachedFileType = new List<Type>();
             
             public override void Reload()
             {
@@ -469,14 +470,22 @@ public class PlotManager
     
             public override void Start()
             {
+                //the normal start setting
                 tm.currentTextPlot = this;
                 Services.eventManager.AddHandler<TextFinished>(OnTextFinished);
                 
+                //for late start
+                //for plots not load weird, the first two sentence of a plot should not have fancy "thinking time"
+                //that takes more than 5- seconds
                 DateTime startTime;
                 parent.Calendar.TryGetValue(this, out startTime);
-                tm.LoadDialogueForNewPlotWhenAPPisOff(startTime);
+                if ((DateTime.Now - startTime) > TimeSpan.FromSeconds(5))
+                {
+                    Debug.Log("????");
+                    tm.LoadDialogueForNewPlotWhenAPPisOff(startTime);
+                }
                 
-                //tm.StartNewStory(story);
+                tm.StartNewStory(story);
             }
             
             public override void Clear()
@@ -488,10 +497,7 @@ public class PlotManager
             
             public void OnTextFinished(TextFinished e)
             {
-                foreach (var filePlot in attachedFile)
-                {
-                    filePlot.AttachFile(e.ShootTime);
-                }
+                CheckAttachedFile(e.ShootTime);
                 _plotState = plotState.isFinished;
             }
     
@@ -548,6 +554,21 @@ public class PlotManager
             {
                 story = PlotFileAddress.GetStory(storyDictType);
             }
+
+            public void CheckAttachedFile(DateTime shootTime)
+            {
+                foreach (var filePlotType in _attachedFileType)
+                {
+                    Debug.Log(filePlotType);
+                    var plot = parent.GetOrCreatePlots(filePlotType);
+                    if (plot.GetType().IsSubclassOf(typeof(TextFilePlot)))
+                    {
+                        var plotText = plot as TextFilePlot;
+                        tm.AddNewFileMessage(plotText.GetType(), shootTime);
+                    }
+                    
+                }
+            }
         }
     
     public class Day1_Text1 : TextPlot //contract text
@@ -559,6 +580,7 @@ public class PlotManager
                 relaSpan = TimeSpan.FromMinutes(0.1f);
                 _requiredPrePlots = new List<Type>(){typeof(RootPlot)};
                 _childPlots = new List<Type>{typeof(Day2_Text1)};
+                _attachedFileType.Add(typeof(Day1_ContractFile));
                 InitStory();
             }
     
@@ -812,42 +834,66 @@ public class PlotManager
     /// </summary>
     public class TextFilePlot : Plot
     {
-        private Type importDocumentPairBelongedPlot = null;
-        private GameObject _bubble;
-        public GameObject bubble
+        protected Type importDocumentPairBelongedPlot = null;
+        protected GameObject _bubblePre;
+        public GameObject bubblePre
         {
             get
             {
                 if (importDocumentPairBelongedPlot == null) importDocumentPairBelongedPlot = GetType();
-                if (!_bubble)
+                if (!_bubblePre)
                 {
-                    _bubble = PlotFileAddress.GetBubble(importDocumentPairBelongedPlot);
-                    _bubble.GetComponentInChildren<OpenFileButton>().plotType = GetType();
+                    _bubblePre = PlotFileAddress.GetBubblePrefab(importDocumentPairBelongedPlot);
                 }
-                return _bubble;
+                return _bubblePre;
             }
         }
 
-        private GameObject _document;
-        public GameObject document
+        protected GameObject _documentPre;
+        public GameObject documentPre
         {
             get
             {
                 if (importDocumentPairBelongedPlot == null) importDocumentPairBelongedPlot = GetType();
-                if (!_document)
+                if (!_documentPre)
                 {
-                    _document = PlotFileAddress.GetBubble(importDocumentPairBelongedPlot);
-                    _bubble.GetComponentInChildren<OpenFileButton>().plotType = GetType();
+                    _documentPre = PlotFileAddress.GetDocumentPrefab(importDocumentPairBelongedPlot);
                 }
-                return _document;
+                return _documentPre;
             }
         }
+
+        public GameObject bubble;
+        public GameObject document;
         protected TextManager tm = Services.textManager;
-
-        public void AttachFile(DateTime shootTime)
+        
+        public void CreateBubble()
         {
-            tm.AddNewFileMessage(GetType(),shootTime);
+            bubble = GameObject.Instantiate(bubblePre, tm.content.transform);
+            bubble.GetComponentInChildren<OpenFileButton>().plotType = GetType();
+            Debug.Log("1");
+        }
+
+        public void CreateDocument()
+        {
+            foreach (var item in Services.pageState.GetGameState("Front_Main").relatedObj)
+            {
+                if (item.CompareTag("PageObj"))
+                {
+                    Debug.Log("documentpre" + documentPre);
+                    document = GameObject.Instantiate(documentPre, item.transform);
+                    document.GetComponentInChildren<CloseFileButton>().plotType = GetType();
+                    document.transform.localScale = new Vector3(0.1f,0.1f,0.1f);
+                    document.transform.DOScale(1f, 1f);
+                    break;
+                }
+            }
         }
     }
-    
+
+    public class Day1_ContractFile : TextFilePlot
+    {
+
+    }
+
 }
