@@ -37,7 +37,7 @@ public class OpenFileButton : MonoBehaviour
 
     public void OnSimpleTap()
     {
-        ps.ChangeGameState(ps.CSM.stateList.Front_Main);
+        ps.ChangeGameState("Front_Main");
         tfp.CreateDocument();
     }
 }

@@ -63,6 +63,11 @@ namespace DialADemon.Page
         {
             _csm.TransitionTo(state);
         }
+        
+        public void ChangeGameState(string stateName)
+        {
+            _csm.TransitionTo(GetGameState(stateName));
+        }
 
         public Pages GetGameState(string pageName)
         {
@@ -81,8 +86,7 @@ namespace DialADemon.Page
 
         public void AddState(string name, bool isValid, GameObject[] relatedObj,params Enum[] properties)
         {
-            IDictionary<string, object> dict = _csm.stateList as IDictionary<string, object>;
-            int id = dict.Keys.Count;
+            int id = _csm.stateList.Keys.Count;
             _csm.AddState(id, name, isValid, relatedObj, properties);
         }
 
@@ -114,7 +118,7 @@ namespace DialADemon.Page
         public void Start()
         {
             //set the initiate state
-            ChangeGameState(_csm.stateList.Menu_Main);
+            ChangeGameState("Menu_Main");
         }
         
         public void Update()

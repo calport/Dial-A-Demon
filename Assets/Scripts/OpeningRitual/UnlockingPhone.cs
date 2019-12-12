@@ -82,7 +82,7 @@ public class UnlockingPhone : MonoBehaviour
             var currentCode = new Vector3((int)inputNumber[0], (int)inputNumber[1], (int)inputNumber[2]);
             if (currentCode == correctCode) StartCoroutine(CorrectFade());
             else if (currentCode == jumpCode)
-                Services.pageState.ChangeGameState(Services.pageState.CSM.stateList.Menu_Main);
+                Services.pageState.ChangeGameState("Menu_Main");
             else StartCoroutine(ScreenShake());
 
             guess = 0;
