@@ -147,7 +147,9 @@ public class UnlockingPhone : MonoBehaviour
         yield return new WaitForSeconds(1);
         //make the screenshake and a vibration play 
         shakeDuration = 2.0f;
+    #if UNITY_IOS
         Handheld.Vibrate(); 
+    #endif
         //set all unlocks back to false 
         Unlock1.SetActive(false);
         Unlock2.SetActive(false);

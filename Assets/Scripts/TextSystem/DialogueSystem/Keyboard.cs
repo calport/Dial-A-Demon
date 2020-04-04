@@ -89,9 +89,11 @@ public class Keyboard : MonoBehaviour
                 tm.textBox.text = content;
                 _sendButton.onClick.AddListener(SendChoice);
                 Debug.Log(_sendButton);
+    #if UNITY_IOS
                 Handheld.Vibrate();
                 Handheld.Vibrate();
-               // neonLight.Play(0);
+    #endif
+                // neonLight.Play(0);
                 optionSound.Play();
             }
             _pointerIn = true;
