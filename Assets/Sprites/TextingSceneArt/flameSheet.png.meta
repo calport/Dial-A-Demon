@@ -15,7 +15,7 @@ TextureImporter:
       213: 5605493794472175547
     second: IMG_0009
   externalObjects: {}
-  serializedVersion: 10
+  serializedVersion: 11
   mipmaps:
     mipMapMode: 0
     enableMipMap: 0
@@ -69,6 +69,7 @@ TextureImporter:
   maxTextureSizeSet: 0
   compressionQualitySet: 0
   textureFormatSet: 0
+  applyGammaDecoding: 1
   platformSettings:
   - serializedVersion: 3
     buildTarget: DefaultTexturePlatform
@@ -136,7 +137,7 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 
+      spriteID: 37bf993a97bc0fea0800000000000000
       internalID: -5840944993403274381
       vertices: []
       indices: 
@@ -157,7 +158,7 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 
+      spriteID: 17c5dd714565863b0800000000000000
       internalID: -5519066424164918159
       vertices: []
       indices: 
@@ -178,7 +179,7 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 
+      spriteID: eb47dda3194c46620800000000000000
       internalID: 2766552199149221054
       vertices: []
       indices: 
@@ -199,7 +200,7 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 
+      spriteID: bb7ab2a28e6bacd40800000000000000
       internalID: 5605493794472175547
       vertices: []
       indices: 
