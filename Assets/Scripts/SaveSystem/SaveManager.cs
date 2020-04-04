@@ -8,8 +8,6 @@ using Antlr4.Runtime;
 using Ink.Runtime;
 using Newtonsoft.Json;
 using UnityEngine;
-using UnityEngine.Experimental.PlayerLoop;
-using UnityEngine.Serialization;
 
 public enum MessageBubbleType
 {

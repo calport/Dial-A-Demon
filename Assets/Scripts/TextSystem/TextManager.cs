@@ -6,7 +6,6 @@ using DialADemon.Library;
 using Ink.Runtime;
 using TMPro;
 using UnityEngine;
-using UnityEngine.Experimental.PlayerLoop;
 using UnityEngine.UI;
 using Yarn.Unity;
 using Yarn.Unity.Example;
