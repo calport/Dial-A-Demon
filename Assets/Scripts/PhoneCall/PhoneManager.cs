@@ -106,7 +106,7 @@ public class PhoneManager
 
     private void OnPhoneFinished()
     {
-        _phoneCallAudioPiece.Stop();
+        if(!ReferenceEquals(_phoneCallAudioPiece,null)) _phoneCallAudioPiece.Stop();
         ps.ChangeGameState(previousPage);
         previousPage = null;
     }
