@@ -14,16 +14,16 @@ public class UnlockingPhone : MonoBehaviour
     private int correct;
     
     //screenshake for if incorrect guess
-    private Transform transform;
+    private Transform _transform;
     //duration of screenshake
-    private float shakeDuration = 0f; 
+    private float _shakeDuration = 0f; 
     //magnitude for the shake
     private float shakeMagnitude = 2.7f; 
     //how fast it should go away
     private float dampingSpeed = 0.75f; 
-    List<int> inputNumber = new List<int>();
-    Vector3 correctCode = new Vector3((int)6, (int)6, (int)6);
-    Vector3 jumpCode = new Vector3((int)1, (int)2, (int)3);
+    private List<int> _inputNumber = new List<int>();
+    private Vector3 _correctCode = new Vector3((int)6, (int)6, (int)6);
+    private Vector3 _jumpCode = new Vector3((int)1, (int)2, (int)3);
     
     //initial position of GameObject
     private Vector3 initialPosition;
@@ -31,9 +31,9 @@ public class UnlockingPhone : MonoBehaviour
 
     private void Awake()
     {
-        if (transform == null)
+        if (_transform == null)
         {
-            transform = GetComponent(typeof(Transform)) as Transform;
+            _transform = GetComponent(typeof(Transform)) as Transform;
         }
     }
 
@@ -47,16 +47,16 @@ public class UnlockingPhone : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-            if (shakeDuration > 0)
+            if (_shakeDuration > 0)
             {
-                transform.localPosition = initialPosition + Random.insideUnitSphere * shakeMagnitude;
+                _transform.localPosition = initialPosition + Random.insideUnitSphere * shakeMagnitude;
    
-                shakeDuration -= Time.deltaTime * dampingSpeed;
+                _shakeDuration -= Time.deltaTime * dampingSpeed;
             }
             else
             {
-                shakeDuration = 0f;
-                transform.localPosition = initialPosition;
+                _shakeDuration = 0f;
+                _transform.localPosition = initialPosition;
             }
     }
 
@@ -76,17 +76,17 @@ public class UnlockingPhone : MonoBehaviour
         }
         guess++;
         
-        if(inputNumber.Count<3) inputNumber.Add(number);
-        if (inputNumber.Count == 3)
+        if(_inputNumber.Count<3) _inputNumber.Add(number);
+        if (_inputNumber.Count == 3)
         {
-            var currentCode = new Vector3((int)inputNumber[0], (int)inputNumber[1], (int)inputNumber[2]);
-            if (currentCode == correctCode) StartCoroutine(CorrectFade());
-            else if (currentCode == jumpCode)
+            var currentCode = new Vector3((int)_inputNumber[0], (int)_inputNumber[1], (int)_inputNumber[2]);
+            if (currentCode == _correctCode) StartCoroutine(CorrectFade());
+            else if (currentCode == _jumpCode)
                 Services.pageState.ChangeGameState("Menu_Main");
             else StartCoroutine(ScreenShake());
 
             guess = 0;
-            inputNumber.Clear();
+            _inputNumber.Clear();
         }
     }
     public void UnlockPhoneCorrect()
@@ -146,8 +146,10 @@ public class UnlockingPhone : MonoBehaviour
     {
         yield return new WaitForSeconds(1);
         //make the screenshake and a vibration play 
-        shakeDuration = 2.0f;
+        _shakeDuration = 2.0f;
+    #if UNITY_IOS
         Handheld.Vibrate(); 
+    #endif
         //set all unlocks back to false 
         Unlock1.SetActive(false);
         Unlock2.SetActive(false);
@@ -175,6 +177,6 @@ public class UnlockingPhone : MonoBehaviour
 
     private void OnEnable()
     {
-        initialPosition = transform.localPosition;
+        initialPosition = _transform.localPosition;
     }
 }

@@ -44,7 +44,6 @@ public class PageRegister : MonoBehaviour
 
         if (gameObject.transform.parent.gameObject.name == "FrontUI")
         {
-            Debug.Log("dfjleajif");
             gameObject.transform.parent.gameObject.SetActive(false);
         }
     }

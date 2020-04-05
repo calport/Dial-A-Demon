@@ -10,13 +10,13 @@ public static class PlotFileAddress
     //all based on resources
     internal static Dictionary<Type, string> inkFileAddress = new Dictionary<Type, string>
     {
-        {typeof(PlotManager.Day1_Text1), "Day1_Contract.json"},
-        {typeof(PlotManager.Day2_Text1), "Day2_Morning.json"}, 
-        {typeof(PlotManager.Day2_Text2), "Day2_Feeling.json"},
-        {typeof(PlotManager.Day3_Text1), "Day3_morning.json"},
-        {typeof(PlotManager.Day3_Text3), "Day3_NeverHaveIEver.json"},
-        {typeof(PlotManager.Day4_Text1), "Day4_morning.json"}, 
-        {typeof(PlotManager.Day6_Text2), "Day6_Gifting.json"}
+        {typeof(PlotManager.Day1_Text1), "Day1_Contract"},
+        {typeof(PlotManager.Day2_Text1), "Day2_Morning"}, 
+        {typeof(PlotManager.Day2_Text2), "Day2_Feeling"},
+        {typeof(PlotManager.Day3_Text1), "Day3_morning"},
+        {typeof(PlotManager.Day3_Text3), "Day3_NeverHaveIEver"},
+        {typeof(PlotManager.Day4_Text1), "Day4_morning"}, 
+        {typeof(PlotManager.Day6_Text2), "Day6_Gifting"}
         //
     };
     internal static Dictionary<Type, string> textBubblePrefabAddress = new Dictionary<Type, string>
@@ -32,9 +32,9 @@ public static class PlotFileAddress
     {
         string textAssetLocation;
         inkFileAddress.TryGetValue(plotType, out textAssetLocation);
-        var ta = SerializeManager.ReadJsonString(Application.dataPath + "/Resources/InkText/" + textAssetLocation);
+        var textAsset = Resources.Load<TextAsset>("InkText/" + textAssetLocation);
         //var ta = Resources.Load<TextAsset>(textAssetLocation);
-        return new Story(ta);
+        return new Story(textAsset.text);
     }
     
     public static GameObject GetBubblePrefab(Type plotType)

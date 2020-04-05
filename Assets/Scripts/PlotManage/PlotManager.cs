@@ -769,8 +769,8 @@ public class PlotManager
 
         protected void InitPhoneClip(Type plotType = null)
         {
-            if(plotType == null) callContent = PhoneFileAddress.GetPhoneClip(GetType());
-            else callContent = PhoneFileAddress.GetPhoneClip(plotType);
+            if(plotType == null) callContent = PhoneFileAddress.GetPhoneClipName(GetType());
+            else callContent = PhoneFileAddress.GetPhoneClipName(plotType);
         }
     }
 

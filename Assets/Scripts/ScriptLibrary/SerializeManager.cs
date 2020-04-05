@@ -4,6 +4,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Text;
 using Newtonsoft.Json;
+using SimpleJSON;
 using UnityEngine;
 
 public class SerializeManager
@@ -102,8 +103,8 @@ public class SerializeManager
 
     public static void SaveToJson<T>(string jsonPath,T fileToSave)
     {
-        string json = JsonConvert.SerializeObject(fileToSave);
-        Debug.Log(json);
+        string json = json
+            JsonConvert.SerializeObject(fileToSave);
         File.WriteAllText(jsonPath, json, Encoding.UTF8);
     }
     
