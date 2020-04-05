@@ -36,7 +36,6 @@ public class AudioManager
     private AudioManagerMonoBehaviour _audioManagerMonoBehaviour;
     private GameObject ea;
     private GameObject ba;
-    private Dictionary<string,AudioClip> _clipDic = new Dictionary<string, AudioClip>(0);
     public List<AudioSource> effectAudioSources = new List<AudioSource>(0);
     public List<AudioSource> backgroundAudioSources = new List<AudioSource>(0);
     
@@ -68,14 +67,23 @@ public class AudioManager
         
     }
 
-    public AudioManager PlayEffectAudio(string audioName)
+    public AudioSource PlayEffectAudio(string audioName, string path = "")
     {
-        var clip = _GetAudioClip(audioName);
+        var clip = GetAudioClip(audioName,path);
         var audioSource = _CreateNewAudioSource(audioName,true);
         
         audioSource.clip = clip;
         audioSource.Play();
-        return this;
+        return audioSource;
+    }
+
+    public AudioSource PlayEffectAudio(AudioClip clip)
+    {
+        var audioSource = _CreateNewAudioSource(clip.name, true);
+        
+        audioSource.clip = clip;
+        audioSource.Play();
+        return audioSource;
     }
 
     public AudioManager StopAllEffectAudio()
@@ -85,25 +93,38 @@ public class AudioManager
         return this;
     }
 
-    public AudioManager PlayBackgroundAudio(string audioName,int trackNumber)
+    public AudioManager StopEffectAudio(AudioSource source)
     {
-        var clip = _GetAudioClip(audioName);
+        if (effectAudioSources.Contains(source))
+        {
+            effectAudioSources.Remove(source);
+            source.Stop();
+            GameObject.Destroy(source.gameObject);
+        }
+        return this;
+    }
+
+    public AudioManager StopBackgroundAudio(int trackNumber)
+    {
+        backgroundAudioSources[trackNumber].Stop();
+        return this;
+    }
+
+    public AudioManager PlayBackgroundAudio(int trackNumber,string audioName,string path = "")
+    {
+        var clip = GetAudioClip(audioName);
         var audioSource = backgroundAudioSources[trackNumber];
         audioSource.clip = clip;
         audioSource.Play();
         return this;
     }
     
-    private AudioClip _GetAudioClip(string audioName)
+    public AudioClip GetAudioClip(string audioName,string path = "")
     {
-        if (_clipDic.ContainsKey(audioName))
-            return  _clipDic[audioName];
-        
-        var clip = Resources.Load<AudioClip>("Audios/"+audioName);
-        _clipDic.Add(audioName,clip);
+        var clip = Resources.Load<AudioClip>("Audios/"+ path + audioName);
         return clip;
     }
-
+    
     private AudioSource _CreateNewAudioSource(string name, bool isEffect)
     {
         var newAudioObj = new GameObject();
@@ -122,5 +143,13 @@ public class AudioManager
                 break;
         }
         return audioSource;
+    }
+}
+
+public class AudioPiece
+{
+    public AudioPiece()
+    {
+        
     }
 }

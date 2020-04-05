@@ -103,7 +103,6 @@ public class SerializeManager
     public static void SaveToJson<T>(string jsonPath,T fileToSave)
     {
         string json = JsonConvert.SerializeObject(fileToSave);
-        Debug.Log(json);
         File.WriteAllText(jsonPath, json, Encoding.UTF8);
     }
     

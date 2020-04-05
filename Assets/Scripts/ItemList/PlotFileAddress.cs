@@ -33,9 +33,8 @@ public static class PlotFileAddress
         string textAssetLocation;
         inkFileAddress.TryGetValue(plotType, out textAssetLocation);
         var textAsset = Resources.Load<TextAsset>("InkText/" + textAssetLocation);
-        var ta = SerializeManager.ReadJsonString(textAsset.text);
         //var ta = Resources.Load<TextAsset>(textAssetLocation);
-        return new Story(ta);
+        return new Story(textAsset.text);
     }
     
     public static GameObject GetBubblePrefab(Type plotType)

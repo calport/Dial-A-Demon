@@ -112,7 +112,24 @@ public static class Services
     }
 
     #endregion
+    
+    #region Util
 
+        private static AudioManager _audioManager;
+        public static AudioManager audioManager
+        {
+            get
+            {
+                if (_audioManager != null) return _audioManager;
+                else
+                {
+                    _audioManager = new AudioManager();
+                    return _audioManager;
+                }
+            }
+        }
+
+    #endregion
     #region Object & Date reference
 
     public static EasyTouch easyTouch;

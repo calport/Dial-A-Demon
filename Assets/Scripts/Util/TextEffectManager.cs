@@ -5,7 +5,6 @@ using System.IO.IsolatedStorage;
 using System.Linq;
 using System.Text.RegularExpressions;
 using TMPro;
-using UnityEditor.Presets;
 using UnityEngine;
 using UnityEngine.Experimental.XR;
 
