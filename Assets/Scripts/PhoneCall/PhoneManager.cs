@@ -12,11 +12,10 @@ public class PhoneManager
     private PageState ps = Services.pageState;
     private Pages previousPage;
     public Coroutine waitForPickingUp;
-    private AudioSource _phoneCallAudioSource;
+    private AudioPiece _phoneCallAudioPiece;
     
     //these are for checking phone call states and making events
     private bool _isPhonePlayLastFrame;
-    private AudioSource _phoneAudioSource;
     public DateTime phoneStartTime;
 
     // Start is called before the first frame update
@@ -31,13 +30,13 @@ public class PhoneManager
     // Update is called once per frame
     public void Update()
     {
-        //this part is for phone call event
+        /*//this part is for phone call event
 /*        if (!_isPhonePlayLastFrame && _phoneAudioSource.isPlaying)
         {
             _phoneStartTime = DateTime.Now;
             Services.eventManager.Fire(new PhonePickedUp());
-        }*/
-        if (_isPhonePlayLastFrame && !ReferenceEquals(_phoneAudioSource, null) && !_phoneCallAudioSource.isPlaying) 
+        }#1#
+        if (_isPhonePlayLastFrame && !ReferenceEquals(_phoneAudioSource, null) && !_phoneCallAudioPiece.isPlaying) 
         {
             if (currrentPhonePlot != null && currrentPhonePlot.plotState != PlotManager.plotState.isBreak &&
                 currrentPhonePlot.plotState != PlotManager.plotState.isFinished)
@@ -45,7 +44,7 @@ public class PhoneManager
                 Services.eventManager.Fire(new PhoneFinished());
             }
         }
-        _isPhonePlayLastFrame = _phoneCallAudioSource.isPlaying;
+        _isPhonePlayLastFrame = _phoneCallAudioPiece.isPlaying;*/
     }
 
     public void Clear()
@@ -91,14 +90,23 @@ public class PhoneManager
         Debug.Assert(currrentPhonePlot!= null,"The current phone plot is not assigned properly");
         ps.ChangeGameState("Phone_OnCall");
         phoneStartTime = DateTime.Now;
-        _phoneCallAudioSource.clip = currrentPhonePlot.callContent;
-        _phoneCallAudioSource = Services.audioManager.PlayEffectAudio(currrentPhonePlot.callContent);
+        _phoneCallAudioPiece = new AudioPiece(currrentPhonePlot.callContent,-1);
+        _phoneCallAudioPiece.onAudioFinished += () =>
+        {
+            _phoneCallAudioPiece.Stop();
+            if (currrentPhonePlot != null && currrentPhonePlot.plotState != PlotManager.plotState.isBreak &&
+                currrentPhonePlot.plotState != PlotManager.plotState.isFinished)
+            {
+                Services.eventManager.Fire(new PhoneFinished());
+            }
+        };
+        _phoneCallAudioPiece.Play();
         //AudioManager.PlaySound(DefaultAudioSource.PhoneCall,currrentPhonePlot.callContent);
     }
 
     private void OnPhoneFinished()
     {
-        _phoneCallAudioSource.Stop();
+        _phoneCallAudioPiece.Stop();
         ps.ChangeGameState(previousPage);
         previousPage = null;
     }

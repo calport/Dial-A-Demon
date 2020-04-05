@@ -115,7 +115,6 @@ public class TextManager
 		{
 			// Continue gets the next line of the story
 			string text = currentStory.Continue();
-			Debug.Log(text);
 			// This removes any white space from the text.
 			text = text.Trim();
 			//check all the tags and use them to rich the text and texting behaviors
