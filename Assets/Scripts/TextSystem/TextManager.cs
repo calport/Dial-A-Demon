@@ -2,8 +2,11 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
+using System.Text;
 using DialADemon.Library;
 using Ink.Runtime;
+using SimpleJSON;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -16,11 +19,11 @@ public class TextManager
 	{
 		get
 		{
-			if (currentTextPlot != null) return currentTextPlot.story;
-			else return null;
+			if (!ReferenceEquals(currentTextPlot,null)) return currentTextPlot.story;
+			return null;
 		}
 	}
-	public string inkJson;
+	public string inkJson { get; private set; }
 	public PlotManager.TextPlot currentTextPlot;
 
 	// path of the massage bubble prefabs
@@ -68,13 +71,14 @@ public class TextManager
 
     public void Init()
     {
+	    Services.eventManager.AddHandler<TextFinished>(_OnTextFinished);
     }
 
     public void Update()
     {
         if (_msgScroll.verticalNormalizedPosition >1f && !isReloadingDialogueMute)
         {
-            if(isLoadInitDialogueFinished) LoadMoreDialogue();
+            if(isLoadInitDialogueFinished) _LoadMoreDialogue();
             isReloadingDialogueMute = true;
             CoroutineManager.DoDelayCertainSeconds(delegate { isReloadingDialogueMute = false; },3f );
         }
@@ -82,6 +86,7 @@ public class TextManager
     public void Clear()
     {
         //save here
+        Services.eventManager.RemoveHandler<TextFinished>(_OnTextFinished);
     }
 
     #endregion
@@ -215,7 +220,7 @@ public class TextManager
                 msg.messageType = MessageBubbleType.Player;
                 msg.content=text;
                 msg.shootTime = shootTime;
-                Services.saveManager.plotMessages.Add(msg);
+                _currentDialogueMessages.Add(msg);
                 
                 //create the bubble
                 Services.textSequenceTaskRunner.AddTask(delegate
@@ -230,7 +235,7 @@ public class TextManager
                 msg.messageType = MessageBubbleType.Demon;
                 msg.content=text;
                 msg.shootTime = shootTime;
-                Services.saveManager.plotMessages.Add(msg);
+                _currentDialogueMessages.Add(msg);
                 
                 Services.textSequenceTaskRunner.AddTask(delegate
                 {
@@ -262,7 +267,7 @@ public class TextManager
 		msg.messageType = MessageBubbleType.Prefab;
 		msg.prefabType = prefabType;
 		msg.shootTime = shootTime;
-		Services.saveManager.plotMessages.Add(msg);
+		_currentDialogueMessages.Add(msg);
 		
 		Services.textSequenceTaskRunner.AddTask(delegate
 		{
@@ -282,7 +287,7 @@ public class TextManager
 		msg.messageType = MessageBubbleType.TimeStamp;
 		msg.content=String.Empty;
 		msg.shootTime = time;
-		Services.saveManager.plotMessages.Add(msg);
+		_currentDialogueMessages.Add(msg);
         
 		Services.textSequenceTaskRunner.AddTask(delegate
 		{
@@ -369,27 +374,122 @@ public class TextManager
 	
 	#region Save
 
-	public void Save()
+	
+	public enum MessageBubbleType
 	{
-		Services.saveManager.lastTimeStamp = _lastTimeStamp;
-    }
+		Demon,
+		Player,
+		TimeStamp,
+		Prefab
+	}
+	
+	[Serializable]
+	public struct MessageContent
+	{
+		public MessageBubbleType messageType;
+		public string content;
+		public DateTime shootTime;
+		public Type prefabType;
+	}
+	
+	private List<MessageContent> _currentDialogueMessages = new List<MessageContent>();
+	private List<MessageContent[]> _dialogueMessages = new List<MessageContent[]>();
 
-    public void Load()
+	public JSONObject Save(JSONObject jsonObject)
+	{
+		//save the data
+		var isLastDialogueFinished = false;
+		if (_currentDialogueMessages.Count != 0)
+			_OnTextFinished(new TextFinished(DateTime.MinValue));
+		else
+			isLastDialogueFinished = true;
+		
+		var dialogueLengthInfo = new List<int>(); 
+		var dialogueMessages = new List<MessageContent>(); 
+		SerializeManager.Serialize2DArray(_dialogueMessages.ToArray(),out dialogueLengthInfo, out dialogueMessages);
+
+		if(currentStory!= null)  File.WriteAllText(Services.saveManager.inkjsonPath, Services.textManager.currentStory.state.ToJson(), Encoding.UTF8);
+		else File.WriteAllText(Services.saveManager.inkjsonPath, "");
+
+		//write them in the json file
+		var textJsonObj = new JSONObject();
+		textJsonObj.Add("isLastDialogueFinished", isLastDialogueFinished);
+		var jsonDialogueLengthInfo = new JSONArray();
+		foreach (var lengthInfo in dialogueLengthInfo)
+			jsonDialogueLengthInfo.Add(lengthInfo);
+		textJsonObj.Add("dialogueLengthInfo", jsonDialogueLengthInfo);
+		var jsonDialogueContent = new JSONArray();
+		foreach (var msg in dialogueMessages)
+		{
+			var msgObj = new JSONObject();
+			msgObj.Add("messageType",msg.messageType.ToString());
+			msgObj.Add("content",msg.content);
+			var shootTimeString = (SerializeManager.JsonDateTime) msg.shootTime;
+			msgObj.Add("shootTime",shootTimeString.value.ToString());
+			if(!ReferenceEquals(msg.prefabType,null)) msgObj.Add("prefabType",msg.prefabType.ToString());
+			jsonDialogueContent.Add(msgObj);
+		}
+		textJsonObj.Add("dialogueMessages", jsonDialogueContent);
+		var stringTimeStamp = (SerializeManager.JsonDateTime) _lastTimeStamp;
+		textJsonObj.Add("lastTimeStamp", stringTimeStamp.value.ToString());
+		
+		jsonObject.Add("text", textJsonObj);
+		Debug.Log(jsonObject);
+		return jsonObject;
+	}
+
+    public void Load(JSONNode jsonObject)
     {
-	    if(File.Exists(Services.saveManager.saveJsonPath)){
-		    _lastTimeStamp = Services.saveManager.lastTimeStamp;
-		    LoadInitialDialogue();
-		    LoadMoreDialogue();
-		    LoadDialogueForOldPlotWhenAPPisOff();
+	    var textJsonObj = jsonObject["text"];
+	    
+	    bool isLastDialogueFinished = textJsonObj["isLastDialogueFinished"];
+	    
+	    //prepare finished msg
+	    var jsonDialogueLengthInfo = textJsonObj["dialogueLengthInfo"];
+	    var jsonDialogueMessages = textJsonObj["dialogueMessages"];
+	    var _msgContent = new List<MessageContent>();
+	    foreach (var jsonMsg in jsonDialogueMessages.Values)
+	    {
+		    var msg = new MessageContent(); 
+		    Enum.TryParse<MessageBubbleType>(jsonMsg["messageType"], out msg.messageType);
+		    msg.content = jsonMsg["content"];
+		    msg.shootTime = new SerializeManager.JsonDateTime(Convert.ToInt64((string)jsonMsg["shootTime"]));
+		    if(jsonMsg["prefabType"]!=null)
+			    msg.prefabType = Type.GetType(jsonMsg["prefabType"]);
+		    _msgContent.Add(msg);
 	    }
+	    var _msgLengthInfo = new List<int>();
+	    foreach (var length in jsonDialogueLengthInfo.Values)
+		    _msgLengthInfo.Add(length);
+	    MessageContent[][] arrayInfo= SerializeManager.Deserialize2DArray(_msgLengthInfo, _msgContent);
+	    //get the info from the save file
+	    foreach (var msgArray in arrayInfo)
+		    _dialogueMessages.Add(msgArray);
+	    if(!isLastDialogueFinished) 
+	    {
+		    if (_dialogueMessages.Count > 0)
+		    {
+			    var leftDialogue = _dialogueMessages[_dialogueMessages.Count - 1];
+			    _currentDialogueMessages = leftDialogue.ToList();
+			    _dialogueMessages.Remove(_dialogueMessages[_dialogueMessages.Count - 1]);
+		    }
+	    }
+        
+	    inkJson = SerializeManager.ReadJsonString(Services.saveManager.inkjsonPath);
+
+	    _lastTimeStamp = new SerializeManager.JsonDateTime(Convert.ToInt64((string)textJsonObj["lastTimeStamp"]));
+	    _LoadInitialDialogue();
+	    _LoadMoreDialogue();
+	    _LoadDialogueForOldPlotWhenAPPisOff();
+	    
 	    isLoadInitDialogueFinished = true;
     }
-    private void LoadDialogueForOldPlotWhenAPPisOff()
+    private void _LoadDialogueForOldPlotWhenAPPisOff()
     {
 	    //protect when currentStory doesnt exist
 	    if(currentTextPlot== null) return;
 	    
-	    var lastMsg = Services.saveManager.FindTheLastMessage();
+	    var lastMsg = FindTheLastMessage();
 	    var startTime = lastMsg.shootTime;
 	    while (currentStory.canContinue)
 	    {
@@ -430,7 +530,7 @@ public class TextManager
 	    }
     }
 
-    public void LoadDialogueForNewPlotWhenAPPisOff(DateTime originalStartTime)
+    public void _LoadDialogueForNewPlotWhenAPPisOff(DateTime originalStartTime)
     {
 	    //protect when currentStory doesnt exist
 	    if(currentTextPlot== null) return;
@@ -474,14 +574,12 @@ public class TextManager
 		    Services.eventManager.Fire(new TextFinished(startTime));
 	    }
     }
-    private void LoadInitialDialogue()
+    private void _LoadInitialDialogue()
     {
-        var plotMessage = Services.saveManager.plotMessages;
-        var dialogueMessage = Services.saveManager.dialogueMessages;
-        _dialogueLabel = dialogueMessage.Count;
-        if(plotMessage.Count!=0) for (int i = plotMessage.Count-1; i>-1; i--)
+        _dialogueLabel = _dialogueMessages.Count;
+        if(_currentDialogueMessages.Count!=0) for (int i = _currentDialogueMessages.Count-1; i>-1; i--)
         {
-            var msg = plotMessage[i];
+            var msg = _currentDialogueMessages[i];
             switch (msg.messageType)
             {
                 case MessageBubbleType.Demon:
@@ -528,11 +626,9 @@ public class TextManager
         _dialogueLabel --;
     }
     
-    private void LoadMoreDialogue()
+    private void _LoadMoreDialogue()
     {
-        var dialogueMessage = Services.saveManager.dialogueMessages;
-
-        if (_dialogueLabel < 0)
+	    if (_dialogueLabel < 0)
         {
             if (!isEndChatShow)
             {
@@ -548,7 +644,7 @@ public class TextManager
             return;
         }
         
-        MessageContent[] dialogueArray = dialogueMessage[_dialogueLabel];
+        MessageContent[] dialogueArray = _dialogueMessages[_dialogueLabel];
         for (int i = dialogueArray.Length-1; i>-1; i--)
         {
             var msg = dialogueArray[i];
@@ -597,6 +693,16 @@ public class TextManager
     }
 
     
+    public MessageContent FindTheLastMessage()
+    {
+	    if (_currentDialogueMessages.Count == 0 && _dialogueMessages.Count==0) return new MessageContent();
+	    if (_currentDialogueMessages.Count != 0) return _currentDialogueMessages[_currentDialogueMessages.Count - 1];
+        
+	    var oldDialogue = _dialogueMessages[_dialogueMessages.Count - 1];
+	    if (oldDialogue.Length != 0) return oldDialogue[oldDialogue.Length - 1];
+	    return new MessageContent();
+    }
+    
     #endregion
 
     #region ExtraFunc
@@ -607,6 +713,18 @@ public class TextManager
 	    {
 		    key.isChoice = false;
 	    }
+    }
+
+    #endregion
+
+    #region Events
+
+    private void _OnTextFinished(TextFinished e)
+    {
+	    //pack the msg and put them into the big list for saving
+	    var msgArray =_currentDialogueMessages.ToArray();
+	    _dialogueMessages.Add(msgArray);
+	    _currentDialogueMessages = new List<MessageContent>();
     }
 
     #endregion

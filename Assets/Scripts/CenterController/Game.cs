@@ -27,6 +27,12 @@ public class Game : MonoBehaviour
         //Services.eventManager.AddHandler<SceneChanged>(OnSceneChange);
 
         Input.simulateMouseWithTouches = true;
+        var time = DateTime.Now;
+        print(time);
+        var json = JsonUtility.ToJson((SerializeManager.JsonDateTime) time);
+        print(json);
+        DateTime timeFromJson = JsonUtility.FromJson<SerializeManager.JsonDateTime>(json);
+        print(timeFromJson);
     }
     
     // Update is called once per frame
@@ -72,9 +78,6 @@ public class Game : MonoBehaviour
     {  
         Services.saveManager.Init();
         Services.saveManager.LoadGame();
-        Services.plotManager.Load();
-        Services.textManager.Load();
-        Services.phoneManager.Load();
         
         //import all the data file
         //Services.referenceInfo = FindObjectOfType<ReferenceInfo>();
@@ -100,13 +103,11 @@ public class Game : MonoBehaviour
         Services.pageState.Clear();
         Services.plotManager.Clear();
         Services.saveManager.Clear();
+        Services.textManager.Clear();
     }
 
     void Save()
     {
-        Services.phoneManager.Save();
-        Services.textManager.Save();
-        Services.plotManager.Save();
         Services.saveManager.SaveGame();
     }
     

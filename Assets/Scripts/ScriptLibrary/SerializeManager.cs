@@ -4,45 +4,32 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Text;
 using Newtonsoft.Json;
-using SimpleJSON;
 using UnityEngine;
 
 public class SerializeManager
 {
-    public static Dictionary<List<int>, List<T>> Serialize2DArray<T>(T[][] array)
+    public static void Serialize2DArray<T>(T[][] array,out List<int> lengthInfo, out List<T> content)
     {
-        List<int> lengthInfo = new List<int>();
-        List<T> info = new List<T>();
+        lengthInfo = new List<int>();
+        content = new List<T>();
         foreach (var smallArray in array)
         {
             lengthInfo.Add(smallArray.Length);
             foreach (var item in smallArray)
-            {
-                info.Add(item);
-            }
+                content.Add(item);
         }
-
-        Dictionary<List<int>, List<T>> dic = new Dictionary<List<int>, List<T>>();
-        dic.Add(lengthInfo,info);
-        return dic;
     }
     
-    public static Dictionary<List<int>, List<T>> Serialize2DList<T>(List<List<T>> list)
+    public static void Serialize2DList<T>(List<List<T>> list,out List<int> lengthInfo, out List<T> content)
     {
-        List<int> lengthInfo = new List<int>();
-        List<T> info = new List<T>();
+        lengthInfo = new List<int>();
+        content = new List<T>();
         foreach (var smallList in list)
         {
             lengthInfo.Add(smallList.Count);
             foreach (var item in smallList)
-            {
-                info.Add(item);
-            }
+                content.Add(item);
         }
-
-        Dictionary<List<int>, List<T>> dic = new Dictionary<List<int>, List<T>>();
-        dic.Add(lengthInfo,info);
-        return dic;
     }
     
     public static T[][] Deserialize2DArray<T>(List<int> lengthInfo, List<T> info)
@@ -95,7 +82,7 @@ public class SerializeManager
     
     public static string ReadJsonString(string jsonPath)
     {
-        //read the file
+        //read the files
         StreamReader sr = new StreamReader(jsonPath);
         var json = sr.ReadToEnd();
         return json;
@@ -103,8 +90,8 @@ public class SerializeManager
 
     public static void SaveToJson<T>(string jsonPath,T fileToSave)
     {
-        string json = json
-            JsonConvert.SerializeObject(fileToSave);
+        
+        string json = JsonConvert.SerializeObject(fileToSave);
         File.WriteAllText(jsonPath, json, Encoding.UTF8);
     }
     
@@ -114,8 +101,12 @@ public class SerializeManager
     }
     
     
-    struct JsonDateTime {
+    public struct JsonDateTime {
         public long value;
+        public JsonDateTime(long value)
+        {
+            this.value = value;
+        }
         public static implicit operator DateTime(JsonDateTime jdt) {
             Debug.Log("Converted to time");
             return DateTime.FromFileTimeUtc(jdt.value);
@@ -128,8 +119,12 @@ public class SerializeManager
         }
     }
     
-    struct JsonTimeSpan {
+    public struct JsonTimeSpan {
         public long value;
+        public JsonTimeSpan(long value)
+        {
+            this.value = value;
+        }
         public static implicit operator TimeSpan(JsonTimeSpan jts)
         {
             TimeSpan newSpan = TimeSpan.Zero + TimeSpan.FromSeconds(jts.value);
