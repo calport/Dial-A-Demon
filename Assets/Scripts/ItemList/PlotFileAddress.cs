@@ -10,7 +10,7 @@ public static class PlotFileAddress
     //all based on resources
     internal static Dictionary<Type, string> inkFileAddress = new Dictionary<Type, string>
     {
-        {typeof(PlotManager.Day1_Text1), "Day1_Contract"},
+        {typeof(PlotManager.Day1_Text1), "AprilDay1_1Contract"},
         {typeof(PlotManager.Day2_Text1), "Day2_Morning"}, 
         {typeof(PlotManager.Day2_Text2), "Day2_Feeling"},
         {typeof(PlotManager.Day3_Text1), "Day3_morning"},
