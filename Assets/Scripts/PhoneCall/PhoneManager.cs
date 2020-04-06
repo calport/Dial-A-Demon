@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using DialADemon.Library;
 using DialADemon.Page;
+using SimpleJSON;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -68,11 +69,11 @@ public class PhoneManager
     }
     
     #region Save
-    public void Load(){}
+    public void Load(JSONNode jsonObject){}
 
-    public void Save()
+    public JSONObject Save(JSONObject jsonObject)
     {
-        
+        return jsonObject;
     }
      #endregion
     

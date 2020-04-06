@@ -72,9 +72,6 @@ public class Game : MonoBehaviour
     {  
         Services.saveManager.Init();
         Services.saveManager.LoadGame();
-        Services.plotManager.Load();
-        Services.textManager.Load();
-        Services.phoneManager.Load();
         
         //import all the data file
         //Services.referenceInfo = FindObjectOfType<ReferenceInfo>();
@@ -100,13 +97,11 @@ public class Game : MonoBehaviour
         Services.pageState.Clear();
         Services.plotManager.Clear();
         Services.saveManager.Clear();
+        Services.textManager.Clear();
     }
 
     void Save()
     {
-        Services.phoneManager.Save();
-        Services.textManager.Save();
-        Services.plotManager.Save();
         Services.saveManager.SaveGame();
     }
     
