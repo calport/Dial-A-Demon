@@ -23,7 +23,6 @@ public class TextManager
 			return null;
 		}
 	}
-	public string inkJson { get; private set; }
 	public PlotManager.TextPlot currentTextPlot;
 
 	// path of the massage bubble prefabs
@@ -434,7 +433,6 @@ public class TextManager
 		textJsonObj.Add("lastTimeStamp", stringTimeStamp.value.ToString());
 		
 		jsonObject.Add("text", textJsonObj);
-		Debug.Log(jsonObject);
 		return jsonObject;
 	}
 
@@ -474,8 +472,6 @@ public class TextManager
 			    _dialogueMessages.Remove(_dialogueMessages[_dialogueMessages.Count - 1]);
 		    }
 	    }
-        
-	    inkJson = SerializeManager.ReadJsonString(Services.saveManager.inkjsonPath);
 
 	    _lastTimeStamp = new SerializeManager.JsonDateTime(Convert.ToInt64((string)textJsonObj["lastTimeStamp"]));
 	    _LoadInitialDialogue();
@@ -577,51 +573,51 @@ public class TextManager
     private void _LoadInitialDialogue()
     {
         _dialogueLabel = _dialogueMessages.Count;
-        if(_currentDialogueMessages.Count!=0) for (int i = _currentDialogueMessages.Count-1; i>-1; i--)
-        {
-            var msg = _currentDialogueMessages[i];
-            switch (msg.messageType)
-            {
-                case MessageBubbleType.Demon:
-                    Services.textSequenceTaskRunner.AddTask(delegate
-                     {
-                         GameObject newTimeBox = GameObject.Instantiate(Resources.Load<GameObject>(_demonTextBox), content.transform);
-                         newTimeBox.GetComponentInChildren<TextMeshProUGUI>().text = msg.content;
-                         newTimeBox.transform.SetSiblingIndex(0);
-                     }, msg.shootTime);
-                    break;
-                case MessageBubbleType.Player:
-                    Services.textSequenceTaskRunner.AddTask(delegate
-                    {
-                        GameObject newTimeBox = GameObject.Instantiate(Resources.Load<GameObject>(_playerTextBox), content.transform);
-                        newTimeBox.GetComponentInChildren<TextMeshProUGUI>().text = msg.content;
-                        newTimeBox.transform.SetSiblingIndex(0);
-                    },msg.shootTime);
-                    break;
-                case MessageBubbleType.TimeStamp:
-                    Services.textSequenceTaskRunner.AddTask(delegate
-                    {
-                        GameObject newTimeBox = GameObject.Instantiate(Resources.Load<GameObject>(_timeStampBubble), content.transform);
-                        newTimeBox.GetComponentInChildren<TextMeshProUGUI>().text = TimeStamp.GetTimeStamp(msg.shootTime);
-                        newTimeBox.transform.SetSiblingIndex(0);
-                    },msg.shootTime);
-                    break;
-                case MessageBubbleType.Prefab:
-	                Services.textSequenceTaskRunner.AddTask(delegate
-	                {
-		                Debug.Log("the msg was read");
-		                var prefabType = msg.prefabType;
-		                if (prefabType.IsSubclassOf(typeof(PlotManager.TextFilePlot)))
+        if(_currentDialogueMessages.Count!=0) 
+	        for (int i = _currentDialogueMessages.Count-1; i>-1; i--)
+			{
+	            var msg = _currentDialogueMessages[i];
+	            switch (msg.messageType)
+	            {
+	                case MessageBubbleType.Demon:
+	                    Services.textSequenceTaskRunner.AddTask(delegate
+	                     {
+	                         GameObject newTimeBox = GameObject.Instantiate(Resources.Load<GameObject>(_demonTextBox), content.transform);
+	                         newTimeBox.GetComponentInChildren<TextMeshProUGUI>().text = msg.content;
+	                         newTimeBox.transform.SetSiblingIndex(0);
+	                     }, msg.shootTime);
+	                    break;
+	                case MessageBubbleType.Player:
+	                    Services.textSequenceTaskRunner.AddTask(delegate
+	                    {
+	                        GameObject newTimeBox = GameObject.Instantiate(Resources.Load<GameObject>(_playerTextBox), content.transform);
+	                        newTimeBox.GetComponentInChildren<TextMeshProUGUI>().text = msg.content;
+	                        newTimeBox.transform.SetSiblingIndex(0);
+	                    },msg.shootTime);
+	                    break;
+	                case MessageBubbleType.TimeStamp:
+	                    Services.textSequenceTaskRunner.AddTask(delegate
+	                    {
+	                        GameObject newTimeBox = GameObject.Instantiate(Resources.Load<GameObject>(_timeStampBubble), content.transform);
+	                        newTimeBox.GetComponentInChildren<TextMeshProUGUI>().text = TimeStamp.GetTimeStamp(msg.shootTime);
+	                        newTimeBox.transform.SetSiblingIndex(0);
+	                    },msg.shootTime);
+	                    break;
+	                case MessageBubbleType.Prefab:
+		                Services.textSequenceTaskRunner.AddTask(delegate
 		                {
-			                PlotManager.TextFilePlot tfp =
-				                Services.plotManager.GetOrCreatePlots(prefabType) as PlotManager.TextFilePlot;
-			                tfp.CreateBubble();
-		                }
-	                },msg.shootTime);
-	                break;
-            }
-            
-        }
+			                Debug.Log("the msg was read");
+			                var prefabType = msg.prefabType;
+			                if (prefabType.IsSubclassOf(typeof(PlotManager.TextFilePlot)))
+			                {
+				                PlotManager.TextFilePlot tfp =
+					                Services.plotManager.GetOrCreatePlots(prefabType) as PlotManager.TextFilePlot;
+				                tfp.CreateBubble();
+			                }
+		                },msg.shootTime);
+		                break;
+	            }
+			}
 
         _dialogueLabel --;
     }

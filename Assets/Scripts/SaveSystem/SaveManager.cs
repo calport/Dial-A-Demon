@@ -23,6 +23,7 @@ public class SaveManager
         get { return _inkjsonPath; }
     }
 
+    public string inkJson;
 
     public void Init()
     {
@@ -40,11 +41,13 @@ public class SaveManager
         {
             //read the file
             var json = SerializeManager.ReadJsonString(_saveJsonPath);
-            var jsonObject = JSON.Parse(json);
-
+            var jsonObject = JSON.Parse(json); 
+            inkJson = SerializeManager.ReadJsonString(Services.saveManager.inkjsonPath);
+            
             //Load info from save
-            Services.textManager.Load(jsonObject);
+            //plot should run before text, since text manager needs its info
             Services.plotManager.Load(jsonObject);
+            Services.textManager.Load(jsonObject);
             Services.phoneManager.Load(jsonObject);
 
 

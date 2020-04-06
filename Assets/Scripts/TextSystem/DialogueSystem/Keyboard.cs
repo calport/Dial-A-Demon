@@ -88,7 +88,6 @@ public class Keyboard : MonoBehaviour
             {
                 tm.textBox.text = content;
                 _sendButton.onClick.AddListener(SendChoice);
-                Debug.Log(_sendButton);
     #if UNITY_IOS
                 Handheld.Vibrate();
                 Handheld.Vibrate();

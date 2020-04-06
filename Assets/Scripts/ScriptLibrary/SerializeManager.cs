@@ -108,13 +108,11 @@ public class SerializeManager
             this.value = value;
         }
         public static implicit operator DateTime(JsonDateTime jdt) {
-            Debug.Log("Converted to time");
-            return DateTime.FromFileTimeUtc(jdt.value);
+            return DateTime.FromFileTime(jdt.value);
         }
         public static implicit operator JsonDateTime(DateTime dt) {
-            Debug.Log("Converted to JDT");
             JsonDateTime jdt = new JsonDateTime();
-            jdt.value = dt.ToFileTimeUtc();
+            jdt.value = dt.ToFileTime();
             return jdt;
         }
     }

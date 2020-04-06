@@ -246,7 +246,6 @@ public class PlotManager
             plotJsonObj.Add("plotBaseTime",stringBaseTime.value.ToString());
             
             jsonObject.Add("plot",plotJsonObj);
-            Debug.Log(jsonObject);
             return jsonObject;
         }
 
@@ -477,7 +476,7 @@ public class PlotManager
                 if (_plotState == plotState.isPlaying || _plotState == plotState.isReadyToPlay)
                 {
                     tm.currentTextPlot = this;
-                    if(tm.inkJson!= "") tm.currentStory.state.LoadJson(tm.inkJson);
+                    if(Services.saveManager.inkJson!= "") tm.currentStory.state.LoadJson(Services.saveManager.inkJson);
                     Services.eventManager.AddHandler<TextFinished>(_OnTextFinished);
                 }
             }

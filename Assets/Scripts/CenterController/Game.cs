@@ -27,12 +27,6 @@ public class Game : MonoBehaviour
         //Services.eventManager.AddHandler<SceneChanged>(OnSceneChange);
 
         Input.simulateMouseWithTouches = true;
-        var time = DateTime.Now;
-        print(time);
-        var json = JsonUtility.ToJson((SerializeManager.JsonDateTime) time);
-        print(json);
-        DateTime timeFromJson = JsonUtility.FromJson<SerializeManager.JsonDateTime>(json);
-        print(timeFromJson);
     }
     
     // Update is called once per frame
