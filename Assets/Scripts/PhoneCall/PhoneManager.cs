@@ -95,8 +95,8 @@ public class PhoneManager
         _phoneCallAudioPiece.onAudioFinished += () =>
         {
             _phoneCallAudioPiece.Stop();
-            if (currrentPhonePlot != null && currrentPhonePlot.plotState != PlotManager.PlotState.isBreak &&
-                currrentPhonePlot.plotState != PlotManager.PlotState.isFinished)
+            if (currrentPhonePlot != null && currrentPhonePlot.plotState != PlotManager.PlotState.Broke &&
+                currrentPhonePlot.plotState != PlotManager.PlotState.Finished)
             {
                 Services.eventManager.Fire(new PhoneFinished());
             }

@@ -509,7 +509,7 @@ public class TextManager
 		    startTime += dotSpan;
 	    }
 
-	    if (currentTextPlot.isBreak()) currentTextPlot.ChangePlotState(PlotManager.PlotState.isBreak);
+	    if (currentTextPlot.isBreak()) currentTextPlot.ChangePlotState(PlotManager.PlotState.Broke);
 	    
 	    if (currentStory.currentChoices.Count > 0)
 	    {
@@ -554,7 +554,7 @@ public class TextManager
 		    startTime += dotSpan;
 	    }
 
-	    if (currentTextPlot.isBreak()) currentTextPlot.ChangePlotState(PlotManager.PlotState.isBreak);
+	    if (currentTextPlot.isBreak()) currentTextPlot.ChangePlotState(PlotManager.PlotState.Broke);
 	    
 	    if (currentStory.currentChoices.Count > 0)
 	    {
