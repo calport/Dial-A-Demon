@@ -18,12 +18,23 @@ public class TextManager
 	public Story currentStory
 	{
 		get
+		{ 
+			return currentTextPlot?.story;
+		}
+	}
+
+	public PlotManager.TextPlot currentTextPlot
+	{
+		get
 		{
-			if (!ReferenceEquals(currentTextPlot,null)) return currentTextPlot.story;
+			foreach (var playingPlot in Services.plotManager.playingPlot)
+			{
+				if (playingPlot.GetType() == typeof(PlotManager.TextPlot)) return playingPlot as PlotManager.TextPlot;
+			}
+
 			return null;
 		}
 	}
-	public PlotManager.TextPlot currentTextPlot;
 
 	// path of the massage bubble prefabs
     private string _demonTextBox= "Prefabs/MessageBubble_Demon";
@@ -460,6 +471,9 @@ public class TextManager
 	    foreach (var length in jsonDialogueLengthInfo.Values)
 		    _msgLengthInfo.Add(length);
 	    MessageContent[][] arrayInfo= SerializeManager.Deserialize2DArray(_msgLengthInfo, _msgContent);
+	    
+	    if(Services.saveManager.inkJson!= "") currentStory.state.LoadJson(Services.saveManager.inkJson);
+	    
 	    //get the info from the save file
 	    foreach (var msgArray in arrayInfo)
 		    _dialogueMessages.Add(msgArray);
@@ -472,7 +486,6 @@ public class TextManager
 			    _dialogueMessages.Remove(_dialogueMessages[_dialogueMessages.Count - 1]);
 		    }
 	    }
-
 	    _lastTimeStamp = new SerializeManager.JsonDateTime(Convert.ToInt64((string)textJsonObj["lastTimeStamp"]));
 	    _LoadInitialDialogue();
 	    _LoadMoreDialogue();
