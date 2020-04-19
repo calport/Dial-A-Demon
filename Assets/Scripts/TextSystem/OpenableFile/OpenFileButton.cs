@@ -8,25 +8,8 @@ using UnityEngine;
 
 public class OpenFileButton : MonoBehaviour
 {
-    public Type plotType;
-
-    public GameObject document
-    {
-        get
-        {
-            PlotManager.TextFilePlot tfp = Services.plotManager.GetOrCreatePlots(plotType) as PlotManager.TextFilePlot;
-            return tfp.documentPre;
-        }
-    }
-
-    PlotManager.TextFilePlot tfp
-    {
-        get
-        {
-            return Services.plotManager.GetOrCreatePlots(plotType) as PlotManager.TextFilePlot;
-        }
-    }
-
+    public string fileContentName;
+    public GameObject document { get; private set; }
     private PageState ps
     {
         get
@@ -38,6 +21,16 @@ public class OpenFileButton : MonoBehaviour
     public void OnSimpleTap()
     {
         ps.ChangeGameState("Front_Main");
-        tfp.CreateDocument();
+        foreach (var item in Services.pageState.GetGameState("Front_Main").relatedObj)
+        {
+            if (item.CompareTag("PageObj"))
+            {
+                document = Instantiate(Resources.Load<GameObject>("Prefabs/FileBubble/" + fileContentName),item.transform);
+                document.GetComponentInChildren<CloseFileButton>().ofb = this;
+                document.transform.localScale = new Vector3(0.1f,0.1f,0.1f);
+                document.transform.DOScale(1f, 1f);
+                break;
+            }
+        }
     }
 }

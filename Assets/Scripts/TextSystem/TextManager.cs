@@ -215,7 +215,9 @@ public class TextManager
 	}
 	
 	private void AddNewMessage(MessageBubbleType msgType, string text, DateTime shootTime)
-    {
+	{
+		text = TextEffectManager.ProcessingTags(text, out List<UndefinedTagInfo> undefinedTagInfos, out List<Tag> gameRelatedTags);
+		
         if ((shootTime - _lastTimeStamp) > TimeSpan.FromMinutes(10f))
         {
             CreateNewTimeStamp(shootTime);
@@ -257,39 +259,32 @@ public class TextManager
 	            Debug.Log("Change to use AddNewFileMessage to initiate a prefab msg.");
 	            break;
         }
+        
+        foreach (var textFiles in gameRelatedTags.Where(tag => tag is TextFile).ToList())
+        {
+	        var file = textFiles as TextFile;
+	        if ((shootTime - _lastTimeStamp) > TimeSpan.FromMinutes(10f))
+	        {
+		        CreateNewTimeStamp(shootTime);
+		        _lastTimeStamp = shootTime;
+	        }
+		
+	        var msg = new MessageContent();
+	        msg.messageType = MessageBubbleType.Prefab;
+	        msg.fileBubbleName = file.fileBubble;
+	        msg.fileContentName = file.fileContent;
+	        msg.shootTime = shootTime;
+	        _currentDialogueMessages.Add(msg);
+		
+	        var bubblePrefab = Resources.Load<GameObject>("Prefabs/FileBubble/" + file.fileBubble);
+		
+	        Services.textSequenceTaskRunner.AddTask(delegate
+	        {
+		        var bubble = GameObject.Instantiate(bubblePrefab, content.transform);
+		        bubble.GetComponentInChildren<OpenFileButton>().fileContentName = file.fileContent;
+	        },shootTime + TimeSpan.FromSeconds(1));
+        }
     }
-
-	/// <summary>
-	/// This func is for the plot manager specifically to create new file bubbles
-	/// It is only called by outside managers and doesn't belongs to the automatic text manager
-	/// </summary>
-	/// <param name="prefabType"></param>
-	/// <param name="shootTime"></param>
-	public void AddNewFileMessage(Type prefabType, DateTime shootTime)
-	{
-		if ((shootTime - _lastTimeStamp) > TimeSpan.FromMinutes(10f))
-		{
-			CreateNewTimeStamp(shootTime);
-			_lastTimeStamp = shootTime;
-		}
-		
-		var msg = new MessageContent();
-		msg.messageType = MessageBubbleType.Prefab;
-		msg.prefabType = prefabType;
-		msg.shootTime = shootTime;
-		_currentDialogueMessages.Add(msg);
-		
-		Services.textSequenceTaskRunner.AddTask(delegate
-		{
-			if (prefabType.IsSubclassOf(typeof(PlotManager.TextFilePlot)))
-			{
-				PlotManager.TextFilePlot tfp =
-					Services.plotManager.GetOrCreatePlots(prefabType) as PlotManager.TextFilePlot;
-				tfp.CreateBubble();
-			}
-		},shootTime);
-	}
-	
 
 	private void CreateNewTimeStamp(DateTime time)
 	{
@@ -399,7 +394,8 @@ public class TextManager
 		public MessageBubbleType messageType;
 		public string content;
 		public DateTime shootTime;
-		public Type prefabType;
+		public string fileBubbleName;
+		public string fileContentName;
 	}
 	
 	private List<MessageContent> _currentDialogueMessages = new List<MessageContent>();
@@ -436,7 +432,8 @@ public class TextManager
 			msgObj.Add("content",msg.content);
 			var shootTimeString = (SerializeManager.JsonDateTime) msg.shootTime;
 			msgObj.Add("shootTime",shootTimeString.value.ToString());
-			if(!ReferenceEquals(msg.prefabType,null)) msgObj.Add("prefabType",msg.prefabType.ToString());
+			if(!ReferenceEquals(msg.fileBubbleName,null)) msgObj.Add("fileBubbleName",msg.fileBubbleName);
+			if(!ReferenceEquals(msg.fileContentName,null)) msgObj.Add("fileBubbleName",msg.fileContentName);
 			jsonDialogueContent.Add(msgObj);
 		}
 		textJsonObj.Add("dialogueMessages", jsonDialogueContent);
@@ -463,8 +460,8 @@ public class TextManager
 		    Enum.TryParse<MessageBubbleType>(jsonMsg["messageType"], out msg.messageType);
 		    msg.content = jsonMsg["content"];
 		    msg.shootTime = new SerializeManager.JsonDateTime(Convert.ToInt64((string)jsonMsg["shootTime"]));
-		    if(jsonMsg["prefabType"]!=null)
-			    msg.prefabType = Type.GetType(jsonMsg["prefabType"]);
+		    if(jsonMsg["fileBubbleName"]!=null) msg.fileBubbleName = jsonMsg["fileBubbleName"];
+		    if(jsonMsg["fileContentName"]!=null) msg.fileContentName = jsonMsg["fileContentName"];
 		    _msgContent.Add(msg);
 	    }
 	    var _msgLengthInfo = new List<int>();
@@ -522,7 +519,7 @@ public class TextManager
 		    startTime += dotSpan;
 	    }
 
-	    if (currentTextPlot.isBreak()) currentTextPlot.ChangePlotState(PlotManager.PlotState.Broke);
+	    if (currentTextPlot.isBreak()) currentTextPlot.ChangePlotState(PlotManager.PlotState.IsBreaking);
 	    
 	    if (currentStory.currentChoices.Count > 0)
 	    {
@@ -567,7 +564,7 @@ public class TextManager
 		    startTime += dotSpan;
 	    }
 
-	    if (currentTextPlot.isBreak()) currentTextPlot.ChangePlotState(PlotManager.PlotState.Broke);
+	    if (currentTextPlot.isBreak()) currentTextPlot.ChangePlotState(PlotManager.PlotState.IsBreaking);
 	    
 	    if (currentStory.currentChoices.Count > 0)
 	    {
@@ -619,15 +616,14 @@ public class TextManager
 	                case MessageBubbleType.Prefab:
 		                Services.textSequenceTaskRunner.AddTask(delegate
 		                {
-			                Debug.Log("the msg was read");
-			                var prefabType = msg.prefabType;
-			                if (prefabType.IsSubclassOf(typeof(PlotManager.TextFilePlot)))
-			                {
-				                PlotManager.TextFilePlot tfp =
-					                Services.plotManager.GetOrCreatePlots(prefabType) as PlotManager.TextFilePlot;
-				                tfp.CreateBubble();
-			                }
+			                var bubblePrefab = Resources.Load<GameObject>("Prefabs/FileBubble/" + msg.fileBubbleName);
+			                
+			                var bubble = GameObject.Instantiate(bubblePrefab, content.transform);
+			                if(bubble.GetComponentInChildren<OpenFileButton>())
+				                bubble.GetComponentInChildren<OpenFileButton>().fileContentName = msg.fileContentName;
+
 		                },msg.shootTime);
+
 		                break;
 	            }
 			}
@@ -686,13 +682,12 @@ public class TextManager
                 case MessageBubbleType.Prefab:
 	                Services.textSequenceTaskRunner.AddTask(delegate
 	                {
-		                var prefabType = msg.prefabType;
-		                if (prefabType.IsSubclassOf(typeof(PlotManager.TextFilePlot)))
-		                {
-			                PlotManager.TextFilePlot tfp =
-				                Services.plotManager.GetOrCreatePlots(prefabType) as PlotManager.TextFilePlot;
-			                tfp.CreateBubble();
-		                }
+		                var bubblePrefab = Resources.Load<GameObject>("Prefabs/FileBubble/" + msg.fileBubbleName);
+			                
+		                var bubble = GameObject.Instantiate(bubblePrefab, content.transform);
+		                if(bubble.GetComponentInChildren<OpenFileButton>())
+			                bubble.GetComponentInChildren<OpenFileButton>().fileContentName = msg.fileContentName;
+
 	                },msg.shootTime);
 	                break;
             }
@@ -719,9 +714,7 @@ public class TextManager
     public void MuteAllKeyboard()
     {
 	    foreach (var key in keyboard.Values)
-	    {
 		    key.isChoice = false;
-	    }
     }
 
     #endregion

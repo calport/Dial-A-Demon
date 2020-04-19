@@ -97,19 +97,7 @@ namespace DialADemon.Page
         {
             // Initialize the CSM with the context (in this case the critter whose states we're managing)
             _csm = new CSM<PageState, Pages>(this);
-
-            /*// Set the initial state. Don't forget to do this!!
-            foreach (var value in Services.referenceInfo.BigPage.Values)
-            {
-                value.SetActive(false);
-                Debug.Log(value);
-            }
-
-            //SetInitialScene();
-            formalState = typeof(MenuPage);*/
             
-           
-
             //initiate  the propertyEnum and all the behavior state
             _csm.Init<PageStatesList>(_propertyEnums);
             //pull saved infos

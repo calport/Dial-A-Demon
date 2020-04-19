@@ -3,16 +3,23 @@ using System.Collections;
 using System.Collections.Generic;
 using System.IO.IsolatedStorage;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Text.RegularExpressions;
 using TMPro;
 using UnityEngine;
 using UnityEngine.Experimental.XR;
 
+public struct UndefinedTagInfo
+{
+    public string tagName;
+    public Dictionary<string, string> attribute;
+    public string targetedString;
+}
 public abstract class Tag
 {
     public Dictionary<string, string> attribute { get; set; }
 
-    public virtual void Init(Dictionary<string, string> attribute)
+    public void Init(Dictionary<string, string> attribute)
     {
         this.attribute = attribute;
     }
@@ -24,6 +31,11 @@ public interface ITextEffectTag
 public interface IGameEffectTag
 {
     void DoGameEffect();
+}
+
+public interface IGameContributeTag
+{
+    void SetVariables();
 }
 
 public class Delete : Tag, ITextEffectTag
@@ -39,87 +51,92 @@ public class Delete : Tag, ITextEffectTag
     }
 }
 
-public class GirlName : Tag, ITextEffectTag
+/// <summary>
+/// ProcessingTag(string) is the only public function in this class
+/// the example string should be like
+/// "<GirlName>she</GirlName> starts <tag1 time=\"1\">to behavior in </tag1>a pretty wired <Delete>way. However, other people are</Delete> apparently not realizing this."
+/// define class to function with certain tags
+/// tags without definition will output as undefinedTagInfos
+/// </summary>
+public class TextEffectManager
 {
-    public string DoTextEffect(string operateString)
+    public static string ProcessingTags(string sentence,out List<UndefinedTagInfo> undefinedTagInfos, out List<Tag> gameRelatedTags )
     {
-        return TextEffectManager.Instance.girlName;
-    }
-}
-public class TextEffectManager : MonoBehaviour
-{
-    public static TextEffectManager Instance;
-    public enum TagName
-    {
-        Default,
-        Delete,
-        GirlName,
-    }
-    public string a = "<she starts <tag1>to behavior in </tag1>a pretty wired <tag2>way. However, other people are</tag2> apparently not realizing this.";
-    public string girlName;
-    
-
-    void Start()
-    {
-        Instance = this;
-        Debug.Log(a);
-        Debug.Log(ProcessingTags(a));
-    }
-
-    public string ProcessingTags(string sentence)
-    {
+        undefinedTagInfos = new List<UndefinedTagInfo>();
+        gameRelatedTags = new List<Tag>();
         var splitSentenceList = Regex.Split(sentence, @"(?=[<])|(?<=[>])").ToList();
-        while (_GetPairTag(splitSentenceList,out KeyValuePair<Tag,string> startTag, out KeyValuePair<Tag,string> endTag))
-        {
-            splitSentenceList = _DoTagBehaviorAndCleanTag(startTag, endTag, splitSentenceList);
+        while (_GetPairTag(splitSentenceList,out KeyValuePair<Tag,string> startTag, out KeyValuePair<Tag,string> endTag, out Dictionary<string,string> attribute))
+        { 
+            splitSentenceList = _DoTagBehaviorAndCleanTag(startTag, endTag, splitSentenceList, out string operateString, out gameRelatedTags);
+
+            if (startTag.Key == null)
+            {
+                
+                undefinedTagInfos.Add(new UndefinedTagInfo
+                             {
+                                 tagName = startTag.Value.Split(" "[0])[0].Substring(1),
+                                 attribute = attribute,
+                                 targetedString = operateString,
+                             });
+            }
+            
             //_PrintString(splitSentenceList);
         }
         return ListToString(splitSentenceList);
     }
 
 
-    private bool _GetPairTag(List<string> stringList,out KeyValuePair<Tag,string> startTag, out KeyValuePair<Tag,string> endTag)
+    private static bool _GetPairTag(List<string> stringList,out KeyValuePair<Tag,string> startTag, out KeyValuePair<Tag,string> endTag, out Dictionary<string,string> attribute)
     {
+        attribute = new Dictionary<string, string>();
+        var startTagName = "";
+        var endTagName = "";
         for (int i = 0; i < stringList.Count; i++)
         {
-            if (!_GetActiveTag(stringList[i], out bool isStart, out Tag tagInstance)) continue;
+            if (!_GetActiveTag(stringList[i], out bool isStart, out string tagName, out Dictionary<string,string> tagAttribute)) continue;
+            var tagInstance = !ReferenceEquals(Type.GetType(tagName),null)? (Tag) Activator.CreateInstance(Type.GetType(tagName)) : null;
+            tagInstance?.Init(attribute);
+            
             if (isStart)
             {
+                startTagName = tagName;
+                attribute = tagAttribute;
                 startTag = new KeyValuePair<Tag, string>(tagInstance,stringList[i]);
                 continue;
             }
             //is end
+            endTagName = tagName;
             endTag = new KeyValuePair<Tag, string>(tagInstance,stringList[i]);
-            Debug.Assert(endTag.Key.GetType() == startTag.Key.GetType(),"tag "+ endTag.Key + "overlay with tag " + startTag.Key);
+            Debug.Assert(Equals(startTagName,endTagName),"tag "+ endTag.Value.Substring(1) + "overlay with tag " + startTag.Value);
             return true;
         }
 
         return false;
     }
-    private bool _GetActiveTag(string testString, out bool isStart, out Tag tagInstance)
+    private static bool _GetActiveTag(string testString, out bool isStart, out string tagName, out Dictionary<string,string> attribute)
     {
         isStart = false;
-        tagInstance = null;
+        tagName = "";
+        attribute = new Dictionary<string,string>();
         
         if (!testString.StartsWith("<") || !testString.EndsWith(">")) return false;
         
         var tagStr = testString.Substring(1, testString.Length - 2).Trim();
         var tagElement = tagStr.Split(" "[0]).ToList();
         
-        var tagName = tagElement[0].Trim();
+        tagName = tagElement[0].Trim();
         tagElement.Remove(tagElement[0]);
+        
         if (tagName.StartsWith("/"))
         {
             tagName = tagName.Substring(1);
-            Type type = Type.GetType(tagName);
-            Debug.Assert(Type.GetType(tagName) != null && 
-                         Type.GetType(tagName).IsSubclassOf(typeof(Tag)), tagName + " is not a defined tag class");
-            tagInstance = (Tag) Activator.CreateInstance(Type.GetType(tagName));
+            //Type type = Type.GetType(tagName);
+            //Debug.Assert(Type.GetType(tagName) != null && Type.GetType(tagName).IsSubclassOf(typeof(Tag)), tagName + " is not a defined tag class");
+            //tagInstance = ReferenceEquals(Type.GetType(tagName),null)? (Tag) Activator.CreateInstance(Type.GetType(tagName)) : null;
             isStart = false;
         }
         else
         {
-            var attribute = new Dictionary<string,string>();
             foreach (var element in tagElement)
             {
                 element.Trim();
@@ -129,36 +146,48 @@ public class TextEffectManager : MonoBehaviour
                 if (attribute.ContainsKey(pair[0])) attribute[pair[0]] = parameter;
                 else attribute.Add(pair[0].Trim(),parameter);
             }
-            Type type = Type.GetType(tagName);
-            Debug.Assert(Type.GetType(tagName) != null && 
-                         Type.GetType(tagName).IsSubclassOf(typeof(Tag)), tagName + " is not a defined tag class");
-            tagInstance = (Tag) Activator.CreateInstance(Type.GetType(tagName));
-            tagInstance.Init(attribute);
+            //Type type = Type.GetType(tagName);
+            //Debug.Assert(Type.GetType(tagName) != null && Type.GetType(tagName).IsSubclassOf(typeof(Tag)), tagName + " is not a defined tag class");
+            //tagInstance = !ReferenceEquals(Type.GetType(tagName),null)? (Tag) Activator.CreateInstance(Type.GetType(tagName)) : null;
+            //tagInstance?.Init(attribute);
             isStart = true;
         }
 
         return true;
     }
-    private List<string> _DoTagBehaviorAndCleanTag(KeyValuePair<Tag,string> startTag, KeyValuePair<Tag,string> endTag, List<string> operateString)
+    
+    private static List<string> _DoTagBehaviorAndCleanTag(KeyValuePair<Tag,string> startTag, KeyValuePair<Tag,string> endTag, List<string> operateString, out string operateTarget, out List<Tag> gameRelatedTags)
     {
         var startPos = operateString.IndexOf(startTag.Value);
         var endPos = operateString.IndexOf(endTag.Value);
-        var operateTarget = "";
+        gameRelatedTags = new List<Tag>();
+        operateTarget = "";
         for (int i = startPos + 1; i < endPos; i++)
         {
             operateTarget += operateString[i];
             operateString[i] = "";
         }
-        if (startTag.Key.GetType().GetInterfaces().Contains(typeof(ITextEffectTag)))
-        {
-            var textEffectTag = (ITextEffectTag) startTag.Key;
-            operateString[startPos+1] = textEffectTag.DoTextEffect(operateTarget);
-        }
 
-        if (startTag.Key.GetType().GetInterfaces().Contains(typeof(IGameEffectTag)))
+        if (startTag.Key != null)
         {
-            var textEffectTag = (IGameEffectTag) startTag.Key;
-            textEffectTag.DoGameEffect();
+            if (startTag.Key.GetType().GetInterfaces().Contains(typeof(ITextEffectTag)))
+            {
+                var textEffectTag = (ITextEffectTag) startTag.Key;
+                operateString[startPos + 1] = textEffectTag.DoTextEffect(operateTarget);
+            }
+
+            if (startTag.Key.GetType().GetInterfaces().Contains(typeof(IGameEffectTag)))
+            {
+                var textEffectTag = (IGameEffectTag) startTag.Key;
+                textEffectTag.DoGameEffect();
+            }
+
+            if (startTag.Key.GetType().GetInterfaces().Contains(typeof(IGameContributeTag)))
+            {
+                var textEffectTag = (IGameContributeTag) startTag.Key;
+                textEffectTag.SetVariables();
+                gameRelatedTags.Add(startTag.Key);
+            }
         }
 
         operateString.Remove(startTag.Value);
@@ -166,6 +195,7 @@ public class TextEffectManager : MonoBehaviour
         
         return operateString;
     }
+    
     private void _PrintString(IEnumerable b)
     {
         foreach (var sentence in b)
@@ -174,7 +204,7 @@ public class TextEffectManager : MonoBehaviour
         }
 
     }
-    public string ListToString(List<string> list)
+    public static string ListToString(List<string> list)
     {
         var str = "";
         foreach (var item in list)
