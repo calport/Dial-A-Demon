@@ -9,20 +9,21 @@ using UnityEngine;
 using UnityEditor;
 using UnityEngine.SceneManagement;
 
+public enum RunState
+{
+    Load,
+    Play,
+    Pause,
+}
+
 public class Game : MonoBehaviour
 {
-    public enum GameState
-    {
-        Load,
-        InGame,
-    }
-
-    public GameState gameState = GameState.Load;
+    public RunState runState = RunState.Load;
     #region Life circle
 
     void Awake()
     {
-        gameState = GameState.Load;
+        runState = RunState.Load;
         
         Services.saveManager.Init();
 
@@ -54,7 +55,7 @@ public class Game : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (gameState == GameState.InGame)
+        if (runState == RunState.Play)
         {
             Services.plotManager.Update();
             Services.pageState.Update();

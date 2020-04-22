@@ -46,9 +46,11 @@ public class SaveManager
             
             //Load info from save
             //plot should run before text, since text manager needs its info
-            Services.plotManager.Load(jsonObject);
-            Services.textManager.Load(jsonObject);
+            Services.plotManager.LoadFromFile(jsonObject);
+            Services.textManager.LoadFromFile(jsonObject);
             Services.phoneManager.Load(jsonObject);
+            Services.plotManager.UpdatePlayerOffTime();
+            Services.textManager.UpdatePlayerOffTime();
 
 
             //TODO: maybe pause the game and then at here unpause it
