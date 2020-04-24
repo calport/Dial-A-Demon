@@ -121,7 +121,7 @@ public class Keyboard : MonoBehaviour
     {   
         //choice idex goes first
         tm.currentStory?.ChooseChoiceIndex(choiceIdex);
-        tm.currentTextPlot?.OnSendText();
+        tm.currentText?.OnSendText();
         tm.CreatePlayerBubble();
 
         _sendButton.onClick.RemoveListener(SendChoice);

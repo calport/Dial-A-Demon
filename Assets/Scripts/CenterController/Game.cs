@@ -40,12 +40,13 @@ public class Game : MonoBehaviour
         Services.phoneManager.Init();
 
         Services.saveManager.LoadGame();
-        
+        runState = RunState.Play;
         DontDestroyOnLoad(gameObject);
     }
 
     private void Start()
     {
+        
         Services.pageState.Start();
         //Services.eventManager.AddHandler<SceneChanged>(OnSceneChange);
 

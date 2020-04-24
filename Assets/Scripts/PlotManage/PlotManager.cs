@@ -44,6 +44,20 @@ public class PlotManager
     
             //Load all plots' info
             _ParsePlotInfo();
+            foreach (var plot in _plots)
+            {
+                Debug.Log(plot.Value.name);
+                Debug.Log(plot.Value.priority);
+                Debug.Log(plot.Value.initType);
+                Debug.Log(plot.Value.plotState);
+                Debug.Log(plot.Value.prePlots.Count);
+                foreach (var pre in plot.Value.prePlots)
+                {
+                    Debug.Log(pre);
+                }
+            }
+            
+            _baseTime = DateTime.Now;
             //TODO: clear notification
             //UnityEngine.iOS.NotificationServices.ClearLocalNotifications();
         }
@@ -59,7 +73,7 @@ public class PlotManager
                     if (pair.Value.startTime < DateTime.Now)
                     {
                         pair.Key.CheckStartQualification();
-                        if (pair.Key.plotState == PlotState.Playing && pair.Value.startTime < DateTime.Now)
+                        if (pair.Key.plotState == PlotState.ReadyToPlay && pair.Value.startTime < DateTime.Now)
                             pair.Key.ChangePlotState(PlotState.Playing);
                     }
                     break;
@@ -97,13 +111,8 @@ public class PlotManager
             Calendar.Clear();
             
         }
-    
-        void InitLeadPlot()
-        {
-            GetPlot("root")?.TryAddToCalendar();
-        }
-    
-        public Plot GetPlot(string name)
+         
+         public Plot GetPlot(string name)
         {
             if (_plots.ContainsKey(name)) return _plots[name];
             return null;
@@ -207,7 +216,7 @@ public class PlotManager
                 pair.Key.plotState == PlotState.ReadyToPlay);
             
             //leave the newest text plot and either abandon or break the old ones
-            var textPairs = pendingPlots.Where(pair => pair.Key is TextPlot).ToList();
+            var textPairs = pendingPlots.Where(pair => pair.Key is Text).ToList();
             var startText = textPairs[textPairs.Count() - 1];
             startText.Key.LateStart();
             startText.Key.ChangePlotState(PlotState.Playing);
@@ -219,7 +228,7 @@ public class PlotManager
             //all the phones are set to missed
             //which is break
             //abandon is like they never exist so we use break here
-            var phonePairs = pendingPlots.Where(pair => pair.Key is PhonePlot).ToList();
+            var phonePairs = pendingPlots.Where(pair => pair.Key is PhoneCall).ToList();
             foreach (var pair in phonePairs)
                 pair.Key.ChangePlotState(PlotState.Broke);
             
@@ -228,7 +237,7 @@ public class PlotManager
 
         #endregion
 
-        #region Private Function
+    #region Private Function
 
         private bool _CheckAndBreakIfItsBreakTime(KeyValuePair<Plot,CalendarPlotTimeSpan> calendarPlot)
         {
@@ -264,6 +273,7 @@ public class PlotManager
         }
         
         #endregion
+        
     //when the app quit, save all the info that needed
     //add notification and other stuff to keep track the gameflow
     
@@ -324,9 +334,9 @@ public class PlotManager
         public List<string> prePlots;
         
         //event delegate
-        public Action onPlotStart;
-        public Action onPlotBreak;
-        public Action onPlotFinish;
+        public Action onPlotStart =() =>{ };
+        public Action onPlotBreak =() =>{ };
+        public Action onPlotFinish =() =>{ };
 
         protected CalendarPlotTimeSpan? _currentCalendarTimeSpan
         {
@@ -369,29 +379,29 @@ public class PlotManager
             switch (ps)
             {
                 case PlotState.ReadyToPlay:
-                    parent.Calendar.Add(this, span);
                     parent.playingPlot.Remove(this);
+                    parent.Calendar.Add(this, span);
                     Init();
                     break;
                 case PlotState.Playing:
+                    parent.playingPlot.Add(this);
                     if(Services.game.runState == RunState.Load) LateStart();
                     else Start();
                     onPlotStart.Invoke();
-                    parent.playingPlot.Add(this);
                     break;
                 case PlotState.Finished: 
+                    parent.playingPlot.Remove(this);
                     OnFinished(); 
                     onPlotFinish.Invoke();
-                    parent.playingPlot.Remove(this);
                     break;
                 case PlotState.Broke:
+                    parent.playingPlot.Remove(this);
                     OnBreak();
                     onPlotBreak.Invoke();
-                    parent.playingPlot.Remove(this);
                     break;
                 case PlotState.Abandoned:
-                    OnAbandon();
                     parent.playingPlot.Remove(this);
+                    OnAbandon();
                     break;
             }
             _plotState = ps;
@@ -450,9 +460,17 @@ public class PlotManager
                         Debug.Assert(true,"plot name " + plot + " not found");
                     }
 
-                    span.startTime = parent.Calendar[parent._plots[prePlots[0]]].potentialBreakTime +
-                                     plotBasedDelayTime;
-                    span.potentialBreakTime = span.startTime + waitTimeBeforeBreak;
+                    if (prePlots.Count == 0)
+                    {
+                        span.startTime = parent._baseTime + plotBasedDelayTime;
+                        span.potentialBreakTime = span.startTime + waitTimeBeforeBreak;
+                    }
+                    else
+                    {
+                        span.startTime = parent.Calendar[parent._plots[prePlots[0]]].potentialBreakTime +
+                                                             plotBasedDelayTime;
+                        span.potentialBreakTime = span.startTime + waitTimeBeforeBreak;
+                    }
                     return true;
                 case PlotInitType.Mix:
                     if (DateTime.Now > timeBasedSendTime) return false;
@@ -478,9 +496,9 @@ public class PlotManager
         }
     }
 
-    public class TextPlot : Plot
+    public class Text : Plot
     {
-        public TextPlot(string name, PlotInitType initType, int priority, TimeSpan timeBasedSendTimeSpan,
+        public Text(string name, PlotInitType initType, int priority, TimeSpan timeBasedSendTimeSpan,
             TimeSpan plotBasedDelayTime,
             TimeSpan waitTimeBeforeBreak, List<string> prePlots) : base(name, initType, priority, timeBasedSendTimeSpan,
             plotBasedDelayTime,
@@ -524,13 +542,13 @@ public class PlotManager
 
         public override void OnBreak()
         {
-            if (_tm.currentTextPlot == this) _tm.MuteAllKeyboard();
+            if (_tm.currentText == this) _tm.MuteAllKeyboard();
             _tm.WrapAndSavePlotDialogues();
         }
 
         public override void OnFinished()
         {
-            if (_tm.currentTextPlot == this) _tm.MuteAllKeyboard();
+            if (_tm.currentText == this) _tm.MuteAllKeyboard();
             _tm.WrapAndSavePlotDialogues();
         }
 
@@ -561,21 +579,21 @@ public class PlotManager
         {
             foreach (var playingPlot in parent.playingPlot)
             {
-                if (playingPlot is TextPlot)
+                if (playingPlot is Text)
                 {
                     // make sure no two text plots run in the same time
-                    if (priority >= playingPlot.priority)
+                    if (priority <= playingPlot.priority)
                         playingPlot.ChangePlotState(PlotState.Broke);
                     else
                         ChangePlotState(PlotState.Abandoned);
                     continue;
                 }
 
-                if (playingPlot is PhonePlot)
+                if (playingPlot is PhoneCall)
                 {
-                    if (playingPlot is PlayerPhoneCallPlot)
+                    if (playingPlot is PlayerCall)
                     {
-                        var phone = playingPlot as PlayerPhoneCallPlot;
+                        var phone = playingPlot as PlayerCall;
                         if (!phone.isPutThrough) continue;
                     }
 
@@ -588,9 +606,9 @@ public class PlotManager
         }
     }
 
-    public class PhonePlot : Plot
+    public class PhoneCall : Plot
     {
-        public PhonePlot(string name, PlotInitType initType, int priority, TimeSpan timeBasedSendTimeSpan,
+        public PhoneCall(string name, PlotInitType initType, int priority, TimeSpan timeBasedSendTimeSpan,
             TimeSpan plotBasedDelayTime,
             TimeSpan waitTimeBeforeBreak, List<string> prePlots) : base(name, initType, priority, timeBasedSendTimeSpan,
             plotBasedDelayTime,
@@ -619,9 +637,9 @@ public class PlotManager
             //pause all text plot
             foreach (var playingPlot in parent.playingPlot)
             {
-                if (playingPlot is TextPlot)
+                if (playingPlot is Text)
                 {
-                    var textPlayingPlot = playingPlot as TextPlot;
+                    var textPlayingPlot = playingPlot as Text;
                     textPlayingPlot.Pause();
                     onPlotFinish += () => textPlayingPlot.UnPause();
                 }
@@ -637,9 +655,9 @@ public class PlotManager
         }
     }
 
-    public class DemonPhoneCallPlot : PhonePlot
+    public class DemonCall : PhoneCall
     {
-        public DemonPhoneCallPlot(string name, PlotInitType initType, int priority, TimeSpan timeBasedSendTimeSpan,
+        public DemonCall(string name, PlotInitType initType, int priority, TimeSpan timeBasedSendTimeSpan,
             TimeSpan plotBasedDelayTime,
             TimeSpan waitTimeBeforeBreak, List<string> prePlots) : base(name, initType, priority, timeBasedSendTimeSpan,
             plotBasedDelayTime,
@@ -654,9 +672,9 @@ public class PlotManager
         {
             foreach (var playingPlot in parent.playingPlot)
             {
-                if (playingPlot is DemonPhoneCallPlot)
+                if (playingPlot is DemonCall)
                 {
-                    if (priority >= playingPlot.priority)
+                    if (priority <= playingPlot.priority)
                     {
                         var span = parent.Calendar[this];
                         span.startTime += TimeSpan.FromMinutes(3f);
@@ -667,9 +685,9 @@ public class PlotManager
                         ChangePlotState(PlotState.Abandoned);
                 }
 
-                if (playingPlot is PlayerPhoneCallPlot)
+                if (playingPlot is PlayerCall)
                 {
-                    var playerCall = playingPlot as PlayerPhoneCallPlot;
+                    var playerCall = playingPlot as PlayerCall;
                     if (playerCall.isPutThrough)
                     {
                         var span = parent.Calendar[this];
@@ -682,9 +700,9 @@ public class PlotManager
         }
     }
     
-    public class PlayerPhoneCallPlot : PhonePlot
+    public class PlayerCall : PhoneCall
     {
-        public PlayerPhoneCallPlot(string name, PlotInitType initType, int priority, TimeSpan timeBasedSendTimeSpan,
+        public PlayerCall(string name, PlotInitType initType, int priority, TimeSpan timeBasedSendTimeSpan,
             TimeSpan plotBasedDelayTime,
             TimeSpan waitTimeBeforeBreak, List<string> prePlots) : base(name, initType, priority, timeBasedSendTimeSpan,
             plotBasedDelayTime,
@@ -695,9 +713,9 @@ public class PlotManager
         {
             foreach (var playingPlot in parent.playingPlot)
             {
-                if (playingPlot is PlayerPhoneCallPlot)
+                if (playingPlot is PlayerCall)
                 {
-                    if (priority >= playingPlot.priority)
+                    if (priority <= playingPlot.priority)
                     {
                         playingPlot.ChangePlotState(PlotState.Broke);
                     }
@@ -709,9 +727,9 @@ public class PlotManager
         
     }
 
-    public class VoiceMailPlot : Plot
+    public class VoiceMail : Plot
     {
-        public VoiceMailPlot(string name, PlotInitType initType, int priority, TimeSpan timeBasedSendTimeSpan,
+        public VoiceMail(string name, PlotInitType initType, int priority, TimeSpan timeBasedSendTimeSpan,
             TimeSpan plotBasedDelayTime,
             TimeSpan waitTimeBeforeBreak, List<string> prePlots) : base(name, initType, priority, timeBasedSendTimeSpan,
             plotBasedDelayTime,
@@ -759,6 +777,7 @@ public class PlotManager
             var prePlotsName = splitLine.Skip(8).ToList();
             prePlotsName.Remove(anchorPlotName);
             prePlotsName.Insert(0,anchorPlotName);
+            prePlotsName = prePlotsName.Where(p => p.Trim() != "").ToList();
             
             object[] para = new object[]{name,initType,priority,timeBasedSendTimeSpan,plotBasedDelayTimeSpan,waitTimeBeforeBreak,prePlotsName};
             Assembly assembly = Assembly.GetExecutingAssembly();

@@ -22,7 +22,7 @@ using UnityEngine;
 
         public static void StopCoroutine(Coroutine routine)
         {
-            StopCoroutine(routine);
+            _CoroutineManagerMonoBehaviour.StopCoroutine(routine);
         }
 
         public static void DoOneFrameDelay(DelayDelegate a)

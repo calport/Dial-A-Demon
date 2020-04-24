@@ -18,19 +18,19 @@ public class TextManager
 {
 	//text manager state info
 	[CanBeNull]
-	public Story currentStory => currentTextPlot?.story;
-	private PlotManager.TextPlot _currentTextPlot;
-	public PlotManager.TextPlot currentTextPlot
+	public Story currentStory => currentText?.story;
+	private PlotManager.Text _currentText;
+	public PlotManager.Text currentText
 	{
 		get
 		{
-			if (!ReferenceEquals(_currentTextPlot, null) && _currentTextPlot.plotState == PlotManager.PlotState.Playing)
-				return _currentTextPlot;
+			if (!ReferenceEquals(_currentText, null) && _currentText.plotState == PlotManager.PlotState.Playing)
+				return _currentText;
 			foreach (var playingPlot in Services.plotManager.playingPlot)
-				if (playingPlot is PlotManager.TextPlot)
+				if (playingPlot is PlotManager.Text)
 				{
-					_currentTextPlot = playingPlot as PlotManager.TextPlot;
-					return _currentTextPlot;
+					_currentText = playingPlot as PlotManager.Text;
+					return _currentText;
 				}
 			return null;
 		}
@@ -145,7 +145,7 @@ public class TextManager
 		else
 		{
 			//end story
-			currentTextPlot.ChangePlotState(PlotManager.PlotState.Finished);
+			currentText.ChangePlotState(PlotManager.PlotState.Finished);
 			//Button choice = CreateChoiceView("End of story.\nRestart?");
 			//choice.onClick.AddListener(delegate { StartStory(); });
 		}
@@ -478,7 +478,7 @@ public class TextManager
     private void _LoadCurrentPlotMessageDuringPlayerOffTime()
     {
 	    //protect when currentStory doesnt exist
-	    if(currentTextPlot== null) return;
+	    if(currentText== null) return;
 	    
 	    var lastMsg = FindTheLastMessage();
 	    var startTime = lastMsg.shootTime;
@@ -507,7 +507,7 @@ public class TextManager
 	    //the story is not end yet
 	    if (currentStory.currentChoices.Count > 0)
 	    {
-		    if(currentTextPlot.CheckAndBreakIfItsBreakTime()) return;
+		    if(currentText.CheckAndBreakIfItsBreakTime()) return;
 		    
 		    for (int i = 0; i < currentStory.currentChoices.Count; i++)
 		    {
@@ -519,7 +519,7 @@ public class TextManager
 	    else
 	    {
 		    //end story
-		    currentTextPlot.ChangePlotState(PlotManager.PlotState.Finished);
+		    currentText.ChangePlotState(PlotManager.PlotState.Finished);
 	    }
 	    
 	   
@@ -528,7 +528,7 @@ public class TextManager
     public void _LoadDialogueForNewPlotWhenAPPisOff(DateTime originalStartTime)
     {
 	    //protect when currentStory doesnt exist
-	    if(currentTextPlot== null) return;
+	    if(currentText== null) return;
 	    
 	    var startTime = originalStartTime;
 	    while (currentStory.canContinue)
@@ -557,7 +557,7 @@ public class TextManager
 	    
 	    if (currentStory.currentChoices.Count > 0)
 	    {
-		    if(currentTextPlot.CheckAndBreakIfItsBreakTime()) return;
+		    if(currentText.CheckAndBreakIfItsBreakTime()) return;
 		    
 		    for (int i = 0; i < currentStory.currentChoices.Count; i++)
 		    {
@@ -568,7 +568,7 @@ public class TextManager
 	    else
 	    {
 		    //end story
-		    currentTextPlot.ChangePlotState(PlotManager.PlotState.Finished);
+		    currentText.ChangePlotState(PlotManager.PlotState.Finished);
 	    }
     }
     private void _LoadInitialDialogue()

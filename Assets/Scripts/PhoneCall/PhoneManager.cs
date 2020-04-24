@@ -17,7 +17,7 @@ public class PhoneManager
     
     //phone plot related info
     private Pages _previousPage;
-    public PlotManager.PhonePlot targetPhonePlot;
+    public PlotManager.PhoneCall targetPhoneCall;
     private AudioPiece _targetCallAudioPiece;
 
     // Start is called before the first frame update
@@ -35,9 +35,9 @@ public class PhoneManager
         Hang();
     }
     
-    public void DialOut(PlotManager.PhonePlot phone = null)
+    public void DialOut(PlotManager.PhoneCall phone = null)
     {
-        targetPhonePlot = phone;
+        targetPhoneCall = phone;
         _previousPage = _ps.GetCurrentState();
         _ps.ChangeGameState("Phone_PlayerCall");
         var waitTime = 0f;
@@ -48,9 +48,9 @@ public class PhoneManager
             waitTime));
     }
 
-    public void DialIn(PlotManager.PhonePlot phone)
+    public void DialIn(PlotManager.PhoneCall phone)
     {
-        targetPhonePlot = phone;
+        targetPhoneCall = phone;
         _previousPage = _ps.GetCurrentState();
         _ps.ChangeGameState("Phone_DemonCall");
         var waitTime = 15f;
@@ -68,14 +68,14 @@ public class PhoneManager
         _phoneRelatedCoroutine.Clear();
         
         //plot mark
-        targetPhonePlot.OnCallPutThrough();
+        targetPhoneCall.OnCallPutThrough();
         
         //change visual
         _ps.ChangeGameState("Phone_OnCall");
         
         //start phone call audioclip
-        if (targetPhonePlot != null)
-            _targetCallAudioPiece = new AudioPiece(targetPhonePlot.callContent,-1);
+        if (targetPhoneCall != null)
+            _targetCallAudioPiece = new AudioPiece(targetPhoneCall.callContent,-1);
         else
         {
             var audio = Services.audioManager.GetAudioClip("NoResponse","PhoneCall/");
@@ -86,27 +86,37 @@ public class PhoneManager
         {
             _ps.ChangeGameState(_previousPage);
             _previousPage = null;
-            targetPhonePlot?.ChangePlotState(PlotManager.PlotState.Finished);
+            targetPhoneCall?.ChangePlotState(PlotManager.PlotState.Finished);
 
-            targetPhonePlot = null;
+            targetPhoneCall = null;
         };
         _targetCallAudioPiece.Play();
     }
 
     public void Hang()
     {
-        if(targetPhonePlot == null || !_targetCallAudioPiece.audioSource.isPlaying) return;
+        if(targetPhoneCall == null) return;
 
-        _targetCallAudioPiece.Stop();
+        //visually return
+        
         _ps.ChangeGameState(_previousPage);
         _previousPage = null;
-        var timeRatio = _targetCallAudioPiece.audioSource.time/ targetPhonePlot.callContent.length;
-        if (timeRatio > 0.95)
-            targetPhonePlot.ChangePlotState(PlotManager.PlotState.Finished);
-        else
-            targetPhonePlot.ChangePlotState(PlotManager.PlotState.Broke);
 
-        targetPhonePlot = null;
+        if (ReferenceEquals(_targetCallAudioPiece, null))
+        {
+            targetPhoneCall.ChangePlotState(PlotManager.PlotState.Broke);
+            return;
+        }
+
+        //if(!_targetCallAudioPiece.audioSource.isPlaying)
+        _targetCallAudioPiece.Stop();
+        var timeRatio = _targetCallAudioPiece.audioSource.time/ targetPhoneCall.callContent.length;
+        if (timeRatio > 0.95)
+            targetPhoneCall.ChangePlotState(PlotManager.PlotState.Finished);
+        else
+            targetPhoneCall.ChangePlotState(PlotManager.PlotState.Broke);
+
+        targetPhoneCall = null;
     }
     
     #region Save

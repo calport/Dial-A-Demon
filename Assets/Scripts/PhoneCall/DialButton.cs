@@ -29,15 +29,15 @@ public class DialButton : MonoBehaviour
     {
         
         //if targeet phone plot exists, that means a call is already started
-        if(_pm.targetPhonePlot!=null) return;
+        if(_pm.targetPhoneCall!=null) return;
 
         //TODO: check what the phone number is
         
         //start dialing the active player call
-        var playerCalls = Services.plotManager.playingPlot.Where(plot => plot is PlotManager.PlayerPhoneCallPlot).ToList();
+        var playerCalls = Services.plotManager.playingPlot.Where(plot => plot is PlotManager.PlayerCall).ToList();
         foreach (var call in playerCalls)
         {
-            var phonePlotCall = call as PlotManager.PlayerPhoneCallPlot;
+            var phonePlotCall = call as PlotManager.PlayerCall;
             if (!phonePlotCall.isPutThrough)
             {
                 _pm.DialOut(phonePlotCall);
