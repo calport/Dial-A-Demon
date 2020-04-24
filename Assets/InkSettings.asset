@@ -18,3 +18,11 @@ MonoBehaviour:
   delayInPlayMode: 1
   handleJSONFilesAutomatically: 1
   compileTimeout: 30
+  customInklecateOptions:
+    runInklecateWithMono: 0
+    monoPaths:
+    - /usr/bin/mono
+    - /usr/local/bin/mono
+    - /Library/Frameworks/Mono.framework/Versions/Current/Commands/mono
+    additionalCompilerOptions: 
+    inklecate: {fileID: 0}

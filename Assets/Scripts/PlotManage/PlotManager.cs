@@ -615,8 +615,7 @@ public class PlotManager
                 return _callContent;
             }
         }
-        
-        public bool isPutThrough;
+        public bool isPutThrough = false;
 
         public void OnCallPutThrough()
         {
