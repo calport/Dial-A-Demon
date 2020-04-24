@@ -64,7 +64,7 @@ public class TextEffectManager
     {
         undefinedTagInfos = new List<UndefinedTagInfo>();
         gameRelatedTags = new List<Tag>();
-        var splitSentenceList = Regex.Split(sentence, @"(?=[<])|(?<=[>])").ToList();
+        var splitSentenceList = Regex.Split(sentence, @"(?=[[])|(?<=[]])").ToList();
         while (_GetPairTag(splitSentenceList,out KeyValuePair<Tag,string> startTag, out KeyValuePair<Tag,string> endTag, out Dictionary<string,string> attribute))
         { 
             splitSentenceList = _DoTagBehaviorAndCleanTag(startTag, endTag, splitSentenceList, out string operateString, out gameRelatedTags);
@@ -74,7 +74,7 @@ public class TextEffectManager
                 
                 undefinedTagInfos.Add(new UndefinedTagInfo
                              {
-                                 tagName = startTag.Value.Split(" "[0])[0].Substring(1),
+                                 tagName = startTag.Value.Split(" "[0],',')[0].Substring(1),
                                  attribute = attribute,
                                  targetedString = operateString,
                              });
@@ -95,8 +95,7 @@ public class TextEffectManager
         {
             if (!_GetActiveTag(stringList[i], out bool isStart, out string tagName, out Dictionary<string,string> tagAttribute)) continue;
             var tagInstance = !ReferenceEquals(Type.GetType(tagName),null)? (Tag) Activator.CreateInstance(Type.GetType(tagName)) : null;
-            tagInstance?.Init(attribute);
-            
+            tagInstance?.Init(tagAttribute);
             if (isStart)
             {
                 startTagName = tagName;
@@ -119,15 +118,15 @@ public class TextEffectManager
         tagName = "";
         attribute = new Dictionary<string,string>();
         
-        if (!testString.StartsWith("<") || !testString.EndsWith(">")) return false;
+        if (!testString.StartsWith("[") || !testString.EndsWith("]")) return false;
         
         var tagStr = testString.Substring(1, testString.Length - 2).Trim();
-        var tagElement = tagStr.Split(" "[0]).ToList();
+        var tagElement = tagStr.Split(" "[0],',').ToList();
         
         tagName = tagElement[0].Trim();
         tagElement.Remove(tagElement[0]);
         
-        if (tagName.StartsWith("/"))
+        if (tagName.StartsWith("'"))
         {
             tagName = tagName.Substring(1);
             //Type type = Type.GetType(tagName);

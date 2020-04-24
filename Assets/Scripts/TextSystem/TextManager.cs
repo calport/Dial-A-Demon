@@ -198,6 +198,7 @@ public class TextManager
 	
 	private void AddNewMessage(MessageBubbleType msgType, string text, DateTime shootTime)
 	{
+		Debug.Log(text);
 		text = TextEffectManager.ProcessingTags(text, out List<UndefinedTagInfo> undefinedTagInfos, out List<Tag> gameRelatedTags);
 		
         if ((shootTime - _lastTimeStamp) > TimeSpan.FromMinutes(10f))

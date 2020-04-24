@@ -10,6 +10,7 @@ public class TextFile : Tag,IGameContributeTag
     public string fileContent;
     public void SetVariables()
     { 
+        Debug.Log(attribute.Count);
         fileBubble = attribute["fileBubbleName"];
         fileContent = attribute["fileContentName"];
     }

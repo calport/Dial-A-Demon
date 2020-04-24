@@ -44,19 +44,7 @@ public class PlotManager
     
             //Load all plots' info
             _ParsePlotInfo();
-            foreach (var plot in _plots)
-            {
-                Debug.Log(plot.Value.name);
-                Debug.Log(plot.Value.priority);
-                Debug.Log(plot.Value.initType);
-                Debug.Log(plot.Value.plotState);
-                Debug.Log(plot.Value.prePlots.Count);
-                foreach (var pre in plot.Value.prePlots)
-                {
-                    Debug.Log(pre);
-                }
-            }
-            
+
             _baseTime = DateTime.Now;
             //TODO: clear notification
             //UnityEngine.iOS.NotificationServices.ClearLocalNotifications();
