@@ -4,7 +4,6 @@ using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using TimeUtil;
 using UnityEngine;
-using UnityEngine.PlayerLoop;
 
 
 public class AudioManager
@@ -18,7 +17,11 @@ public class AudioManager
         void Update()
         {
             if (_su.detect)
-                _CleanDeadSources();
+            {
+                 _CleanDeadSources();
+                 _ClearAudioThatFinished();
+            }
+               
         }
 
         public void Init(AudioManager am)
@@ -35,10 +38,18 @@ public class AudioManager
             }
             
             _parent.discardedPieces.Clear();
-            
-            foreach (var audioPiece in _parent.trackingPieces)
-                if (!audioPiece.audioSource.isPlaying && audioPiece.audioSource.time/audioPiece.audioSource.clip.length > 0.99f)
-                    audioPiece.Stop();
+
+        }
+
+        private void _ClearAudioThatFinished()
+        {
+             foreach (var audioPiece in _parent.trackingPieces)
+                 if (!audioPiece.audioSource.isPlaying &&
+                     audioPiece.audioSource.time / audioPiece.audioSource.clip.length > 0.99f)
+                 {
+                     audioPiece.onAudioFinished.Invoke();
+                     audioPiece.Stop();
+                 }
         }
         
     }

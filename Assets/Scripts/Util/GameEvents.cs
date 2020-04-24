@@ -14,25 +14,6 @@ public class SceneChanged : GameEvent
     }
 }
 
-
-public class TextFinished : GameEvent
-{
-    public DateTime ShootTime = DateTime.MinValue;
-
-    public TextFinished(DateTime shootTime)
-    {
-        ShootTime = shootTime;
-    }
-}
-
-public class PhoneStart : GameEvent{}
-
-public class PhonePickedUp : GameEvent{}
-
-public class PhoneHangedUp : GameEvent{}
-
-public class PhoneFinished : GameEvent{}
-
 public class GameCleanStarted : GameEvent{}
 
 #region Util Events

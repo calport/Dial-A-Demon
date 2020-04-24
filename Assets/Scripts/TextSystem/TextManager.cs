@@ -6,6 +6,7 @@ using System.Linq;
 using System.Text;
 using DialADemon.Library;
 using Ink.Runtime;
+using JetBrains.Annotations;
 using SimpleJSON;
 using TMPro;
 using UnityEngine;
@@ -15,15 +16,26 @@ using Yarn.Unity.Example;
 
 public class TextManager
 {
-	public Story currentStory
+	//text manager state info
+	[CanBeNull]
+	public Story currentStory => currentText?.story;
+	private PlotManager.Text _currentText;
+	public PlotManager.Text currentText
 	{
 		get
 		{
-			if (!ReferenceEquals(currentTextPlot,null)) return currentTextPlot.story;
+			if (!ReferenceEquals(_currentText, null) && _currentText.plotState == PlotManager.PlotState.Playing)
+				return _currentText;
+			foreach (var playingPlot in Services.plotManager.playingPlot)
+				if (playingPlot is PlotManager.Text)
+				{
+					_currentText = playingPlot as PlotManager.Text;
+					return _currentText;
+				}
 			return null;
 		}
 	}
-	public PlotManager.TextPlot currentTextPlot;
+	private RunState _textManagerState = RunState.Play;
 
 	// path of the massage bubble prefabs
     private string _demonTextBox= "Prefabs/MessageBubble_Demon";
@@ -33,30 +45,17 @@ public class TextManager
     private string _endChatBubble = "Prefabs/MessageBubble_EndChat";
     private string _typingDotBubble = "Prefabs/MessageBubble_TypingDot";
 
-    private bool isReloadingDialogueMute = false;
-    public bool isLoadInitDialogueFinished = false;
-    private bool isEndChatShow = false;
+    private bool _isReloadingDialogueMute = false;
+    private bool _isEndChatShow = false;
 
-    public Dictionary<string, Keyboard> keyboard
-    {
-	    get { return TextRunnerInfo.Instance.keyboard; }
-    }
+    //text manager related reference
+    public Dictionary<string, Keyboard> keyboard => TextRunnerInfo.Instance.keyboard;
     public GameObject pointerTrigger;
-    public TextMeshProUGUI textBox
-    {
-	    get { return TextRunnerInfo.Instance.textBox; }
-    }
-    public Button sendButton{
-	    get { return TextRunnerInfo.Instance.sendButton; }
-    }
-    private ScrollRect _msgScroll{
-	    get { return TextRunnerInfo.Instance.msgScroll; }
-    }
-    public GameObject content
-        {
-            get { return _msgScroll.content.gameObject; }
-        }
-    private GameObject _dot;
+    public TextMeshProUGUI textBox => TextRunnerInfo.Instance.textBox;
+    public Button sendButton =>  TextRunnerInfo.Instance.sendButton;
+    private ScrollRect _msgScroll => TextRunnerInfo.Instance.msgScroll;
+	public GameObject content => _msgScroll.content.gameObject;
+	private GameObject _dot;
     
     //this is a place that record all the dialogue lines, so it will be easier to restore the game
     public List<string> FinishedLog = new List<string>();
@@ -70,42 +69,36 @@ public class TextManager
 
     public void Init()
     {
-	    Services.eventManager.AddHandler<TextFinished>(_OnTextFinished);
     }
 
     public void Update()
     {
-        if (_msgScroll.verticalNormalizedPosition >1f && !isReloadingDialogueMute)
-        {
-            if(isLoadInitDialogueFinished) _LoadMoreDialogue();
-            isReloadingDialogueMute = true;
-            CoroutineManager.DoDelayCertainSeconds(delegate { isReloadingDialogueMute = false; },3f );
+        if (_msgScroll.verticalNormalizedPosition >1f && !_isReloadingDialogueMute)
+        { 
+	        _LoadMoreDialogue();
+            _isReloadingDialogueMute = true;
+            CoroutineManager.DoDelayCertainSeconds(delegate { _isReloadingDialogueMute = false; },3f );
         }
     }
     public void Clear()
     {
         //save here
-        Services.eventManager.RemoveHandler<TextFinished>(_OnTextFinished);
     }
 
     #endregion
 
-
     #region TextRunner
 
-    public void Start()
-	{
-	}
-
-	public void StartNewStory(Story newStory)
-	{
-		RefreshView();
-	}
-
-	public void ContinueStory()
+    public void ContinueOrStartStory()
 	{
 		//check if the story is finished, if not, check the json saving file and continue the old story
-		RefreshView();
+		_textManagerState = RunState.Play;
+		if(currentStory!= null) RefreshView();
+	}
+
+	public void PauseStory()
+	{
+		_textManagerState = RunState.Pause;
 	}
 
 	// This is the main function called every time the story changes. It does a few things:
@@ -113,7 +106,7 @@ public class TextManager
 	// Continues over all the lines of text, then displays all the choices. If there are no choices, the story is finished!
 	private void RefreshView()
 	{
-		
+		if(_textManagerState!=RunState.Play) return;
 		// Read all the content until we can't continue any more
 		if (currentStory.canContinue)
 		{
@@ -152,7 +145,7 @@ public class TextManager
 		else
 		{
 			//end story
-			Services.eventManager.Fire(new TextFinished(DateTime.Now));
+			currentText.ChangePlotState(PlotManager.PlotState.Finished);
 			//Button choice = CreateChoiceView("End of story.\nRestart?");
 			//choice.onClick.AddListener(delegate { StartStory(); });
 		}
@@ -204,7 +197,9 @@ public class TextManager
 	}
 	
 	private void AddNewMessage(MessageBubbleType msgType, string text, DateTime shootTime)
-    {
+	{
+		text = TextEffectManager.ProcessingTags(text, out List<UndefinedTagInfo> undefinedTagInfos, out List<Tag> gameRelatedTags);
+		
         if ((shootTime - _lastTimeStamp) > TimeSpan.FromMinutes(10f))
         {
             CreateNewTimeStamp(shootTime);
@@ -246,39 +241,32 @@ public class TextManager
 	            Debug.Log("Change to use AddNewFileMessage to initiate a prefab msg.");
 	            break;
         }
+        
+        foreach (var textFiles in gameRelatedTags.Where(tag => tag is TextFile).ToList())
+        {
+	        var file = textFiles as TextFile;
+	        if ((shootTime - _lastTimeStamp) > TimeSpan.FromMinutes(10f))
+	        {
+		        CreateNewTimeStamp(shootTime);
+		        _lastTimeStamp = shootTime;
+	        }
+		
+	        var msg = new MessageContent();
+	        msg.messageType = MessageBubbleType.Prefab;
+	        msg.fileBubbleName = file.fileBubble;
+	        msg.fileContentName = file.fileContent;
+	        msg.shootTime = shootTime;
+	        _currentDialogueMessages.Add(msg);
+		
+	        var bubblePrefab = Resources.Load<GameObject>("Prefabs/FileBubble/" + file.fileBubble);
+		
+	        Services.textSequenceTaskRunner.AddTask(delegate
+	        {
+		        var bubble = GameObject.Instantiate(bubblePrefab, content.transform);
+		        bubble.GetComponentInChildren<OpenFileButton>().fileContentName = file.fileContent;
+	        },shootTime + TimeSpan.FromSeconds(1));
+        }
     }
-
-	/// <summary>
-	/// This func is for the plot manager specifically to create new file bubbles
-	/// It is only called by outside managers and doesn't belongs to the automatic text manager
-	/// </summary>
-	/// <param name="prefabType"></param>
-	/// <param name="shootTime"></param>
-	public void AddNewFileMessage(Type prefabType, DateTime shootTime)
-	{
-		if ((shootTime - _lastTimeStamp) > TimeSpan.FromMinutes(10f))
-		{
-			CreateNewTimeStamp(shootTime);
-			_lastTimeStamp = shootTime;
-		}
-		
-		var msg = new MessageContent();
-		msg.messageType = MessageBubbleType.Prefab;
-		msg.prefabType = prefabType;
-		msg.shootTime = shootTime;
-		_currentDialogueMessages.Add(msg);
-		
-		Services.textSequenceTaskRunner.AddTask(delegate
-		{
-			if (prefabType.IsSubclassOf(typeof(PlotManager.TextFilePlot)))
-			{
-				PlotManager.TextFilePlot tfp =
-					Services.plotManager.GetOrCreatePlots(prefabType) as PlotManager.TextFilePlot;
-				tfp.CreateBubble();
-			}
-		},shootTime);
-	}
-	
 
 	private void CreateNewTimeStamp(DateTime time)
 	{
@@ -388,7 +376,8 @@ public class TextManager
 		public MessageBubbleType messageType;
 		public string content;
 		public DateTime shootTime;
-		public Type prefabType;
+		public string fileBubbleName;
+		public string fileContentName;
 	}
 	
 	private List<MessageContent> _currentDialogueMessages = new List<MessageContent>();
@@ -399,7 +388,7 @@ public class TextManager
 		//save the data
 		var isLastDialogueFinished = false;
 		if (_currentDialogueMessages.Count != 0)
-			_OnTextFinished(new TextFinished(DateTime.MinValue));
+			WrapAndSavePlotDialogues();
 		else
 			isLastDialogueFinished = true;
 		
@@ -425,7 +414,8 @@ public class TextManager
 			msgObj.Add("content",msg.content);
 			var shootTimeString = (SerializeManager.JsonDateTime) msg.shootTime;
 			msgObj.Add("shootTime",shootTimeString.value.ToString());
-			if(!ReferenceEquals(msg.prefabType,null)) msgObj.Add("prefabType",msg.prefabType.ToString());
+			if(!ReferenceEquals(msg.fileBubbleName,null)) msgObj.Add("fileBubbleName",msg.fileBubbleName);
+			if(!ReferenceEquals(msg.fileContentName,null)) msgObj.Add("fileBubbleName",msg.fileContentName);
 			jsonDialogueContent.Add(msgObj);
 		}
 		textJsonObj.Add("dialogueMessages", jsonDialogueContent);
@@ -436,7 +426,7 @@ public class TextManager
 		return jsonObject;
 	}
 
-    public void Load(JSONNode jsonObject)
+    public void LoadFromFile(JSONNode jsonObject)
     {
 	    var textJsonObj = jsonObject["text"];
 	    
@@ -452,14 +442,17 @@ public class TextManager
 		    Enum.TryParse<MessageBubbleType>(jsonMsg["messageType"], out msg.messageType);
 		    msg.content = jsonMsg["content"];
 		    msg.shootTime = new SerializeManager.JsonDateTime(Convert.ToInt64((string)jsonMsg["shootTime"]));
-		    if(jsonMsg["prefabType"]!=null)
-			    msg.prefabType = Type.GetType(jsonMsg["prefabType"]);
+		    if(jsonMsg["fileBubbleName"]!=null) msg.fileBubbleName = jsonMsg["fileBubbleName"];
+		    if(jsonMsg["fileContentName"]!=null) msg.fileContentName = jsonMsg["fileContentName"];
 		    _msgContent.Add(msg);
 	    }
 	    var _msgLengthInfo = new List<int>();
 	    foreach (var length in jsonDialogueLengthInfo.Values)
 		    _msgLengthInfo.Add(length);
 	    MessageContent[][] arrayInfo= SerializeManager.Deserialize2DArray(_msgLengthInfo, _msgContent);
+	    
+	    if(Services.saveManager.inkJson!= "") currentStory.state.LoadJson(Services.saveManager.inkJson);
+	    
 	    //get the info from the save file
 	    foreach (var msgArray in arrayInfo)
 		    _dialogueMessages.Add(msgArray);
@@ -472,18 +465,20 @@ public class TextManager
 			    _dialogueMessages.Remove(_dialogueMessages[_dialogueMessages.Count - 1]);
 		    }
 	    }
-
 	    _lastTimeStamp = new SerializeManager.JsonDateTime(Convert.ToInt64((string)textJsonObj["lastTimeStamp"]));
 	    _LoadInitialDialogue();
 	    _LoadMoreDialogue();
-	    _LoadDialogueForOldPlotWhenAPPisOff();
-	    
-	    isLoadInitDialogueFinished = true;
+	    _LoadCurrentPlotMessageDuringPlayerOffTime();
     }
-    private void _LoadDialogueForOldPlotWhenAPPisOff()
+
+    public void UpdatePlayerOffTime()
+    {
+	   
+    }
+    private void _LoadCurrentPlotMessageDuringPlayerOffTime()
     {
 	    //protect when currentStory doesnt exist
-	    if(currentTextPlot== null) return;
+	    if(currentText== null) return;
 	    
 	    var lastMsg = FindTheLastMessage();
 	    var startTime = lastMsg.shootTime;
@@ -509,27 +504,31 @@ public class TextManager
 		    startTime += dotSpan;
 	    }
 
-	    if (currentTextPlot.isBreak()) currentTextPlot.ChangePlotState(PlotManager.plotState.isBreak);
-	    
+	    //the story is not end yet
 	    if (currentStory.currentChoices.Count > 0)
 	    {
+		    if(currentText.CheckAndBreakIfItsBreakTime()) return;
+		    
 		    for (int i = 0; i < currentStory.currentChoices.Count; i++)
 		    {
 			    Choice choice = currentStory.currentChoices[i];
 			    CreateChoiceView(choice);
 		    }
 	    }
+	    //story ends
 	    else
 	    {
 		    //end story
-		    Services.eventManager.Fire(new TextFinished(startTime));
+		    currentText.ChangePlotState(PlotManager.PlotState.Finished);
 	    }
+	    
+	   
     }
 
     public void _LoadDialogueForNewPlotWhenAPPisOff(DateTime originalStartTime)
     {
 	    //protect when currentStory doesnt exist
-	    if(currentTextPlot== null) return;
+	    if(currentText== null) return;
 	    
 	    var startTime = originalStartTime;
 	    while (currentStory.canContinue)
@@ -553,11 +552,13 @@ public class TextManager
 		    AddNewMessage(MessageBubbleType.Demon,text,shootTime);
 		    startTime += dotSpan;
 	    }
-
-	    if (currentTextPlot.isBreak()) currentTextPlot.ChangePlotState(PlotManager.plotState.isBreak);
+	    
+	    
 	    
 	    if (currentStory.currentChoices.Count > 0)
 	    {
+		    if(currentText.CheckAndBreakIfItsBreakTime()) return;
+		    
 		    for (int i = 0; i < currentStory.currentChoices.Count; i++)
 		    {
 			    Choice choice = currentStory.currentChoices[i];
@@ -567,7 +568,7 @@ public class TextManager
 	    else
 	    {
 		    //end story
-		    Services.eventManager.Fire(new TextFinished(startTime));
+		    currentText.ChangePlotState(PlotManager.PlotState.Finished);
 	    }
     }
     private void _LoadInitialDialogue()
@@ -606,15 +607,14 @@ public class TextManager
 	                case MessageBubbleType.Prefab:
 		                Services.textSequenceTaskRunner.AddTask(delegate
 		                {
-			                Debug.Log("the msg was read");
-			                var prefabType = msg.prefabType;
-			                if (prefabType.IsSubclassOf(typeof(PlotManager.TextFilePlot)))
-			                {
-				                PlotManager.TextFilePlot tfp =
-					                Services.plotManager.GetOrCreatePlots(prefabType) as PlotManager.TextFilePlot;
-				                tfp.CreateBubble();
-			                }
+			                var bubblePrefab = Resources.Load<GameObject>("Prefabs/FileBubble/" + msg.fileBubbleName);
+			                
+			                var bubble = GameObject.Instantiate(bubblePrefab, content.transform);
+			                if(bubble.GetComponentInChildren<OpenFileButton>())
+				                bubble.GetComponentInChildren<OpenFileButton>().fileContentName = msg.fileContentName;
+
 		                },msg.shootTime);
+
 		                break;
 	            }
 			}
@@ -626,7 +626,7 @@ public class TextManager
     {
 	    if (_dialogueLabel < 0)
         {
-            if (!isEndChatShow)
+            if (!_isEndChatShow)
             {
                 Services.textSequenceTaskRunner.AddSideTask(delegate
                 {
@@ -634,7 +634,7 @@ public class TextManager
                         GameObject.Instantiate(Resources.Load<GameObject>(_endChatBubble), content.transform);
                     newTimeBox.transform.SetSiblingIndex(0);
                 },DateTime.Now);
-                isEndChatShow = true;
+                _isEndChatShow = true;
             }
 
             return;
@@ -673,13 +673,12 @@ public class TextManager
                 case MessageBubbleType.Prefab:
 	                Services.textSequenceTaskRunner.AddTask(delegate
 	                {
-		                var prefabType = msg.prefabType;
-		                if (prefabType.IsSubclassOf(typeof(PlotManager.TextFilePlot)))
-		                {
-			                PlotManager.TextFilePlot tfp =
-				                Services.plotManager.GetOrCreatePlots(prefabType) as PlotManager.TextFilePlot;
-			                tfp.CreateBubble();
-		                }
+		                var bubblePrefab = Resources.Load<GameObject>("Prefabs/FileBubble/" + msg.fileBubbleName);
+			                
+		                var bubble = GameObject.Instantiate(bubblePrefab, content.transform);
+		                if(bubble.GetComponentInChildren<OpenFileButton>())
+			                bubble.GetComponentInChildren<OpenFileButton>().fileContentName = msg.fileContentName;
+
 	                },msg.shootTime);
 	                break;
             }
@@ -706,16 +705,14 @@ public class TextManager
     public void MuteAllKeyboard()
     {
 	    foreach (var key in keyboard.Values)
-	    {
 		    key.isChoice = false;
-	    }
     }
 
     #endregion
 
     #region Events
 
-    private void _OnTextFinished(TextFinished e)
+    public void WrapAndSavePlotDialogues()
     {
 	    //pack the msg and put them into the big list for saving
 	    var msgArray =_currentDialogueMessages.ToArray();

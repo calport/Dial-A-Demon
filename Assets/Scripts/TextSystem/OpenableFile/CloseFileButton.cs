@@ -8,23 +8,7 @@ using UnityEngine;
 
 public class CloseFileButton : MonoBehaviour
 {
-    public Type plotType;
-    public GameObject bubble
-    {
-        get
-        {
-            PlotManager.TextFilePlot tfp = Services.plotManager.GetOrCreatePlots(plotType) as PlotManager.TextFilePlot;
-            return tfp.bubble;
-        }
-    }
-    public GameObject document
-    {
-        get
-        {
-            PlotManager.TextFilePlot tfp = Services.plotManager.GetOrCreatePlots(plotType) as PlotManager.TextFilePlot;
-            return tfp.document;
-        }
-    }
+    public OpenFileButton ofb;
     private PageState ps
     {
         get
@@ -32,18 +16,10 @@ public class CloseFileButton : MonoBehaviour
             return Services.pageState;
         }
     }
-    private PlotManager.TextFilePlot tfp
-    {
-        get
-        {
-            return Services.plotManager.GetOrCreatePlots(plotType) as PlotManager.TextFilePlot;
-        }
-    }
 
     public void OnSimpleTap()
     {
-        Destroy(document);
+        Destroy(ofb.document);
         ps.TransitToPreviousState();
-            
     }
 }

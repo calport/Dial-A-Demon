@@ -1,5 +1,6 @@
 ﻿
 using System;
+using System.CodeDom;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
@@ -13,231 +14,137 @@ using DialADemon.Page;
 using Ink.Runtime;
 using SimpleJSON;
 using UnityEngine;
+using UnityEngine.Experimental.XR;
+
 //using UnityEngine.iOS;
 
 public class PlotManager 
 {
-    public Dictionary<Plot, DateTime> Calendar = new Dictionary<Plot, DateTime>();
+    public struct CalendarPlotTimeSpan
+    {
+        public DateTime startTime;
+        public DateTime potentialBreakTime;
+    }
+    //Calendar contains all the information about the plots which is ready, preparing and finished with certain trigger time
+    public Dictionary<Plot, CalendarPlotTimeSpan> Calendar = new Dictionary<Plot, CalendarPlotTimeSpan>();
+    public List<Plot> playingPlot = new List<Plot>();
     public bool isSpeedMode = false;
     
     private DateTime _baseTime = DateTime.MinValue;
     //Calendar system
-    private Dictionary<Type, Plot> _plots = new Dictionary<Type, Plot>();
-    //
-    private Dictionary<Type, Plot> _globalCheckPlot = new Dictionary<Type, Plot>();
+    private Dictionary<string, Plot> _plots = new Dictionary<string, Plot>();
     private string _currentTextAssetLocation;
     
     //other quick reference
 
     #region Life Cycle
 
-     public void Init()
+    public void Init()
         {
     
-            //clear notification
+            //Load all plots' info
+            _ParsePlotInfo();
+
+            _baseTime = DateTime.Now;
+            //TODO: clear notification
             //UnityEngine.iOS.NotificationServices.ClearLocalNotifications();
-    
-            //for the first time upload
-            if (!File.Exists(Services.saveManager.saveJsonPath))
-            {
-                _baseTime = DateTime.Now;
-                InitLeadPlot();
-            }
-    
-            //TODO: The init here didn't consider the situation that the game is recovering from a save
         }
         
-        public void Update()
+    public void Update()
+    {
+        //constantly update the plots' state
+        foreach (var pair in Calendar)
         {
-            List<Plot> unusedPlot = new List<Plot>();
-            //constantly update the plots' state
-            for(int i = 0; i< Calendar.Keys.ToList().Count;i++)
+            switch (pair.Key.plotState)
             {
-                KeyValuePair<Plot, DateTime> plotPair = Calendar.ElementAt(i);
-                if (plotPair.Value < DateTime.Now && plotPair.Key.plotState == plotState.isOnCalendar)
-                {
-                    plotPair.Key.ChangePlotState(plotState.isReadyToPlay);
-                    plotPair.Key.Init();
-                    continue;
-                }
-    
-                if (plotPair.Key.plotState == plotState.isReadyToPlay)
-                {
-                    plotPair.Key.ChangePlotState(plotState.isPlaying);
-                    plotPair.Key.Start();
-                    continue;
-                }
-                
-                if (plotPair.Key.plotState == plotState.isPlaying)
-                {
-                    plotPair.Key.Update();
-                    continue;
-                }
-    
-                if (plotPair.Key.plotState == plotState.isFinished)
-                {
-                    plotPair.Key.Clear();
-                    unusedPlot.Add(plotPair.Key);
-                    continue;
-                }
-    
-                if (plotPair.Key.plotState == plotState.isBreak)
-                {
-                    plotPair.Key.Break();
-                    unusedPlot.Add(plotPair.Key);
-                    continue;
-                }
-            }
-            
-            //clean finished plots
-            foreach (var plot in unusedPlot)
-            {
-                Calendar.Remove(plot);
-            }
-            
-            foreach (var plot in _globalCheckPlot.Values)
-            {
-                if (plot.plotState == plotState.isStandingBy || plot.plotState == plotState.isChecking)
-                {
-                    bool isLoadable;
-                    
-                    if (!isSpeedMode) isLoadable = plot.CheckLoad();
-                    else isLoadable = plot.SpeedCheckLoad();
-                    
-                    if (isLoadable)
+                case PlotState.ReadyToPlay:
+                    if (pair.Value.startTime < DateTime.Now)
                     {
-                        plot.AddToCalendar();
+                        pair.Key.CheckStartQualification();
+                        if (pair.Key.plotState == PlotState.ReadyToPlay && pair.Value.startTime < DateTime.Now)
+                            pair.Key.ChangePlotState(PlotState.Playing);
                     }
-                }
+                    break;
+                case PlotState.Playing:
+                    pair.Key.Update();
+                    _CheckAndBreakIfItsBreakTime(pair);
+                    break;
             }
         }
-    
-        public void Clear()
+
+        foreach (var plot in _plots.Values)
         {
-            //save all the list of plots
-            //save all the plot start time
-            //TODO
-            //add notification
+            if (plot.plotState == PlotState.StandingBy)
+                plot.TryAddToCalendar();
         }
+    }
+
+    public void Clear()
+    {
+        //save all the list of plots
+        //save all the plot start time
+        //TODO
+        //add notification
+    }
 
     #endregion
 
-    public void ClearCalendar()
-    {
-        //including save and clean data
-        //save TODO
-        //clean
-        Calendar.Clear();
-        _plots.Clear();
-        
-    }
+    #region Public Functions
 
-    void InitLeadPlot()
-    {
-        var root = GetOrCreatePlots<RootPlot>();
-        root.AddToCalendar();
-    }
-
-    public T GetOrCreatePlots<T>() where T : Plot
-    {
-        Plot outPlot;
-        _plots.TryGetValue(typeof(T), out outPlot);
-        if (outPlot != null)
+         public void ClearCalendar()
         {
-            return outPlot as T;
-        }    
-        else
-        {
-            T newPlot = Activator.CreateInstance<T>();
-            newPlot.parent = this;
-            newPlot.ChangePlotState(plotState.isChecking);
-            if(newPlot.isGlobalCheck) _globalCheckPlot.Add(newPlot.GetType(),newPlot);
-            _plots.Add(typeof(T), newPlot);
+            //including save and clean data
+            //save TODO
+            //clean
+            Calendar.Clear();
             
-            return newPlot;
         }
-    }
-
-
-    public Plot GetOrCreatePlots(Type type)
-    {
-        Plot outPlot;
-        _plots.TryGetValue(type, out outPlot);
-        if (outPlot != null)
+         
+         public Plot GetPlot(string name)
         {
-            return outPlot;
+            if (_plots.ContainsKey(name)) return _plots[name];
+            return null;
         }
-        else
-        {
-            Plot newPlot = Activator.CreateInstance(type) as Plot;
-            newPlot.parent = this;
-            newPlot.ChangePlotState(plotState.isChecking);
-            if (newPlot.isGlobalCheck) _globalCheckPlot.Add(newPlot.GetType(), newPlot);
-            _plots.Add(type, newPlot);
-            
-            return newPlot;
-        }
-    }
 
-    public void StartPlot<T>() where T : Plot
+    #endregion
+    
+    #region GameTestFunc
+
+    public void Tool_StartPlot(string name)
     {
         ClearCalendar();
-        var newPlot = GetOrCreatePlots<T>();
-        newPlot.AddToCalendarWithSetTime(DateTime.Now);
+        Tool_AddPlotToCalender(name,
+            new CalendarPlotTimeSpan {startTime = DateTime.Now, potentialBreakTime = DateTime.MaxValue});
     }
 
-    public void AddPlot<T>(DateTime startTime) where T : Plot
+    public void Tool_AddPlotToCalender(string name, CalendarPlotTimeSpan timeSpan)
     {
-        var newPlot = GetOrCreatePlots<T>();
-        newPlot.AddToCalendarWithSetTime(startTime);
+        GetPlot(name)?.Tool_AddToCalendar(timeSpan);
     }
 
-    #region Save
+    #endregion
 
-        [Serializable]
-        public class PlotInfo
-        {
-            public bool isOnCalendar;
-            public Type plotType;
-            public PlotManager.plotState plotState;
-            public TimeSpan relaSpan;
-            public DateTime startTime;
-            //for phone plot
-            public PlotManager.PhonePlot.PhoneCallState phoneCallState;
-        }
-        
+    #region Save & Load
+
+    /// <summary>
+    /// all these happen without plotmanager update
+    /// </summary>
+    /// <param name="jsonObject"></param>
+    /// <returns></returns>
         public JSONObject Save(JSONObject jsonObject)
         {
             var plotJsonObj = new JSONObject();
             var plotList = new JSONArray();
-            foreach (var plotPair in _plots)
+            foreach (var plotPair in Calendar)
             {
                 //save each plot
                 var plotJson = new JSONObject();
-                if (Calendar.ContainsKey(plotPair.Value))
-                {
-                    plotJson.Add("isOnCalendar",true);
-                    Calendar.TryGetValue(plotPair.Value, out DateTime time);
-                    var stringTime = (SerializeManager.JsonDateTime) time;
-                    plotJson.Add("startTime",stringTime.value.ToString());
-                }
-                else
-                {
-                    plotJson.Add("isOnCalendar",false);
-                }
-                
-                plotJson.Add("plotType",plotPair.Value.GetType().ToString());
-                plotJson.Add("plotState",plotPair.Value.plotState.ToString());
-                var stringSpan = (SerializeManager.JsonTimeSpan) plotPair.Value.relaSpan;
-                plotJson.Add("relaSpan",stringSpan.value);
-                
-                if(plotPair.Key.IsSubclassOf(typeof(PhonePlot)))
-                {
-                    PhonePlot plot = plotPair.Value as PhonePlot;
-                    plotJson.Add("phoneCallState", plot.phoneCallState.ToString());
-                }
-                else
-                    plotJson.Add("phoneCallState", PhonePlot.PhoneCallState.NotStart.ToString());
+                plotJson.Add("name",plotPair.Key.name);
+                var stringStartTime = (SerializeManager.JsonDateTime) plotPair.Value.startTime;
+                var stringBreakTime = (SerializeManager.JsonDateTime) plotPair.Value.potentialBreakTime;
+                plotJson.Add("startTime",stringStartTime.value.ToString());
+                plotJson.Add("breakTime",stringBreakTime.value.ToString());
+                plotJson.Add("plotState",plotPair.Key.plotState.ToString());
                 plotList.Add(plotJson);
             }
             
@@ -249,669 +156,647 @@ public class PlotManager
             return jsonObject;
         }
 
-        public void Load(JSONNode jsonObject)
+        public void LoadFromFile(JSONNode jsonObject)
         {
+
+            //reload the calendar
             var plotJsonObj = jsonObject["plot"];
             _baseTime = new SerializeManager.JsonDateTime(Convert.ToInt64((string)plotJsonObj["plotBaseTime"]));
             foreach (var jsonPlotInfo in plotJsonObj["plotList"].Values)
             {
-                var plotType = Type.GetType(jsonPlotInfo["plotType"]);
-                var plot = GetOrCreatePlots(plotType);
-                if(Enum.TryParse<plotState>(jsonPlotInfo["plotState"], out plotState s))
+                var plot = GetPlot(jsonPlotInfo["name"]);
+                if(Enum.TryParse<PlotState>(jsonPlotInfo["plotState"], out PlotState s))
                     plot.ChangePlotState(s);
-                plot.relaSpan = new SerializeManager.JsonTimeSpan(Convert.ToInt64((string)jsonPlotInfo["relaSpan"]));
-                if (plotType.IsSubclassOf(typeof(PhonePlot)))
+                var timeSpan = new CalendarPlotTimeSpan
                 {
-                    PhonePlot phonePlot = plot as PhonePlot;
-                    Enum.TryParse<PhonePlot.PhoneCallState>(jsonPlotInfo["phoneCallState"], out phonePlot.phoneCallState);
-                }
-                if (plotJsonObj["isOnCalendar"]) Calendar.Add(plot, new SerializeManager.JsonDateTime(Convert.ToInt64((string)jsonPlotInfo["startTime"])));
-                plot.Reload();
+                    startTime = new SerializeManager.JsonDateTime(Convert.ToInt64((string)jsonPlotInfo["startTime"])),
+                    potentialBreakTime = new SerializeManager.JsonDateTime(Convert.ToInt64((string)jsonPlotInfo["breakTime"]))
+                };
+                Calendar.Add(plot, timeSpan);
+
+                //game load functions
+                _LoadPlayingPlots();
+               
             }
         }
 
-    #endregion
-
-
-    public void CheckCapableTextWhenLoad()
-    {
+        public void UpdatePlayerOffTime()
+        {
+             _LoadPlotsThatShouldStart();
+        }
         
-    }
+        private void _LoadPlayingPlots()
+        {
+            foreach (var plotPair in Calendar)
+            {
+                if(plotPair.Key.plotState != PlotState.Playing) return;
+                
+                _CheckAndBreakIfItsBreakTime(plotPair);
+                plotPair.Key.ReloadPlayingPlot();
+                playingPlot.Add(plotPair.Key); 
+            }
+        }
+        private void _LoadPlotsThatShouldStart()
+        {
+            var sortCalendar = _SortCalenderByStartTime();
+            var pendingPlots = sortCalendar.Where(pair =>
+                pair.Value.startTime < DateTime.Now - TimeSpan.FromMinutes(3) &&
+                pair.Key.plotState == PlotState.ReadyToPlay);
+            
+            //leave the newest text plot and either abandon or break the old ones
+            var textPairs = pendingPlots.Where(pair => pair.Key is Text).ToList();
+            var startText = textPairs[textPairs.Count() - 1];
+            startText.Key.LateStart();
+            startText.Key.ChangePlotState(PlotState.Playing);
+            _CheckAndBreakIfItsBreakTime(startText);
+            textPairs.Remove(startText);
+            foreach (var pair in textPairs)
+                pair.Key.ChangePlotState(PlotState.Abandoned);
+
+            //all the phones are set to missed
+            //which is break
+            //abandon is like they never exist so we use break here
+            var phonePairs = pendingPlots.Where(pair => pair.Key is PhoneCall).ToList();
+            foreach (var pair in phonePairs)
+                pair.Key.ChangePlotState(PlotState.Broke);
+            
+        }
+    
+
+        #endregion
+
+    #region Private Function
+
+        private bool _CheckAndBreakIfItsBreakTime(KeyValuePair<Plot,CalendarPlotTimeSpan> calendarPlot)
+        {
+            if (calendarPlot.Value.potentialBreakTime < DateTime.Now && calendarPlot.Key.plotState == PlotState.Playing)
+            {
+                calendarPlot.Key.ChangePlotState(PlotState.Broke);
+                return true;
+            }
+            return false;
+        }
+
+        private List<KeyValuePair<Plot,CalendarPlotTimeSpan>> _SortCalenderByStartTime()
+        {
+            var list = Calendar.ToList();
+            for(var i = 0; i < list.Count - 1; i++) {
+                for(var j = 0; j < list.Count - 1 - i; j++) {
+                    if(list[j].Value.startTime > list[j+1].Value.startTime) {       
+                        var temp = list[j+1];
+                        list[j+1] = list[j];
+                        list[j] = temp;
+                    }
+                }
+            }
+            return list;
+        }
+
+        private List<KeyValuePair<Plot, CalendarPlotTimeSpan>> _GetPlotWithStateFromCalendar(PlotState state)
+        {
+            var list = new List<KeyValuePair<Plot, CalendarPlotTimeSpan>>();
+            foreach (var pair in Calendar)
+                if(pair.Key.plotState == state) list.Add(pair);
+            return list;
+        }
+        
+        #endregion
+        
     //when the app quit, save all the info that needed
     //add notification and other stuff to keep track the gameflow
     
 
-    public enum plotState
+    public enum PlotState
     {
-        isStandingBy,
-        isChecking,
-        isOnCalendar,
-        isReadyToPlay,
-        isPlaying,
-        isFinished,
-        isAbandoned,
-        isBreak,
+        StandingBy,
+        ReadyToPlay,
+        Playing,
+        Finished,
+        Broke,
+        Abandoned
     }
 
+    public enum PlotInitType
+    {
+        TimeBased,
+        PlotBased,
+        Mix,
+    }
 
     public abstract class Plot
     {
-        public PlotManager parent;
-        protected List<Type> _parentPlots = new List<Type>();
-        //these plots are only important for a special speed-up mode
-        protected List<Type> _requiredPrePlots = new List<Type>();
-        protected List<Type> _childPlots = new List<Type>();
+        public Plot( 
+            string name, PlotInitType initType, int priority, TimeSpan timeBasedSendTimeSpan, TimeSpan plotBasedDelayTime,
+            TimeSpan waitTimeBeforeBreak, List<string> prePlots)
+        {
+            this.name = name;
+            this.initType = initType;
+            this.priority = priority;
+            this.timeBasedSendTimeSpan = timeBasedSendTimeSpan;
+            this.plotBasedDelayTime = plotBasedDelayTime;
+            this.waitTimeBeforeBreak = waitTimeBeforeBreak;
+            this.prePlots = prePlots;
+        }
         
-        protected plotState _plotState = plotState.isStandingBy;
-        public plotState plotState
+        public PlotManager parent;
+
+        private PlotState _plotState = PlotState.StandingBy;
+
+        public PlotState plotState
         {
             get { return _plotState; }
         }
-
-        public void ChangePlotState(plotState ps)
+        
+        //new sys
+        public string name { get; private set; }
+        public PlotInitType initType { get; private set; }
+        public int priority { get; private set; } = 0;
+        public TimeSpan timeBasedSendTimeSpan { get; private set; }
+        public DateTime timeBasedSendTime
         {
+            get { return parent._baseTime.Date + timeBasedSendTimeSpan; }
+        }
+
+        public TimeSpan plotBasedDelayTime { get; private set; }
+        public TimeSpan waitTimeBeforeBreak { get; private set; }
+        public List<string> prePlots;
+        
+        //event delegate
+        public Action onPlotStart =() =>{ };
+        public Action onPlotBreak =() =>{ };
+        public Action onPlotFinish =() =>{ };
+
+        protected CalendarPlotTimeSpan? _currentCalendarTimeSpan
+        {
+            get {
+                if (parent.Calendar.ContainsKey(this))
+                    return parent.Calendar[this];
+                return null;
+            }
+        }
+
+        #region Life Cycle
+
+            public virtual void ReloadPlayingPlot(){}
+
+            //called when reloading
+            //for plots that are supposed to happen in between the time that the player is offline
+            public virtual void LateStart(){}
+            
+            //int when the plot is added to calendar
+            public virtual void Init(){}
+            //start when it is time for the plot to run
+            public virtual void Start(){}
+            public virtual void Update(){}
+
+            public virtual void OnFinished(){}
+
+            public virtual void OnBreak(){}
+
+            public virtual void OnAbandon(){}
+
+        #endregion
+        
+        //this is for handling conflict when a plot is ready to start
+        public virtual void CheckStartQualification(){}
+
+        #region Public Func
+
+        public void ChangePlotState(PlotState ps,CalendarPlotTimeSpan span = new CalendarPlotTimeSpan())
+        {
+            switch (ps)
+            {
+                case PlotState.ReadyToPlay:
+                    parent.playingPlot.Remove(this);
+                    parent.Calendar.Add(this, span);
+                    Init();
+                    break;
+                case PlotState.Playing:
+                    parent.playingPlot.Add(this);
+                    if(Services.game.runState == RunState.Load) LateStart();
+                    else Start();
+                    onPlotStart.Invoke();
+                    break;
+                case PlotState.Finished: 
+                    parent.playingPlot.Remove(this);
+                    OnFinished(); 
+                    onPlotFinish.Invoke();
+                    break;
+                case PlotState.Broke:
+                    parent.playingPlot.Remove(this);
+                    OnBreak();
+                    onPlotBreak.Invoke();
+                    break;
+                case PlotState.Abandoned:
+                    parent.playingPlot.Remove(this);
+                    OnAbandon();
+                    break;
+            }
             _plotState = ps;
         }
 
-        //true when the checking 
-        public  bool isGlobalCheck = false;
+        public void TryAddToCalendar()
+        {
+            if (_plotState == PlotState.StandingBy)
+            {
+                if (_IsPlotTimeSpanAbleToSet(out CalendarPlotTimeSpan span))
+                {
+                    ChangePlotState(PlotState.ReadyToPlay, span);
+                }
+            }
+        }
 
-        public  bool isInstance = false;
+        public void Tool_AddToCalendar(CalendarPlotTimeSpan span)
+        {
+            parent.Calendar.Add(this, span);
+            Init();
+            ChangePlotState(PlotState.ReadyToPlay,span);
+        }
+
+        public bool CheckAndBreakIfItsBreakTime()
+        {
+            if (_currentCalendarTimeSpan?.potentialBreakTime < DateTime.Now && plotState == PlotState.Playing)
+            {
+                ChangePlotState(PlotState.Broke);
+                return true;
+            }
+            return false;
+        }
+
+        #endregion
         
-        //calendar time
-        protected Type _referPlot;
-        public TimeSpan relaSpan;
+        private bool _IsPlotTimeSpanAbleToSet(out CalendarPlotTimeSpan span)
+        {
+            span = new CalendarPlotTimeSpan();
+            switch (initType)
+            {
+                case PlotInitType.TimeBased:
+                    span.startTime = timeBasedSendTime;
+                    span.potentialBreakTime = timeBasedSendTime + waitTimeBeforeBreak;
+                    return true;
+                case PlotInitType.PlotBased:
+                    foreach (var plot in prePlots)
+                    {
+                        if (parent._plots.ContainsKey(plot))
+                        {
+                            var state = parent._plots[plot].plotState;
+                            if (state == PlotState.StandingBy || state == PlotState.ReadyToPlay ||
+                                state == PlotState.Playing) 
+                                return false;
+                            continue;
+                        }
+                        Debug.Assert(true,"plot name " + plot + " not found");
+                    }
 
-        public TimeSpan absSpan
+                    if (prePlots.Count == 0)
+                    {
+                        span.startTime = parent._baseTime + plotBasedDelayTime;
+                        span.potentialBreakTime = span.startTime + waitTimeBeforeBreak;
+                    }
+                    else
+                    {
+                        span.startTime = parent.Calendar[parent._plots[prePlots[0]]].potentialBreakTime +
+                                                             plotBasedDelayTime;
+                        span.potentialBreakTime = span.startTime + waitTimeBeforeBreak;
+                    }
+                    return true;
+                case PlotInitType.Mix:
+                    if (DateTime.Now > timeBasedSendTime) return false;
+                    
+                    foreach (var plot in prePlots)
+                    {
+                        if (parent._plots.ContainsKey(plot))
+                        {
+                            var state = parent._plots[plot].plotState;
+                            if (state == PlotState.StandingBy || state == PlotState.ReadyToPlay ||
+                                state == PlotState.Playing) 
+                                return false;
+                            continue;
+                        }
+                        Debug.Assert(true,"plot name " + plot + " not found");
+                    }
+                    span.startTime = timeBasedSendTime;
+                    span.potentialBreakTime = timeBasedSendTime + waitTimeBeforeBreak;
+                    return true;
+            }
+
+            return false;
+        }
+    }
+
+    public class Text : Plot
+    {
+        public Text(string name, PlotInitType initType, int priority, TimeSpan timeBasedSendTimeSpan,
+            TimeSpan plotBasedDelayTime,
+            TimeSpan waitTimeBeforeBreak, List<string> prePlots) : base(name, initType, priority, timeBasedSendTimeSpan,
+            plotBasedDelayTime,
+            waitTimeBeforeBreak, prePlots){}
+
+        private Story _story;
+        public Story story
         {
             get
             {
-                TimeSpan time = relaSpan;
-                Plot rp = this;
-                while(rp._referPlot!= null)
+                if (ReferenceEquals(_story, null))
                 {
-                    rp = parent.GetOrCreatePlots(rp._referPlot);
-                    time += rp.relaSpan;
+                    var textAsset = Resources.Load<TextAsset>("InkText/" + name);
+                    //var ta = Resources.Load<TextAsset>(textAssetLocation);
+                    _story = new Story(textAsset.text);
+                    return _story;
                 }
 
-                return time;
+                return _story;
             }
         }
-        public DateTime plotStartTime
+        private readonly TextManager _tm = Services.textManager;
+
+        public override void ReloadPlayingPlot(){}
+
+        public override void LateStart()
         {
-            get { return parent._baseTime.Add(absSpan); }
+            parent.Calendar.TryGetValue(this, out CalendarPlotTimeSpan timeSpan);
+            Debug.Log("????");
+            _tm._LoadDialogueForNewPlotWhenAPPisOff(timeSpan.startTime);
         }
 
-        public virtual void Reload(){}
-        //preInit when the plot is created
+        public override void Init(){}
 
-        //int when the plot is added to calendar
-        public virtual void Init()
+        public override void Start()
         {
-        }
-        //start when it is time for the plot to run
-        public virtual void Start(){}
-        public virtual void Update()
-        {
+            _tm.ContinueOrStartStory();
         }
 
-        public virtual void Clear()
+        public override void Update(){}
+
+        public override void OnBreak()
         {
+            if (_tm.currentText == this) _tm.MuteAllKeyboard();
+            _tm.WrapAndSavePlotDialogues();
         }
 
-        public virtual bool isBreak()
+        public override void OnFinished()
         {
-            return false;
+            if (_tm.currentText == this) _tm.MuteAllKeyboard();
+            _tm.WrapAndSavePlotDialogues();
         }
 
-        public virtual bool isBreak(DateTime lastMessage)
+        public override void OnAbandon(){}
+
+        public void OnSendText()
         {
-            return false;
+            var span = new CalendarPlotTimeSpan();
+            if (!ReferenceEquals(_currentCalendarTimeSpan, null))
+            {
+                span = _currentCalendarTimeSpan.Value;
+                span.potentialBreakTime = DateTime.Now + waitTimeBeforeBreak;
+                parent.Calendar[this] = span;
+            }
         }
-        public virtual void Break(){}
         
-
-        public void AddToCalendar()
+        public void Pause()
         {
-            if (_plotState == plotState.isChecking || _plotState == plotState.isStandingBy)
-            {
-                parent.Calendar.Add(this,plotStartTime);
-                this._plotState = plotState.isOnCalendar;
-            }
-        }
-        
-        public void AddToCalendarWithSetTime(DateTime startTime)
-        {
-            if (_plotState == plotState.isChecking || _plotState == plotState.isStandingBy)
-            {
-                parent.Calendar.Add(this,startTime);
-                this._plotState = plotState.isOnCalendar;
-            }
+            _tm.PauseStory();
         }
 
-        public void CheckChild()
+        public void UnPause()
         {
-            foreach (var childPlot in _childPlots)
+            _tm.ContinueOrStartStory();
+        }
+
+        public override void CheckStartQualification()
+        {
+            foreach (var playingPlot in parent.playingPlot)
             {
-                var plotInit = parent.GetOrCreatePlots(childPlot);
-                if (plotInit._plotState == plotState.isChecking || plotInit._plotState == plotState.isStandingBy)
+                if (playingPlot is Text)
                 {
-                    plotInit._plotState = plotState.isChecking;
-                    bool isLoadable;
-                    
-                    if (!parent.isSpeedMode) isLoadable = plotInit.CheckLoad();
-                    else isLoadable = plotInit.SpeedCheckLoad();
-                    
-                    if (isLoadable)
+                    // make sure no two text plots run in the same time
+                    if (priority <= playingPlot.priority)
+                        playingPlot.ChangePlotState(PlotState.Broke);
+                    else
+                        ChangePlotState(PlotState.Abandoned);
+                    continue;
+                }
+
+                if (playingPlot is PhoneCall)
+                {
+                    if (playingPlot is PlayerCall)
                     {
-                        plotInit.AddToCalendar();
+                        var phone = playingPlot as PlayerCall;
+                        if (!phone.isPutThrough) continue;
                     }
-                }
-            }
-        }
-        
-        //check if the plot itself is loaded
-        public virtual bool CheckLoad()
-        {
-            return false;
-        }
 
-        public bool SpeedCheckLoad()
-        {
-            int i = 0;
-            foreach (var plotType in _requiredPrePlots)
-            {
-                var plot = parent.GetOrCreatePlots(plotType);
-                if (plot._plotState != plotState.isFinished)
-                {
-                    i++;
+                    var span = parent.Calendar[this];
+                    span.startTime += TimeSpan.FromMinutes(3f);
+                    span.potentialBreakTime += TimeSpan.FromMinutes(3f);
+                    parent.Calendar[this] = span;
                 }
             }
-            if(i==0)
-            {
-                SetRelatedSpanToZero();
-                return true;
-            }
-            else
-            {
-                return false;
-            }
-
-        }
-        
-        public void SetRelatedSpanToZero()
-        {
-            relaSpan= TimeSpan.Zero;
-        }
-    }
-    
-    public class RootPlot : Plot
-        {
-            public RootPlot()
-            {
-                _referPlot = null;
-                relaSpan = TimeSpan.Zero;
-                _childPlots = new List<Type>{typeof(Day1_Text1),typeof(Day1_Phone1)};
-            }
-    
-            public override void Start()
-            {
-                _plotState = plotState.isFinished;
-            }
-    
-            public override void Clear()
-            {
-                CheckChild();
-            }
-        }
-        
-    public class TextPlot : Plot
-        {
-            public Story story;
-            protected TextManager tm = Services.textManager;
-            protected List<Type> _attachedFileType = new List<Type>();
-            
-            public override void Reload()
-            {
-                if (_plotState == plotState.isPlaying || _plotState == plotState.isReadyToPlay)
-                {
-                    tm.currentTextPlot = this;
-                    if(Services.saveManager.inkJson!= "") tm.currentStory.state.LoadJson(Services.saveManager.inkJson);
-                    Services.eventManager.AddHandler<TextFinished>(_OnTextFinished);
-                }
-            }
-    
-            public override void Init()
-            {
-                // make sure no two text plots run in the same time
-                if (tm.currentTextPlot != null && this != tm.currentTextPlot)
-                {
-                    tm.currentTextPlot.ChangePlotState(plotState.isBreak);
-                    tm.MuteAllKeyboard();
-                }
-            }
-    
-            public override void Start()
-            {
-                //the normal start setting
-                tm.currentTextPlot = this;
-                Services.eventManager.AddHandler<TextFinished>(_OnTextFinished);
-                
-                //for late start
-                //for plots not load weird, the first two sentence of a plot should not have fancy "thinking time"
-                //that takes more than 5- seconds
-                DateTime startTime;
-                parent.Calendar.TryGetValue(this, out startTime);
-                if ((DateTime.Now - startTime) > TimeSpan.FromSeconds(5))
-                {
-                    Debug.Log("????");
-                    tm._LoadDialogueForNewPlotWhenAPPisOff(startTime);
-                }
-                
-                tm.StartNewStory(story);
-            }
-            
-            public override void Clear()
-            {
-                CheckChild();
-                tm.currentTextPlot = null;
-                Services.eventManager.RemoveHandler<TextFinished>(_OnTextFinished);
-            }
-            
-            private void _OnTextFinished(TextFinished e)
-            {
-                CheckAttachedFile(e.ShootTime);
-                _plotState = plotState.isFinished;
-            }
-    
-            public override bool CheckLoad()
-            {
-                foreach (var plotType in _requiredPrePlots)
-                {
-                    if (plotType.IsSubclassOf(typeof(TextPlot)))
-                    {
-                        var plot = parent.GetOrCreatePlots(plotType);
-                        if (plot.plotState == plotState.isPlaying || plot.plotState == plotState.isReadyToPlay)
-                            return false;
-                    }
-                }
-    
-                return true;
-            }
-
-            public override bool isBreak()
-            {
-                //when the loading is checking
-                //if the last msg sent has been more than 0.2 hours ago, then this plot will be cancel
-                if (!tm.isLoadInitDialogueFinished)
-                {
-                    var msg = Services.textManager.FindTheLastMessage();
-                    if ((DateTime.Now - msg.shootTime) > TimeSpan.FromHours(0.2f))
-                    {
-                        return true;
-                    }
-                }
-                return false;
-            }
-    
-            public override void Break()
-            {
-                if(tm.currentTextPlot == this) tm.MuteAllKeyboard();
-                    CheckChild();
-                Services.eventManager.RemoveHandler<TextFinished>(_OnTextFinished);
-            }
-    
-            protected void InitStory()
-            {
-                story = PlotFileAddress.GetStory(GetType());
-            }
-            
-            protected void InitStory(Type storyDictType)
-            {
-                story = PlotFileAddress.GetStory(storyDictType);
-            }
-
-            
-            //TODO this has to be changed to a more proper way so we dont need the file to be only able to attached in the end of a conversation
-            public void CheckAttachedFile(DateTime shootTime)
-            {
-                foreach (var filePlotType in _attachedFileType)
-                {
-                    Debug.Log(filePlotType);
-                    var plot = parent.GetOrCreatePlots(filePlotType);
-                    if (plot.GetType().IsSubclassOf(typeof(TextFilePlot)))
-                    {
-                        var plotText = plot as TextFilePlot;
-                        tm.AddNewFileMessage(plotText.GetType(), shootTime);
-                    }
-                    
-                }
-            }
-        }
-    
-    public class Day1_Text1 : TextPlot //contract text
-    {
-            public Day1_Text1()
-            {
-                //this part is for initialize the original properties that related to the plot
-                _referPlot = typeof(RootPlot);
-                relaSpan = TimeSpan.FromMinutes(0.1f);
-                _requiredPrePlots = new List<Type>(){typeof(RootPlot)};
-                _childPlots = new List<Type>{typeof(Day2_Text1)};
-                _attachedFileType.Add(typeof(Day1_ContractFile));
-                InitStory();
-            }
-    
-            public override bool CheckLoad()
-            {
-                return true;
-            }
-        }
-        
-    public class Day2_Text1 : TextPlot //day 2 good morning
-    {
-        public Day2_Text1()
-        {
-            //this part is for initialize the original properties that related to the plot
-            _referPlot = typeof(RootPlot);
-            relaSpan = TimeSpan.FromMinutes(0.5f);
-            _requiredPrePlots = new List<Type>(){typeof(Day1_Text1)};
-            _childPlots = new List<Type>{typeof(Day2_Text2)};
-            InitStory();
-        }
-
-        public override bool CheckLoad()
-        {
-            return true;
-        }
-        
-    }
-
-    public class Day2_Text2 : TextPlot //how are you
-    {
-        public Day2_Text2()
-        {
-            //initialize properties
-            _referPlot = typeof(RootPlot);
-            relaSpan = TimeSpan.FromMinutes(0.5f);
-            _requiredPrePlots = new List<Type>() {typeof(Day2_Text1)};
-            _childPlots = new List<Type>{typeof(Day3_Text1)};
-            InitStory();
-
         }
     }
 
-    public class Day3_Text1 : TextPlot
+    public class PhoneCall : Plot
     {
-        public Day3_Text1()
-        {
-            //initialize properties
-            _referPlot = typeof(RootPlot);
-            relaSpan = TimeSpan.FromMinutes(0.5f);
-            _requiredPrePlots = new List<Type>() {typeof(Day2_Text2)};
-            _childPlots = new List<Type>{typeof(Day3_Text3)};
-            InitStory();
-        }
-    }
-
-    public class Day3_Text3 : TextPlot //Never have I ever
-    {
-        public Day3_Text3()
-        {
-            //initialize properties
-            _referPlot = typeof(RootPlot);
-            relaSpan = TimeSpan.FromMinutes(0.5f);
-            _requiredPrePlots = new List<Type>() {typeof(Day3_Text1)};
-            _childPlots = new List<Type>{typeof(Day4_Text1)};
-            InitStory();
-
-        }
-    }
-    
-    public class Day4_Text1 : TextPlot //Day 4 Morning
-    {
-        public Day4_Text1()
-        {
-            //initialize properties
-            _referPlot = typeof(RootPlot);
-            relaSpan = TimeSpan.FromMinutes(0.5f);
-            _requiredPrePlots = new List<Type>() {typeof(Day3_Text3)};
-            _childPlots = new List<Type>{typeof(Day6_Text2)};
-            InitStory();
-
-        }
-    }
-    
-    public class Day6_Text2 : TextPlot //Day 6 Gifting
-    {
-        public Day6_Text2()
-        {
-            //initialize properties
-            _referPlot = typeof(RootPlot);
-            relaSpan = TimeSpan.FromMinutes(0.5f);
-            _requiredPrePlots = new List<Type>() {typeof(Day4_Text1)};
-            //_childPlots = new List<Type>{typeof(Day4_Text1)};
-            InitStory();
-
-        }
-    }
-
-    public class PhonePlot : Plot
-    {
-        public enum PhoneCallState
-        {
-            NotStart,
-            Calling,
-            Hanged,
-            End
-        }
-        protected PhoneManager pm = Services.phoneManager;
-        public AudioClip callContent;
-        public PhoneCallState phoneCallState = PhoneCallState.NotStart;
-
-        public TimeSpan callTimeSpan
-        {
-            get{return  TimeSpan.FromSeconds(callContent.length);}
-        }
-
-        public bool isDemonCall
+        public PhoneCall(string name, PlotInitType initType, int priority, TimeSpan timeBasedSendTimeSpan,
+            TimeSpan plotBasedDelayTime,
+            TimeSpan waitTimeBeforeBreak, List<string> prePlots) : base(name, initType, priority, timeBasedSendTimeSpan,
+            plotBasedDelayTime,
+            waitTimeBeforeBreak, prePlots){}
+        protected readonly PhoneManager _pm = Services.phoneManager;
+        private AudioClip _callContent;
+        public AudioClip callContent
         {
             get
             {
-                if (this.GetType().IsSubclassOf(typeof(DemonPhoneCallPlot))) return true;
-                if (this.GetType().IsSubclassOf(typeof(PlayerPhoneCallPlot))) return false;
-                return false;
+                if (ReferenceEquals(_callContent, null))
+                {
+                    _callContent = Services.audioManager.GetAudioClip(name,"PhoneCall/");
+                    return _callContent;
+                }
+                return _callContent;
             }
         }
+        
+        public bool isPutThrough;
 
-        public override void Init()
+        public void OnCallPutThrough()
         {
-            Services.eventManager.AddHandler<PhoneFinished>(delegate { OnPhoneFinished(); });
-            Services.eventManager.AddHandler<PhoneHangedUp>(delegate { OnPhoneHangedUp(); });
+            isPutThrough = true;
+            
+            //pause all text plot
+            foreach (var playingPlot in parent.playingPlot)
+            {
+                if (playingPlot is Text)
+                {
+                    var textPlayingPlot = playingPlot as Text;
+                    textPlayingPlot.Pause();
+                    onPlotFinish += () => textPlayingPlot.UnPause();
+                }
+            }
+            var span = new CalendarPlotTimeSpan();
+            if (!ReferenceEquals(_currentCalendarTimeSpan, null))
+            {
+                span = _currentCalendarTimeSpan.Value;
+                span.potentialBreakTime = DateTime.MaxValue;
+                parent.Calendar[this] = span;
+            }
+            
         }
+    }
+
+    public class DemonCall : PhoneCall
+    {
+        public DemonCall(string name, PlotInitType initType, int priority, TimeSpan timeBasedSendTimeSpan,
+            TimeSpan plotBasedDelayTime,
+            TimeSpan waitTimeBeforeBreak, List<string> prePlots) : base(name, initType, priority, timeBasedSendTimeSpan,
+            plotBasedDelayTime,
+            waitTimeBeforeBreak, prePlots){}
         
         public override void Start()
         {
-            pm.currrentPhonePlot = this;
-            phoneCallState = PhoneCallState.Calling;
-            Services.eventManager.Fire(new PhoneStart());
+            _pm.DialIn(this);
         }
-
-        public override void Clear()
+        
+        public override void CheckStartQualification()
         {
-            phoneCallState = PhoneCallState.End;
-            pm.currrentPhonePlot = null;
-            CheckChild();
-            Services.eventManager.RemoveHandler<PhoneFinished>(delegate{ OnPhoneFinished();});
-            Services.eventManager.RemoveHandler<PhoneHangedUp>(delegate{ OnPhoneHangedUp();});
-        }
-
-        public override bool CheckLoad()
-        {
-            foreach (var plotType in _requiredPrePlots)
+            foreach (var playingPlot in parent.playingPlot)
             {
-                if (plotType.IsSubclassOf(typeof(PhonePlot)))
+                if (playingPlot is DemonCall)
                 {
-                    var plot = parent.GetOrCreatePlots(plotType);
-                    if (plot.plotState == plotState.isPlaying || plot.plotState == plotState.isReadyToPlay)
-                        return false;
+                    if (priority <= playingPlot.priority)
+                    {
+                        var span = parent.Calendar[this];
+                        span.startTime += TimeSpan.FromMinutes(3f);
+                        span.potentialBreakTime += TimeSpan.FromMinutes(3f);
+                        parent.Calendar[this] = span;
+                    }
+                    else
+                        ChangePlotState(PlotState.Abandoned);
+                }
+
+                if (playingPlot is PlayerCall)
+                {
+                    var playerCall = playingPlot as PlayerCall;
+                    if (playerCall.isPutThrough)
+                    {
+                        var span = parent.Calendar[this];
+                        span.startTime += TimeSpan.FromMinutes(3f);
+                        span.potentialBreakTime += TimeSpan.FromMinutes(3f);
+                        parent.Calendar[this] = span;
+                    }
                 }
             }
-
-            return true;
         }
-
-        public override void Break()
-        {
-            phoneCallState = PhoneCallState.Hanged;
-            pm.currrentPhonePlot = null;
-            CheckChild();
-        }
-
-        protected void OnPhoneHangedUp()
-        {
-            if (pm.currrentPhonePlot == this)
-            {
-                _plotState = plotState.isBreak;
-            }
-            
-        }
-
-        protected void OnPhoneFinished()
-        {
-            if (pm.currrentPhonePlot == this)
-            {
-                _plotState = plotState.isFinished;
-            }
-        }
-
-        protected void InitPhoneClip(Type plotType = null)
-        {
-            if(plotType == null) callContent = PhoneFileAddress.GetPhoneClipName(GetType());
-            else callContent = PhoneFileAddress.GetPhoneClipName(plotType);
-        }
-    }
-
-    public class DemonPhoneCallPlot : PhonePlot
-    {
     }
     
-    public class PlayerPhoneCallPlot : PhonePlot
+    public class PlayerCall : PhoneCall
     {
+        public PlayerCall(string name, PlotInitType initType, int priority, TimeSpan timeBasedSendTimeSpan,
+            TimeSpan plotBasedDelayTime,
+            TimeSpan waitTimeBeforeBreak, List<string> prePlots) : base(name, initType, priority, timeBasedSendTimeSpan,
+            plotBasedDelayTime,
+            waitTimeBeforeBreak, prePlots){}
         public TimeSpan playerWaitTime = TimeSpan.FromSeconds(5f);
+        
+        public override void CheckStartQualification()
+        {
+            foreach (var playingPlot in parent.playingPlot)
+            {
+                if (playingPlot is PlayerCall)
+                {
+                    if (priority <= playingPlot.priority)
+                    {
+                        playingPlot.ChangePlotState(PlotState.Broke);
+                    }
+                    else
+                        ChangePlotState(PlotState.Abandoned);
+                }
+            }
+        }
+        
     }
 
-    public class Day1_Phone1 : DemonPhoneCallPlot
+    public class VoiceMail : Plot
     {
-        public Day1_Phone1()
-        {
-            //this part is for initialize the original properties that related to the plot
-            _referPlot = typeof(RootPlot);
-            relaSpan = TimeSpan.FromSeconds(0.1f);
-            _requiredPrePlots = new List<Type>(){typeof(RootPlot)};
-            _childPlots = new List<Type>();
-            InitPhoneClip();
-        }
-    }
-    public class VoiceMailPlot : Plot
-    {
+        public VoiceMail(string name, PlotInitType initType, int priority, TimeSpan timeBasedSendTimeSpan,
+            TimeSpan plotBasedDelayTime,
+            TimeSpan waitTimeBeforeBreak, List<string> prePlots) : base(name, initType, priority, timeBasedSendTimeSpan,
+            plotBasedDelayTime,
+            waitTimeBeforeBreak, prePlots){}
+        
         public bool isSend;
 
-        public override void Reload()
+        public override void ReloadPlayingPlot()
         {
-            if (_plotState == plotState.isFinished && isSend)
+            if (isSend)
             {
                 //TODO upload the voice mail
             }
         }
-
-       
-
+        
         public override void Start()
         {
             isSend = true;
             //TODO upload the voice mail
-            _plotState = plotState.isFinished;
-        }
-
-        public override bool CheckLoad()
-        {
-            foreach (var plotType in _requiredPrePlots)
-            {
-                var plot = parent.GetOrCreatePlots(plotType);
-                if (plot.plotState == plotState.isFinished) return true;
-            }
-
-            return false;
+            ChangePlotState(PlotState.Finished);
         }
     }
 
-    /// <summary>
-    /// Special Class
-    /// This class will not be hanged in the calender
-    /// </summary>
-    public class TextFilePlot : Plot
+    #region Plot Input
+
+    private void _ParsePlotInfo()
     {
-        protected Type importDocumentPairBelongedPlot = null;
-        protected GameObject _bubblePre;
-        public GameObject bubblePre
-        {
-            get
-            {
-                if (importDocumentPairBelongedPlot == null) importDocumentPairBelongedPlot = GetType();
-                if (!_bubblePre)
-                {
-                    _bubblePre = PlotFileAddress.GetBubblePrefab(importDocumentPairBelongedPlot);
-                }
-                return _bubblePre;
-            }
-        }
-
-        protected GameObject _documentPre;
-        public GameObject documentPre
-        {
-            get
-            {
-                if (importDocumentPairBelongedPlot == null) importDocumentPairBelongedPlot = GetType();
-                if (!_documentPre)
-                {
-                    _documentPre = PlotFileAddress.GetDocumentPrefab(importDocumentPairBelongedPlot);
-                }
-                return _documentPre;
-            }
-        }
-
-        public GameObject bubble;
-        public GameObject document;
-        protected TextManager tm = Services.textManager;
+        var plotDataCSV = Resources.Load<TextAsset>("Data/PlotInfo");
         
-        public void CreateBubble()
+        _plots.Clear();
+        
+        var lines = plotDataCSV.text.Split('\n');
+        for (var i = 1; i < lines.Length; i++)
         {
-            bubble = GameObject.Instantiate(bubblePre, tm.content.transform);
-            bubble.GetComponentInChildren<OpenFileButton>().plotType = GetType();
-            Debug.Log("1");
-        }
+            var splitLine = lines[i].Split(',');
+            if (splitLine.Length != 10) continue;
 
-        public void CreateDocument()
-        {
-            foreach (var item in Services.pageState.GetGameState("Front_Main").relatedObj)
+            var name = splitLine[0];
+            var initType = (PlotInitType)Enum.Parse(typeof(PlotInitType),splitLine[2]);
+            var priority = int.Parse(splitLine[3]);
+            var timeBasedSendTimeSpan = splitLine[4] == "" ? TimeSpan.Zero : _ParseTimeSpan(splitLine[4]);
+            var plotBasedDelayTimeSpan = splitLine[5] == "" ? TimeSpan.Zero : _ParseTimeSpan(splitLine[5]);
+            var waitTimeBeforeBreak = splitLine[6] == "" ? TimeSpan.Zero : _ParseTimeSpan(splitLine[6]);
+            var anchorPlotName = splitLine[7];
+            var prePlotsName = splitLine.Skip(8).ToList();
+            prePlotsName.Remove(anchorPlotName);
+            prePlotsName.Insert(0,anchorPlotName);
+            prePlotsName = prePlotsName.Where(p => p.Trim() != "").ToList();
+            
+            object[] para = new object[]{name,initType,priority,timeBasedSendTimeSpan,plotBasedDelayTimeSpan,waitTimeBeforeBreak,prePlotsName};
+            Assembly assembly = Assembly.GetExecutingAssembly();
+            var toAdd = assembly.CreateInstance("PlotManager+" + splitLine[1].Trim(),true,System.Reflection.BindingFlags.Default,null,para,null,null);
+            if (!ReferenceEquals(toAdd, null) && toAdd.GetType().IsSubclassOf(typeof(Plot)))
             {
-                if (item.CompareTag("PageObj"))
-                {
-                    Debug.Log("documentpre" + documentPre);
-                    document = GameObject.Instantiate(documentPre, item.transform);
-                    document.GetComponentInChildren<CloseFileButton>().plotType = GetType();
-                    document.transform.localScale = new Vector3(0.1f,0.1f,0.1f);
-                    document.transform.DOScale(1f, 1f);
-                    break;
-                }
+                var plotToAdd = (Plot) toAdd;
+                _plots.Add(name,plotToAdd);
+                plotToAdd.parent = this;
             }
         }
     }
 
-    public class Day1_ContractFile : TextFilePlot
+    private DateTime _ParseDateTime(DateTime contrast, string toParse)
     {
+        var toReturn = new DateTime();
+        var timeSpan = _ParseTimeSpan(toParse);
 
+        toReturn = contrast.Date + timeSpan;
+        return toReturn;
     }
 
+    private TimeSpan _ParseTimeSpan(string toParse)
+    {
+        var toReturn = TimeSpan.Zero;
+        var infoList = toParse.Trim(new char[]{'d', 'h', 'm'}).Split(new char[]{'d', 'h', 'm'},StringSplitOptions.RemoveEmptyEntries);
+        toReturn += TimeSpan.FromDays(int.Parse(infoList[0]));
+        toReturn += TimeSpan.FromHours(int.Parse(infoList[1]));
+        toReturn += TimeSpan.FromMinutes(int.Parse(infoList[2]));
+        return toReturn;
+    }
+
+    #endregion
 }

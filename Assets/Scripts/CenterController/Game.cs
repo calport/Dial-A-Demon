@@ -9,20 +9,44 @@ using UnityEngine;
 using UnityEditor;
 using UnityEngine.SceneManagement;
 
+public enum RunState
+{
+    Load,
+    Play,
+    Pause,
+}
+
 public class Game : MonoBehaviour
 {
+    public RunState runState = RunState.Load;
     #region Life circle
 
     void Awake()
     {
-        if (Services.game == null) Init();
-        //when scene switch, reinit some of the game system to let them find the items that only shows in the present scene
+        runState = RunState.Load;
         
+        Services.saveManager.Init();
+
+        //import all the data file
+        //Services.referenceInfo = FindObjectOfType<ReferenceInfo>();
+        Services.easyTouch = FindObjectOfType<EasyTouch>();
+        Services.dataContract = ScriptableObject.CreateInstance<Data_Contract>();
+        Services.dataContract.ResetContract();
+        //import the system so it starts working
+        Services.game = this;
+        Services.textManager.Init();
+        Services.plotManager.Init();
+        Services.pageState.Init();
+        Services.phoneManager.Init();
+
+        Services.saveManager.LoadGame();
+        runState = RunState.Play;
         DontDestroyOnLoad(gameObject);
     }
 
     private void Start()
     {
+        
         Services.pageState.Start();
         //Services.eventManager.AddHandler<SceneChanged>(OnSceneChange);
 
@@ -32,22 +56,19 @@ public class Game : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        Services.plotManager.Update();
-        /*if (Services.gameSettings.SpeedPlot)
+        if (runState == RunState.Play)
         {
-            Services.plotManager.SpeedUpdate();
+            Services.plotManager.Update();
+            Services.pageState.Update();
+            Services.textSequenceTaskRunner.Update();
+            Services.textManager.Update();
+            Services.phoneManager.Update();
+            Services.plotManager.Update();
         }
-        else
-        {
-            Services.plotManager.RegularUpdate();
-        }*/
-
-        Services.pageState.Update();
-        Services.textSequenceTaskRunner.Update();
-        Services.textManager.Update();
-        Services.phoneManager.Update();
-        Services.plotManager.Update();
     }
+    #endregion
+
+    #region Application Behavior
 
     private void OnApplicationPause(bool paused)
     {
@@ -68,27 +89,6 @@ public class Game : MonoBehaviour
     #region Static functions
     
     //init must include the start of all the components and the reading of all ths save files
-    void Init()
-    {  
-        Services.saveManager.Init();
-        Services.saveManager.LoadGame();
-        
-        //import all the data file
-        //Services.referenceInfo = FindObjectOfType<ReferenceInfo>();
-        Services.easyTouch = FindObjectOfType<EasyTouch>();
-        Services.dataContract = ScriptableObject.CreateInstance<Data_Contract>();
-        Services.dataContract.ResetContract();
-        //import the system so it starts working
-        Services.game = this;
-        Services.textManager.Init();
-        
-        //some logic problem here that doesnt consider the save situation
-        //TODO
-        Services.plotManager.Init();
-        Services.pageState.Init();
-        Services.phoneManager.Init();
-      
-    }
 
     void Clear()
     {

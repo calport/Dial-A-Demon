@@ -1,6 +1,6 @@
 VAR PlayerNickname = "" 
 VAR DemonName = "Dantalian" 
--   hey. 
+-   hey. <\\TextFile fileBubbleName=\"DemonContract\",fileContentName=\"fileContentName\"><\\TextFile>
 -   welcome to my game
 -   tell me, what made you play this dumb game? 
 *   it seemed thrilling -> Thrill 
