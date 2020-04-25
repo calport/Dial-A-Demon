@@ -27,7 +27,6 @@ public class DialButton : MonoBehaviour
 
     private void _OnClick()
     {
-        
         //if targeet phone plot exists, that means a call is already started
         if(_pm.targetPhoneCall!=null) return;
 

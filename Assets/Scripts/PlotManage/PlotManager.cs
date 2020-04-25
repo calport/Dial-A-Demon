@@ -145,13 +145,18 @@ public class PlotManager
                 plotJson.Add("startTime",stringStartTime.value.ToString());
                 plotJson.Add("breakTime",stringBreakTime.value.ToString());
                 plotJson.Add("plotState",plotPair.Key.plotState.ToString());
+                if (plotPair.Key is PhoneCall)
+                {
+                    var p = plotPair.Key as PhoneCall;
+                    plotJson.Add("isPutThrough",p.isPutThrough);
+                }
                 plotList.Add(plotJson);
             }
             
             plotJsonObj.Add("plotList",plotList);
             var stringBaseTime = (SerializeManager.JsonDateTime) _baseTime;
             plotJsonObj.Add("plotBaseTime",stringBaseTime.value.ToString());
-            
+
             jsonObject.Add("plot",plotJsonObj);
             return jsonObject;
         }
@@ -165,8 +170,13 @@ public class PlotManager
             foreach (var jsonPlotInfo in plotJsonObj["plotList"].Values)
             {
                 var plot = GetPlot(jsonPlotInfo["name"]);
+                if (plot is PhoneCall)
+                {
+                    var p = plot as PhoneCall;
+                    p.isPutThrough = jsonPlotInfo["isPutThrough"];
+                }
                 if(Enum.TryParse<PlotState>(jsonPlotInfo["plotState"], out PlotState s))
-                    plot.ChangePlotState(s);
+                    plot.AssignPlotState(s);
                 var timeSpan = new CalendarPlotTimeSpan
                 {
                     startTime = new SerializeManager.JsonDateTime(Convert.ToInt64((string)jsonPlotInfo["startTime"])),
@@ -200,18 +210,20 @@ public class PlotManager
         {
             var sortCalendar = _SortCalenderByStartTime();
             var pendingPlots = sortCalendar.Where(pair =>
-                pair.Value.startTime < DateTime.Now - TimeSpan.FromMinutes(3) &&
+                pair.Value.startTime < DateTime.Now - TimeSpan.FromMinutes(2) &&
                 pair.Key.plotState == PlotState.ReadyToPlay);
             
             //leave the newest text plot and either abandon or break the old ones
             var textPairs = pendingPlots.Where(pair => pair.Key is Text).ToList();
-            var startText = textPairs[textPairs.Count() - 1];
-            startText.Key.LateStart();
-            startText.Key.ChangePlotState(PlotState.Playing);
-            _CheckAndBreakIfItsBreakTime(startText);
-            textPairs.Remove(startText);
-            foreach (var pair in textPairs)
-                pair.Key.ChangePlotState(PlotState.Abandoned);
+            if (textPairs.Count != 0)
+            {
+                var startText = textPairs[textPairs.Count - 1];
+                startText.Key.ChangePlotState(PlotState.Playing);
+                _CheckAndBreakIfItsBreakTime(startText);
+                textPairs.Remove(startText);
+                foreach (var pair in textPairs)
+                    pair.Key.ChangePlotState(PlotState.Abandoned);
+            }
 
             //all the phones are set to missed
             //which is break
@@ -392,6 +404,11 @@ public class PlotManager
                     OnAbandon();
                     break;
             }
+            _plotState = ps;
+        }
+        
+        public void AssignPlotState(PlotState ps,CalendarPlotTimeSpan span = new CalendarPlotTimeSpan())
+        {
             _plotState = ps;
         }
 
@@ -615,8 +632,7 @@ public class PlotManager
                 return _callContent;
             }
         }
-        
-        public bool isPutThrough;
+        public bool isPutThrough = false;
 
         public void OnCallPutThrough()
         {

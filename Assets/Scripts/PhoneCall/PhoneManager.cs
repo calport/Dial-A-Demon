@@ -105,17 +105,19 @@ public class PhoneManager
         if (ReferenceEquals(_targetCallAudioPiece, null))
         {
             targetPhoneCall.ChangePlotState(PlotManager.PlotState.Broke);
+            targetPhoneCall = null;
             return;
         }
 
         //if(!_targetCallAudioPiece.audioSource.isPlaying)
-        _targetCallAudioPiece.Stop();
+        
         var timeRatio = _targetCallAudioPiece.audioSource.time/ targetPhoneCall.callContent.length;
-        if (timeRatio > 0.95)
+        Debug.Log(timeRatio);
+        if (timeRatio > 0.9f)
             targetPhoneCall.ChangePlotState(PlotManager.PlotState.Finished);
         else
-            targetPhoneCall.ChangePlotState(PlotManager.PlotState.Broke);
-
+            targetPhoneCall.ChangePlotState(PlotManager.PlotState.Broke); 
+        _targetCallAudioPiece.Stop();
         targetPhoneCall = null;
     }
     

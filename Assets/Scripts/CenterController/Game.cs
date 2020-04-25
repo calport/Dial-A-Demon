@@ -94,10 +94,10 @@ public class Game : MonoBehaviour
     {
         //this place is for save and clear everything
         Services.phoneManager.Clear();
-        Services.pageState.Clear();
         Services.plotManager.Clear();
-        Services.saveManager.Clear();
         Services.textManager.Clear();
+        Services.pageState.Clear();
+        Services.saveManager.Clear();
     }
 
     void Save()

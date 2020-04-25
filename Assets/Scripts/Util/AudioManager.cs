@@ -43,13 +43,13 @@ public class AudioManager
 
         private void _ClearAudioThatFinished()
         {
-             foreach (var audioPiece in _parent.trackingPieces)
-                 if (!audioPiece.audioSource.isPlaying &&
-                     audioPiece.audioSource.time / audioPiece.audioSource.clip.length > 0.99f)
-                 {
-                     audioPiece.onAudioFinished.Invoke();
-                     audioPiece.Stop();
-                 }
+            foreach (var audioPiece in _parent.trackingPieces)
+                if (!audioPiece.audioSource.isPlaying &&
+                    audioPiece.audioSource.time == 0f)
+                {
+                    audioPiece.onAudioFinished.Invoke();
+                    audioPiece.Stop();
+                }
         }
         
     }
@@ -231,6 +231,13 @@ public class AudioPiece
     {
         if (ReferenceEquals(audioSource, null)) return this;
         audioSource.Pause();
+        return this;
+    }
+
+    public AudioPiece UnPause()
+    {
+        if (ReferenceEquals(audioSource, null)) return this;
+        audioSource.Play();
         return this;
     }
 }
