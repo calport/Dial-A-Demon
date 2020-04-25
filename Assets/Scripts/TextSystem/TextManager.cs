@@ -419,8 +419,12 @@ public class TextManager
 			jsonDialogueContent.Add(msgObj);
 		}
 		textJsonObj.Add("dialogueMessages", jsonDialogueContent);
-		var stringTimeStamp = (SerializeManager.JsonDateTime) _lastTimeStamp;
-		textJsonObj.Add("lastTimeStamp", stringTimeStamp.value.ToString());
+		if (_lastTimeStamp != DateTime.MinValue)
+		{
+			var stringTimeStamp = (SerializeManager.JsonDateTime) _lastTimeStamp;
+			textJsonObj.Add("lastTimeStamp", stringTimeStamp.value.ToString());
+		}
+		
 		
 		jsonObject.Add("text", textJsonObj);
 		return jsonObject;
@@ -465,7 +469,8 @@ public class TextManager
 			    _dialogueMessages.Remove(_dialogueMessages[_dialogueMessages.Count - 1]);
 		    }
 	    }
-	    _lastTimeStamp = new SerializeManager.JsonDateTime(Convert.ToInt64((string)textJsonObj["lastTimeStamp"]));
+	    if(textJsonObj["lastTimeStamp"]!= null)
+		    _lastTimeStamp = new SerializeManager.JsonDateTime(Convert.ToInt64((string)textJsonObj["lastTimeStamp"]));
 	    _LoadInitialDialogue();
 	    _LoadMoreDialogue();
 	    _LoadCurrentPlotMessageDuringPlayerOffTime();

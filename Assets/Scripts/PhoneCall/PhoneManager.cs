@@ -105,6 +105,7 @@ public class PhoneManager
         if (ReferenceEquals(_targetCallAudioPiece, null))
         {
             targetPhoneCall.ChangePlotState(PlotManager.PlotState.Broke);
+            targetPhoneCall = null;
             return;
         }
 
