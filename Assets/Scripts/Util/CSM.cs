@@ -35,11 +35,11 @@ public class CSM<TContext, V> where TContext : class where V : Info
 
     //This is a list of all the state that the CSM contains, while they are like enums and not functioning as FSM
     //The detail of each state's behavior is according to their properties
-    public Dictionary<string, object> stateList = new Dictionary<string, object>();
+    public Dictionary<string, V> stateList = new Dictionary<string, V>();
 
     public void AddState(int id, string name, bool isValid, GameObject[] relatedObj, params Enum[] properties)
     {
-        V newState = Activator.CreateInstance<V>();
+        var newState = Activator.CreateInstance<V>();
         newState.id = id;
         newState.name = name;
         newState.isValid = isValid;
@@ -56,7 +56,7 @@ public class CSM<TContext, V> where TContext : class where V : Info
             else{ newState.property.Add(prop.GetType(),prop);}
         }
         
-        stateList.Add(newState.name,newState as object);
+        stateList.Add(newState.name,newState);
     }
 
     public Dictionary<Enum, StateBehavior> _stateBehavior = new Dictionary<Enum, StateBehavior>();
@@ -186,11 +186,8 @@ public class CSM<TContext, V> where TContext : class where V : Info
     
     public V GetGameState(string stateName)
     {
-        Object state;
-        stateList.TryGetValue(stateName, out state);
-        V stateInfo = state as V;
-        if (stateInfo != null) return stateInfo;
-        else return null;
+        stateList.TryGetValue(stateName, out var state);
+        return state;
     }
     
     private void CallingMethod(V state, string methodName, params Object[] objects)

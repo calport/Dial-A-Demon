@@ -1,43 +1,44 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
-public class MovingWithMouse : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler, IDragHandler
+public class MovingWithMouse : MonoBehaviour, IDragHandler
 {
-    private Touch _touch;
-    private bool _pointerIn;
-    
-    void ChangePosWithTouch(Touch touch)
+    private Vector3 oriPos;
+
+    private void Start()
     {
-        Vector3 posChange = touch.position;
-        Debug.Log(posChange);
-        var posLength = posChange.magnitude;
-        var plantPos = new Vector3(posChange.x, posChange.y, -1)    ;
-        var plantLength = plantPos.magnitude;
-    }
-    
-    public void OnPointerEnter(PointerEventData pointerEventData)
-    {
-        _pointerIn = true;
+        oriPos = gameObject.transform.position;
+        Services.eventManager.AddHandler<Reset>(_OnReset);
     }
 
-    public void OnPointerExit(PointerEventData pointerEventData)
+    private void OnDestroy()
     {
-        _pointerIn = false;
+        Services.eventManager.RemoveHandler<Reset>(_OnReset);
     }
+    
     public void OnDrag(PointerEventData eventData)
     { 
-        if(Input.touchCount>0) ChangePosWithTouch(Input.GetTouch(0));
-        
-        Vector2 mouseDrag = Camera.main.ScreenToWorldPoint(eventData.position);
-        transform.position = new Vector3(mouseDrag.x, mouseDrag.y,-1);
-        if (Input.GetMouseButtonDown(0))
+        if (Input.touchSupported)
         {
-            Debug.Log("true");
-            //var curScreenSpace = new Vector3(Input.mousePosition.x, Input.mousePosition.y, 0f);
-            //transform.position = curScreenSpace;
+            if(Input.touchCount == 0 || Input.GetTouch(0).phase == TouchPhase.Began) return;
+            var touch = Input.GetTouch(0);
+            Vector3 posChange = touch.position;
+            var plantPos = new Vector3(posChange.x, posChange.y, -1);
         }
+        else
+        {
+            if(!Input.GetMouseButton(0) || Input.GetMouseButtonDown(0)) return;
+            Vector2 mouseDrag = Camera.main.ScreenToWorldPoint(eventData.position);
+            transform.position = new Vector3(mouseDrag.x, mouseDrag.y, -1);
+        }
+    }
+
+    private void _OnReset(Reset e)
+    {
+        gameObject.transform.position = oriPos;
     }
 }   

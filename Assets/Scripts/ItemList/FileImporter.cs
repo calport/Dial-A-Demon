@@ -2,17 +2,16 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class FileImporter : MonoBehaviour
+public static class FileImporter
 {
-    void Start()
-       { // Start is called before the first frame update
-   
-        
-    }
-
     // Update is called once per frame
-    void GetText()
+    public static void GetText(string name)
     { 
         var textAsset = Resources.Load<TextAsset>("InkText/" + name);
+    }
+
+    public static GameObject GetRitual(string name)
+    {
+        return Resources.Load<GameObject>("Prefabs/Rituals/" + name);
     }
 }
