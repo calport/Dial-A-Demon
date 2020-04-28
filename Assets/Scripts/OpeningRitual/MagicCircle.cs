@@ -19,6 +19,8 @@ public class MagicCircle : MonoBehaviour
 
     private SpriteRenderer rend;
     private bool noLongerRubbing; 
+    
+    public GameObject openingRitual;
 
     // Start is called before the first frame update
     void Start()
@@ -77,14 +79,14 @@ public class MagicCircle : MonoBehaviour
 
         if (startFade)
         {
-            GameObject openingRitual;
-            var openRitualPage = Services.pageState.GetGameState("Ritual_Open");
-            openingRitual = openRitualPage.relatedObj[0];
-            var pic = openingRitual.transform.Find("Background").Find("Pic").gameObject;
-            Color c = pic.GetComponent<SpriteRenderer>().color;
+            
+            //var openRitualPage = Services.pageState.GetGameState("Ritual_Open");
+            //openingRitual = openRitualPage.relatedObj[0];
+            //var pic = openingRitual.transform.Find("Background").Find("Pic").gameObject;
+            Color c = openingRitual.GetComponent<SpriteRenderer>().color;
             c.a = Mathf.Lerp(c.a,0,0.8f*Time.deltaTime);
             //remember to fade all the pics 
-            pic.GetComponent<SpriteRenderer>().color = c;
+            openingRitual.GetComponent<SpriteRenderer>().color = c;
             rend.material.color = c;
             demonCircle.GetComponent<SpriteRenderer>().color = c;
             gameObject.GetComponent<SpriteRenderer>().color = c;
