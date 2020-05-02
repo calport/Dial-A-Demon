@@ -40,7 +40,7 @@ public class MicrophoneRepeat : MonoBehaviour
     IEnumerator WaitForWords()
     {   
         while(!gameObject.GetComponent<AudioVisualizer>().adjustmentFinished){yield return new WaitForSeconds(Time.deltaTime);}
-        soundRecieving.SetActive(false);
+        soundRecieving.SetActive(true);
         wordScene.SetActive(true);
         //yield return new WaitForSeconds(3);
         yield return new WaitForSeconds(1);
@@ -140,7 +140,7 @@ public class MicrophoneRepeat : MonoBehaviour
     
                 var coroutineLastTime = Time.time - startCoroutineTime;
     
-                if (coroutineLastTime > 3.0f)
+                if (coroutineLastTime > 5.0f)
                 {
                     
                     finishCheck = true;
@@ -164,6 +164,7 @@ public class MicrophoneRepeat : MonoBehaviour
                     DurTime = lastTime;
                     if (lastTime > microphoneGetSoundTime[order])
                     {
+                        Debug.Log("skip");
                         finishCheck = true;
                         /*f (nextCoroutine == null)
                         {
