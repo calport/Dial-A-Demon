@@ -44,7 +44,7 @@ public class MagicCircle : MonoBehaviour
                     Mathf.Lerp(gameObject.GetComponent<DrawCircle>().speed, 3.0f, 2.0f * Time.deltaTime);
 
                 Color c = rend.material.color;
-                c.a = Mathf.Lerp(c.a, 0, 2.0f * Time.deltaTime);
+                c.a = Mathf.Lerp(c.a, 0, 0.0050f * Time.deltaTime);
                 rend.material.color = c;
             }
             else
@@ -55,7 +55,7 @@ public class MagicCircle : MonoBehaviour
                 if(gameObject.GetComponent<DrawCircle>().speed>480f)
                 {
                     Color c = rend.material.color;
-                    c.a = Mathf.Lerp(c.a,1,0.1f*Time.deltaTime);
+                    c.a = Mathf.Lerp(c.a,1,0.001f*Time.deltaTime);
                     rend.material.color = c;
                 }
             }
@@ -74,17 +74,17 @@ public class MagicCircle : MonoBehaviour
         if (demonCircle.GetComponent<SpriteRenderer>().color.a > 0.4f && !startFade)
         {
             startFade = true;
+            SceneManager.LoadSceneAsync(1, LoadSceneMode.Additive);
             fadeTime = Time.time;
         }
 
         if (startFade)
         {
-            
             //var openRitualPage = Services.pageState.GetGameState("Ritual_Open");
             //openingRitual = openRitualPage.relatedObj[0];
             //var pic = openingRitual.transform.Find("Background").Find("Pic").gameObject;
             Color c = openingRitual.GetComponent<SpriteRenderer>().color;
-            c.a = Mathf.Lerp(c.a,0,0.8f*Time.deltaTime);
+            c.a = Mathf.Lerp(c.a,0,0.05f*Time.deltaTime);
             //remember to fade all the pics 
             openingRitual.GetComponent<SpriteRenderer>().color = c;
             rend.material.color = c;
@@ -92,7 +92,8 @@ public class MagicCircle : MonoBehaviour
             gameObject.GetComponent<SpriteRenderer>().color = c;
             if (c.a <0.02f)
             {
-                Services.pageState.ChangeGameState("Menu_Main");
+                SceneManager.UnloadSceneAsync(0);
+                // Services.pageState.ChangeGameState("Menu_Main");
             }
         }
        
