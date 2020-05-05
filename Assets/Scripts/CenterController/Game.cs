@@ -93,6 +93,7 @@ public class Game : MonoBehaviour
     void Clear()
     {
         //this place is for save and clear everything
+       // Services.ritualManager.Clear();
         Services.phoneManager.Clear();
         Services.plotManager.Clear();
         Services.textManager.Clear();

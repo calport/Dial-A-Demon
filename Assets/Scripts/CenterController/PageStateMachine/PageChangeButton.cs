@@ -41,15 +41,11 @@ public class PageChangeButton : MonoBehaviour
         if (!transferToPrevious)
         {
             var csm = Services.pageState.CSM;
-            object pageObj;
-            csm.stateList.TryGetValue(pageName, out pageObj);
-            Pages page = pageObj as Pages;
+            csm.stateList.TryGetValue(pageName, out var page);
             Services.pageState.ChangeGameState(page);
         }
         else
-        {
             Services.pageState.TransitToPreviousState();
-        }
     }
 }
   

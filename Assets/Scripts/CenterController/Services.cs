@@ -95,8 +95,22 @@ public static class Services
             }
         }
     }
-
-
+//    
+//    private static RitualManager _ritualManager;
+//
+//    public static RitualManager ritualManager
+//    {
+//        get
+//        {
+//            if (_ritualManager != null) return _ritualManager;
+//            else
+//            {
+//                _ritualManager = new RitualManager();
+//                return _ritualManager;
+//            }
+//        }
+//    }
+    
     private static SaveManager _saveManager;
     public static SaveManager saveManager
     {

@@ -646,6 +646,7 @@ public class PlotManager
                     var textPlayingPlot = playingPlot as Text;
                     textPlayingPlot.Pause();
                     onPlotFinish += () => textPlayingPlot.UnPause();
+                    onPlotBreak += () => textPlayingPlot.UnPause();
                 }
             }
             var span = new CalendarPlotTimeSpan();
@@ -729,6 +730,58 @@ public class PlotManager
             }
         }
         
+    }
+
+    public class Ritual : Plot
+    {
+        public bool isStart = false;
+        public bool isSEnd = false;
+        public Ritual(string name, PlotInitType initType, int priority, TimeSpan timeBasedSendTimeSpan,
+            TimeSpan plotBasedDelayTime,
+            TimeSpan waitTimeBeforeBreak, List<string> prePlots) : base(name, initType, priority, timeBasedSendTimeSpan,
+            plotBasedDelayTime,
+            waitTimeBeforeBreak, prePlots){}
+
+        private GameObject ritualPrefab;
+
+        public void OnRitualStart()
+        {
+            isStart = true;
+            
+            //pause all text plot
+            foreach (var playingPlot in parent.playingPlot)
+            {
+                if (playingPlot is Text)
+                {
+                    var textPlayingPlot = playingPlot as Text;
+                    textPlayingPlot.Pause();
+                    onPlotFinish += () => textPlayingPlot.UnPause();
+                    onPlotBreak += () => textPlayingPlot.UnPause();
+                }
+            }
+            
+            //hang the prefab on the page obj
+            foreach (var item in Services.pageState.GetGameState("Ritual_Empty").relatedObj)
+            {
+                if (item.CompareTag("PageObj"))
+                {
+                    if (ritualPrefab == null)
+                        ritualPrefab = GameObject.Instantiate(FileImporter.GetRitual(name), item.transform);
+
+                    break;
+                }
+            }
+        }
+
+        public override void OnBreak()
+        {
+            ritualPrefab = null;
+        }
+
+        public override void OnFinished()
+        {
+            ritualPrefab = null;
+        }
     }
 
     public class VoiceMail : Plot

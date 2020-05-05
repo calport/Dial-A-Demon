@@ -62,12 +62,14 @@ namespace DialADemon.Page
 
         public void ChangeGameState(Pages state)
         {
+            if(state == GetCurrentState()) return;
+            Services.eventManager.Fire(new Reset());
             _csm.TransitionTo(state);
         }
         
         public void ChangeGameState(string stateName)
         {
-            _csm.TransitionTo(GetGameState(stateName));
+            ChangeGameState(GetGameState(stateName));
         }
 
         public Pages GetGameState(string pageName)

@@ -16,6 +16,8 @@ public class SceneChanged : GameEvent
 
 public class GameCleanStarted : GameEvent{}
 
+public class Reset : GameEvent{}
+
 #region Util Events
 
 public class UtilEvents : GameEvent{}
@@ -50,6 +52,25 @@ public class DownCounterBreak : UtilEvents
     }
 }
 
+public class PointerOut : UtilEvents
+{
+    public GameObject obj;
+
+    public PointerOut(GameObject obj)
+    {
+        this.obj = obj;
+    }
+}
+
+public class PointerIn : UtilEvents
+{
+    public GameObject obj;
+
+    public PointerIn(GameObject obj)
+    {
+        this.obj = obj;
+    }
+}
 #endregion
 
 
