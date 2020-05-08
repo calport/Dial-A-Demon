@@ -68,9 +68,10 @@ public class PhoneManager
         _phoneRelatedCoroutine.Clear();
         
         //plot mark
-        targetPhoneCall.OnCallPutThrough();
+        targetPhoneCall?.OnCallPutThrough();
         
         //change visual
+        //TODO visual logic
         _ps.ChangeGameState("Phone_OnCall");
         
         //start phone call audioclip
