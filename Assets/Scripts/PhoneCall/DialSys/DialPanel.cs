@@ -22,8 +22,10 @@ public class DialPanel : MonoBehaviour
             button.onClick.AddListener(_OnNumButtonClick);
         dialView.text = "";
         if(!ReferenceEquals(deleteButton,null))
-            deleteButton.onClick.AddListener(_OnDeleteButtonClick)
-;    }
+            deleteButton.onClick.AddListener(_OnDeleteButtonClick);
+        
+        Services.eventManager.AddHandler<ResetForPageChange>(_OnReset);
+    }
 
     private void OnDisable()
     {
@@ -57,5 +59,14 @@ public class DialPanel : MonoBehaviour
         foreach (var number in dialedList)
             str += number.ToString(); 
         dialView.text = str;
+    }
+
+    private void _OnReset(ResetForPageChange e)
+    {
+        if (string.Equals(e.toPage.name, "Phone_OnCall"))
+        {
+            dialedList.Clear();
+            _UpdateView();
+        }
     }
 }

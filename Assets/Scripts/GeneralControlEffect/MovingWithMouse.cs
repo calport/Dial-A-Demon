@@ -12,12 +12,12 @@ public class MovingWithMouse : MonoBehaviour, IDragHandler
     private void Start()
     {
         oriPos = gameObject.transform.position;
-        Services.eventManager.AddHandler<Reset>(_OnReset);
+        Services.eventManager.AddHandler<ResetForPageChange>(_OnReset);
     }
 
     private void OnDestroy()
     {
-        Services.eventManager.RemoveHandler<Reset>(_OnReset);
+        Services.eventManager.RemoveHandler<ResetForPageChange>(_OnReset);
     }
     
     public void OnDrag(PointerEventData eventData)
@@ -37,7 +37,7 @@ public class MovingWithMouse : MonoBehaviour, IDragHandler
         }
     }
 
-    private void _OnReset(Reset e)
+    private void _OnReset(ResetForPageChange e)
     {
         gameObject.transform.position = oriPos;
     }

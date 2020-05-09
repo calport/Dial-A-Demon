@@ -39,7 +39,7 @@ public class PhoneManager
     {
         targetPhoneCall = phone;
         _previousPage = _ps.GetCurrentState();
-        _ps.ChangeGameState("Phone_PlayerCall");
+        _ps.ChangeGameState("Phone_OnCall");
         var waitTime = 0f;
         if (phone == null) waitTime = 15f;
         else waitTime = Random.Range(0f, 13f);
@@ -96,30 +96,36 @@ public class PhoneManager
 
     public void Hang()
     {
-        if(targetPhoneCall == null) return;
-
         //visually return
-        
-        _ps.ChangeGameState(_previousPage);
-        _previousPage = null;
-
-        if (ReferenceEquals(_targetCallAudioPiece, null))
+        if (!ReferenceEquals(_previousPage, null))
         {
-            targetPhoneCall.ChangePlotState(PlotManager.PlotState.Broke);
+            _ps.ChangeGameState(_previousPage); 
+            _previousPage = null;
+        }
+        
+        //if the phone hasn't put through yet, then it's broken
+        if (_targetCallAudioPiece==null)
+        {
+            targetPhoneCall?.ChangePlotState(PlotManager.PlotState.Broke);
             targetPhoneCall = null;
             return;
         }
-
-        //if(!_targetCallAudioPiece.audioSource.isPlaying)
-        
-        var timeRatio = _targetCallAudioPiece.audioSource.time/ targetPhoneCall.callContent.length;
-        Debug.Log(timeRatio);
-        if (timeRatio > 0.9f)
-            targetPhoneCall.ChangePlotState(PlotManager.PlotState.Finished);
         else
-            targetPhoneCall.ChangePlotState(PlotManager.PlotState.Broke); 
-        _targetCallAudioPiece.Stop();
-        targetPhoneCall = null;
+        {
+            //if(!_targetCallAudioPiece.audioSource.isPlaying)
+            if (targetPhoneCall != null)
+            {
+                var timeRatio = _targetCallAudioPiece.audioSource.time / targetPhoneCall.callContent.length;
+                if (timeRatio > 0.9f)
+                    targetPhoneCall?.ChangePlotState(PlotManager.PlotState.Finished);
+                else
+                    targetPhoneCall?.ChangePlotState(PlotManager.PlotState.Broke);
+                targetPhoneCall = null;
+            }
+            _targetCallAudioPiece.Stop();
+            _targetCallAudioPiece = null;
+        }
+
     }
     
     #region Save

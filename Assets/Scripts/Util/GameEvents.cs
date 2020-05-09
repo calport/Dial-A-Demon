@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using DialADemon.Page;
 using TimeUtil;
 using UnityEngine;
 
@@ -16,7 +17,15 @@ public class SceneChanged : GameEvent
 
 public class GameCleanStarted : GameEvent{}
 
-public class Reset : GameEvent{}
+public class ResetForPageChange : GameEvent
+{
+    public Pages toPage;
+
+    public ResetForPageChange(Pages toPage)
+    {
+        this.toPage = toPage;
+    }
+}
 
 #region Util Events
 
