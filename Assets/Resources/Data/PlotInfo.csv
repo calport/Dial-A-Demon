@@ -1,3 +1,4 @@
 PlotName,PlotType,InitType,Priority,SendTime,RelaSendTime,WaitTimeBeforeBreak,AnchorPrePlot,PrePlot1,PrePlot2
-Day1_Contract,Text,PlotBased,1,,d0h0m1,d0h1m0,,,
-Day1_DemonCall,DemonCall,PlotBased,1,,d0h0m0,d0h0m1,,,
+Day1_1Contract,Text,PlotBased,1,,d0h0m1,d0h1m0,,,
+Day1_0DemonCall,PlayerCall,PlotBased,1,,d0h0m0,d0h0m1,,,
+Day1_2PhoneCal,DemonCall,PlotBased,1,,d0h0m2,d0h1m0,Day1_1Contract,Day1_1Contract,
