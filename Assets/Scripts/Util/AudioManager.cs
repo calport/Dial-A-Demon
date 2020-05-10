@@ -45,7 +45,7 @@ public class AudioManager
         {
             foreach (var audioPiece in _parent.trackingPieces)
                 if (!audioPiece.audioSource.isPlaying &&
-                    audioPiece.audioSource.time == 0f)
+                    audioPiece.audioSource.time == 0f && audioPiece.playedOnce)
                 {
                     audioPiece.onAudioFinished.Invoke();
                     audioPiece.Stop();
@@ -186,6 +186,7 @@ public class AudioPiece
     public AudioSource audioSource { get; private set; }
     public int trackNumber{ get; private set; }
     public Action onAudioFinished;
+    public bool playedOnce = false;
     
 
     private GameObject _sourceParent
@@ -213,6 +214,7 @@ public class AudioPiece
             am.trackingPieces.Add(this);
         audioSource.clip = audioClip;
         audioSource.Play();
+        playedOnce = true;
         return this;
     }
     

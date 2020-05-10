@@ -53,8 +53,10 @@ public class PlotManager
     public void Update()
     {
         //constantly update the plots' state
-        foreach (var pair in Calendar)
+        var count = Calendar.Count;
+        for (int i = 0; i < count; i++)
         {
+            var pair = Calendar.ElementAt(i);
             switch (pair.Key.plotState)
             {
                 case PlotState.ReadyToPlay:
@@ -393,15 +395,33 @@ public class PlotManager
                     parent.playingPlot.Remove(this);
                     OnFinished(); 
                     onPlotFinish.Invoke();
+                    parent.Calendar[this] = new CalendarPlotTimeSpan()
+                    {
+                        startTime = parent.Calendar[this].startTime,
+                        potentialBreakTime = DateTime.Now
+                    };
                     break;
                 case PlotState.Broke:
                     parent.playingPlot.Remove(this);
                     OnBreak();
                     onPlotBreak.Invoke();
+                    parent.Calendar[this] = new CalendarPlotTimeSpan()
+                    {
+                        startTime = parent.Calendar[this].startTime,
+                        potentialBreakTime = DateTime.Now
+                    };
                     break;
                 case PlotState.Abandoned:
                     parent.playingPlot.Remove(this);
                     OnAbandon();
+                    CoroutineManager.DoOneFrameDelay((() =>
+                    {
+                        parent.Calendar[this] = new CalendarPlotTimeSpan()
+                        {
+                            startTime = parent.Calendar[this].startTime,
+                            potentialBreakTime = DateTime.Now
+                        };
+                    }));
                     break;
             }
             _plotState = ps;
@@ -555,6 +575,7 @@ public class PlotManager
         {
             if (_tm.currentText == this) _tm.MuteAllKeyboard();
             _tm.WrapAndSavePlotDialogues();
+            
         }
 
         public override void OnAbandon(){}
