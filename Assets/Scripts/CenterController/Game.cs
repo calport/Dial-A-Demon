@@ -32,6 +32,7 @@ public class Game : MonoBehaviour
         Services.easyTouch = FindObjectOfType<EasyTouch>();
         Services.dataContract = ScriptableObject.CreateInstance<Data_Contract>();
         Services.dataContract.ResetContract();
+        Services.settings = Resources.Load<Settings>("ScriptableObj/GameSetting");
         //import the system so it starts working
         Services.game = this;
         Services.textManager.Init();

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using System.Runtime.CompilerServices;
 using TimeUtil;
 using UnityEngine;
@@ -45,7 +46,7 @@ public class AudioManager
         {
             foreach (var audioPiece in _parent.trackingPieces)
                 if (!audioPiece.audioSource.isPlaying &&
-                    audioPiece.audioSource.time == 0f && audioPiece.playedOnce)
+                    audioPiece.audioSource.time == 0f && audioPiece.playedOnce && !audioPiece.isLoop)
                 {
                     audioPiece.onAudioFinished.Invoke();
                     audioPiece.Stop();
@@ -152,14 +153,34 @@ public class AudioManager
         return CreateAudioPiece(clip, trackNumber);
     }
     
-    public AudioPiece CreateAudioPiece(AudioClip clip, int trackNumber = -1)
+    public AudioPiece CreateAudioPiece(AudioClip clip, int trackNumber = -1, bool isLoop = false)
     {
-        return new AudioPiece(clip, trackNumber);
+        return new AudioPiece(clip, trackNumber, isLoop);
+    }
+
+    public AudioPiece Play(AudioClip clip, int trackNumber = -1, bool isLoop = false)
+    {
+        var vp = CreateAudioPiece(clip, trackNumber,isLoop);
+        vp.Play();
+        return vp;
     }
 
     public AudioClip GetAudioClip(string audioName, string path = "")
     {
         return Resources.Load<AudioClip>("Audios/"+ path + audioName);
+    }
+
+    public void ChangeSoundEffectVolume(float toVolume)
+    {
+        foreach (var ap in trackingPieces.Where(o => o.trackNumber == -1))
+            ap.audioSource.volume = toVolume;
+
+    }
+
+    public void ChangeBGMVolume(float toVolume)
+    {
+        foreach (var ap in trackingPieces.Where(o => o.trackNumber != -1))
+            ap.audioSource.volume = toVolume;
     }
     
     private AudioSource _CreateNewAudioSource(string name, GameObject parent, bool isLoop)
@@ -176,10 +197,11 @@ public class AudioManager
 
 public class AudioPiece
 {
-    public AudioPiece(AudioClip clip, int trackNumber = -1)
+    public AudioPiece(AudioClip clip, int trackNumber = -1, bool isLoop = false)
     {
         audioClip = clip;
         this.trackNumber = trackNumber;
+        this.isLoop = isLoop;
     }
     
     public AudioClip audioClip { get; private set; }
@@ -187,6 +209,7 @@ public class AudioPiece
     public int trackNumber{ get; private set; }
     public Action onAudioFinished;
     public bool playedOnce = false;
+    public bool isLoop = false;
     
 
     private GameObject _sourceParent
@@ -206,6 +229,7 @@ public class AudioPiece
                 var newAudioObj = new GameObject();
                 newAudioObj.name = audioClip.name + "AudioPlayer";
                 audioSource = newAudioObj.AddComponent<AudioSource>();
+                audioSource.loop = isLoop;
                 newAudioObj.transform.parent = _sourceParent.transform;
             }
         }
