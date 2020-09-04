@@ -11,7 +11,7 @@ public static class Services
     #region Game play reference
 
     public static Game game;
-    
+
     private static PlotManager _plotManager;
     public static PlotManager plotManager
     {
@@ -148,6 +148,7 @@ public static class Services
 
     public static EasyTouch easyTouch;
     public static Data_Contract dataContract;
+    public static Settings settings;
 
     #endregion
 

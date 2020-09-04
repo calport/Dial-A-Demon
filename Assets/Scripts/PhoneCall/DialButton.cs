@@ -29,10 +29,6 @@ public class DialButton : MonoBehaviour
 
     private void _OnClick()
     {
-        foreach (var num in dp.dialedList)
-        {
-            Debug.Log(num);
-        }
         if (dp.dialedList.SequenceEqual(new List<int> {6, 6, 6}))
         {
             //if target phone plot exists, that means a call is already started

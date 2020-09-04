@@ -25,9 +25,9 @@ using UnityEngine;
             _CoroutineManagerMonoBehaviour.StopCoroutine(routine);
         }
 
-        public static void DoOneFrameDelay(DelayDelegate a)
+        public static Coroutine DoOneFrameDelay(DelayDelegate a)
         {
-            _CoroutineManagerMonoBehaviour.StartCoroutine(OneFrameDelay(a));
+            return _CoroutineManagerMonoBehaviour.StartCoroutine(OneFrameDelay(a));
         }
         
         public static Coroutine DoDelayCertainSeconds(DelayDelegate a, float delayTime)

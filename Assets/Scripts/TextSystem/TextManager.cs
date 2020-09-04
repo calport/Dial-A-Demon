@@ -63,7 +63,7 @@ public class TextManager
     public List<int> Speaker = new List<int>();
 
     private DateTime _lastTimeStamp = DateTime.MinValue;
-    private int _dialogueLabel = 0;
+    private int _dialogueLabel = -1;
     
     #region Lifecycle
 

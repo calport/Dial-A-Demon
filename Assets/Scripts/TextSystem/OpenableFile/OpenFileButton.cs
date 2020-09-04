@@ -25,7 +25,6 @@ public class OpenFileButton : MonoBehaviour
         {
             if (item.CompareTag("PageObj"))
             {
-                Debug.Log(fileContentName);
                 document = Instantiate(Resources.Load<GameObject>("Prefabs/FileContent/" + fileContentName),item.transform);
                 document.GetComponentInChildren<CloseFileButton>().ofb = this;
                 document.transform.localScale = new Vector3(0.1f,0.1f,0.1f);
