@@ -3,7 +3,6 @@ using System.IO;
 using System.Collections;
 using System.Collections.Generic;
 using System.Text;
-using Newtonsoft.Json;
 using UnityEngine;
 
 public class SerializeManager
@@ -71,14 +70,14 @@ public class SerializeManager
         return finalList;
     }
 
-    public static T ReadFromJson<T>(string jsonPath)
-    {
-        //read the file
-        StreamReader sr = new StreamReader(jsonPath);
-        var json = sr.ReadToEnd();
-        T file = JsonConvert.DeserializeObject<T>(json);
-        return file;
-    }
+//   public static T ReadFromJson<T>(string jsonPath)
+//   {
+//       //read the file
+//       StreamReader sr = new StreamReader(jsonPath);
+//       var json = sr.ReadToEnd();
+//       T file = JsonConvert.DeserializeObject<T>(json);
+//       return file;
+//   }
     
     public static string ReadJsonString(string jsonPath)
     {
@@ -88,12 +87,12 @@ public class SerializeManager
         return json;
     }
 
-    public static void SaveToJson<T>(string jsonPath,T fileToSave)
-    {
-        
-        string json = JsonConvert.SerializeObject(fileToSave);
-        File.WriteAllText(jsonPath, json, Encoding.UTF8);
-    }
+//    public static void SaveToJson<T>(string jsonPath,T fileToSave)
+//    {
+//        
+//        string json = JsonConvert.SerializeObject(fileToSave);
+//        File.WriteAllText(jsonPath, json, Encoding.UTF8);
+//    }
     
     public static void SaveJson(string jsonPath,string json)
     {

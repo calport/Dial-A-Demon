@@ -11,8 +11,6 @@ using SimpleJSON;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
-using Yarn.Unity;
-using Yarn.Unity.Example;
 
 public class TextManager
 {

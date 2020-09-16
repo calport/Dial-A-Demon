@@ -4,7 +4,6 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
-using Yarn.Unity.Example;
 
 [RequireComponent(typeof(AudioSource))]
 public class Keyboard : MonoBehaviour
