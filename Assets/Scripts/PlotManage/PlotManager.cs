@@ -450,7 +450,7 @@ public class PlotManager
             ChangePlotState(PlotState.ReadyToPlay,span);
         }
 
-        public bool CheckAndBreakIfItsBreakTime()
+        public virtual bool CheckAndBreakIfItsBreakTime()
         {
             if (_currentCalendarTimeSpan?.potentialBreakTime < DateTime.Now && plotState == PlotState.Playing)
             {
@@ -580,13 +580,13 @@ public class PlotManager
 
         public override void OnAbandon(){}
 
-        public void OnSendText()
+        public void UpdateBreakTime(DateTime chooseTime)
         {
             var span = new CalendarPlotTimeSpan();
             if (!ReferenceEquals(_currentCalendarTimeSpan, null))
             {
                 span = _currentCalendarTimeSpan.Value;
-                span.potentialBreakTime = DateTime.Now + waitTimeBeforeBreak;
+                span.potentialBreakTime = chooseTime + waitTimeBeforeBreak;
                 parent.Calendar[this] = span;
             }
         }
@@ -629,6 +629,16 @@ public class PlotManager
                     parent.Calendar[this] = span;
                 }
             }
+        }
+        
+        public override bool CheckAndBreakIfItsBreakTime()
+        {
+            if (_currentCalendarTimeSpan?.potentialBreakTime < DateTime.Now && _tm.isChoosing && plotState == PlotState.Playing)
+            {
+                ChangePlotState(PlotState.Broke);
+                return true;
+            }
+            return false;
         }
     }
 
