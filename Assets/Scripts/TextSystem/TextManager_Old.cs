@@ -10,10 +10,9 @@ using JetBrains.Annotations;
 using SimpleJSON;
 using TMPro;
 using UnityEngine;
-using UnityEngine.UI;
-using Random = System.Random;
+using UnityEngine.UI; 
 
-public class TextManager
+public class TextManager_Old
 {
 	//text manager state info
 	[CanBeNull]
@@ -34,8 +33,6 @@ public class TextManager
 			return null;
 		}
 	}
-
-	public bool isChoosing = false;
 	private RunState _textManagerState = RunState.Play;
 
 	// path of the massage bubble prefabs
@@ -64,11 +61,8 @@ public class TextManager
     public List<int> Speaker = new List<int>();
 
     private DateTime _lastTimeStamp = DateTime.MinValue;
-    private Dictionary<GameObject, DateTime> _timeStampBoxes = new Dictionary<GameObject, DateTime>();
     private int _dialogueLabel = -1;
-
-    private float _typingSpeed = 0.1f;
-
+    
     #region Lifecycle
 
     public void Init()
@@ -108,9 +102,6 @@ public class TextManager
 	// This is the main function called every time the story changes. It does a few things:
 	// Destroys all the old content and choices.
 	// Continues over all the lines of text, then displays all the choices. If there are no choices, the story is finished!
-	/// <summary>
-	/// This function is only used on real-time conversation
-	/// </summary>
 	private void _RefreshView()
 	{
 		if(_textManagerState!=RunState.Play) return;
@@ -121,18 +112,34 @@ public class TextManager
 			string text = currentStory.Continue();
 			// This removes any white space from the text.
 			text = text.Trim();
-
-			_AddNewDemonMessageBox(MessageBubbleType.Demon,text,DateTime.Now, out DateTime finalShootTime);
+			//check all the tags and use them to rich the text and texting behaviors
+			if (isSentenceFileType(currentStory.currentTags))
+			{
+				
+			}
+			var behaviorType = CheckTypingBehavior(currentStory.currentTags);
+			
+			//add text
+			var dotSpan = AddTypingBehaviorAndReturnTotalSpan(behaviorType);
+			_AddNewMessageBox(MessageBubbleType.Demon,text,DateTime.Now + dotSpan);
 			Services.textSequenceTaskRunner.AddTask(delegate
 			{
 				_RefreshView();
-			},DateTime.Now);
+			},DateTime.Now + dotSpan);
 			
 		}
 		// Display all the choices, if there are any!
 		else if (currentStory.currentChoices.Count > 0)
-			_CreateChoices(DateTime.Now);
-			// If we've read all the content and there's no choices, the story is finished!
+		{
+			for (int i = 0; i < currentStory.currentChoices.Count; i++)
+			{
+				Choice choice = currentStory.currentChoices[i];
+				_CreateChoiceView(choice);
+				// Tell the button what to do when we press it
+				//button.onClick.AddListener(delegate { OnClickChoiceButton(choice); });
+			}
+		}
+		// If we've read all the content and there's no choices, the story is finished!
 		else
 		{
 			//end story
@@ -143,16 +150,6 @@ public class TextManager
 		
 	}
 
-	private void _CreateChoices(DateTime chooseTime)
-	{
-		isChoosing = true;
-		currentText.UpdateBreakTime(chooseTime);
-		for (int i = 0; i < currentStory.currentChoices.Count; i++)
-		{
-			Choice choice = currentStory.currentChoices[i];
-			_CreateChoiceView(choice);
-		}
-	}
 	// Creates a button showing the choice text
 	private void _CreateChoiceView(Choice choice)
 	{
@@ -187,171 +184,171 @@ public class TextManager
 		}
 
 		// show text
-		_AddNewDemonMessageBox(MessageBubbleType.Player, text, DateTime.Now, out DateTime finalShootTime);
+		_AddNewMessageBox(MessageBubbleType.Player, text, DateTime.Now);
 		Services.textSequenceTaskRunner.AddTask(delegate { _RefreshView(); }, DateTime.Now);
-	}
 
-	public void CleanChoices()
-	{
-		isChoosing = false;
 		// clear the text box
 		textBox.text = String.Empty;
 		//reset all the keyboard to null
 		MuteAllKeyboard();
+
 	}
 	
-	/// <summary>
-	/// Adding new message box with raw data that comes from a fresh new ink file
-	/// </summary>
-	/// <param name="msgType"></param>
-	/// <param name="text"></param>
-	/// <param name="shootTime"></param>
-	/// <param name="isAddedToTop"></param>
-	private void _AddNewDemonMessageBox(MessageBubbleType msgType, string text, DateTime rawShootTime, out DateTime shootTime)
+	private void _AddNewMessageBox(MessageBubbleType msgType, string text, DateTime shootTime, bool isAddedToTop = false)
 	{
-		//processing label elements in the raw text and clean them to get the real text
 		text = TextEffectManager.ProcessingTags(text, out List<UndefinedTagInfo> undefinedTagInfos, out List<Tag> gameRelatedTags);
-		shootTime = _AddTypingBehaviorBox(text, gameRelatedTags, rawShootTime);
 		
-		//Time Stamp appearing logic
         if ((shootTime - _lastTimeStamp) > TimeSpan.FromMinutes(10f))
         {
-	        MessageContent ts= new MessageContent();
-	        ts.messageType = MessageBubbleType.TimeStamp;
-	        ts.content=String.Empty;
-	        ts.shootTime = shootTime;
-	        _currentDialogueMessages.Add(ts);
-            
-	        _AddMessageBox(ts);
+            _CreateNewTimeStamp(shootTime);
             _lastTimeStamp = shootTime;
         }
         
-        MessageContent msg= new MessageContent();
-        msg.messageType = msgType;
-        msg.content=text;
-        msg.shootTime = shootTime;
-        _currentDialogueMessages.Add(msg);
+        switch (msgType)
+        {
+            case MessageBubbleType.Player:
+                //create the msg info and put them in the save manager
+                MessageContent msg= new MessageContent();
+                msg.messageType = MessageBubbleType.Player;
+                msg.content=text;
+                msg.shootTime = shootTime;
+                _currentDialogueMessages.Add(msg);
+                
+                //create the bubble
+                Services.textSequenceTaskRunner.AddTask(delegate
+                {
+                     GameObject newTimeBox = GameObject.Instantiate(Resources.Load<GameObject>(_playerTextBox), content.transform);
+	                 newTimeBox.GetComponentInChildren<TextMeshProUGUI>().text = text;
+                },shootTime);
+                break;
+            
+            case MessageBubbleType.Demon:
+                msg= new MessageContent();
+                msg.messageType = MessageBubbleType.Demon;
+                msg.content=text;
+                msg.shootTime = shootTime;
+                _currentDialogueMessages.Add(msg);
+                
+                Services.textSequenceTaskRunner.AddTask(delegate
+                {
+                    GameObject newTimeBox = GameObject.Instantiate(Resources.Load<GameObject>(_demonTextBox), content.transform);
+                    newTimeBox.GetComponentInChildren<TextMeshProUGUI>().text = text;
+                },shootTime);
+                break;
+            case MessageBubbleType.Prefab:
+	            Debug.Log("Change to use AddNewFileMessage to initiate a prefab msg.");
+	            break;
+        }
         
-        _AddMessageBox(msg);
-
-        //Prefab Logic
         foreach (var textFiles in gameRelatedTags.Where(tag => tag is TextFile).ToList())
         {
 	        var file = textFiles as TextFile;
-	        
 	        if ((shootTime - _lastTimeStamp) > TimeSpan.FromMinutes(10f))
 	        {
-		        MessageContent ts= new MessageContent();
-		        ts.messageType = MessageBubbleType.TimeStamp;
-		        ts.content=String.Empty;
-		        ts.shootTime = shootTime + TimeSpan.FromSeconds(1);
-		        _currentDialogueMessages.Add(ts);
-            
-		        _AddMessageBox(ts);
+		        _CreateNewTimeStamp(shootTime);
 		        _lastTimeStamp = shootTime;
 	        }
 		
-	        msg = new MessageContent();
+	        var msg = new MessageContent();
 	        msg.messageType = MessageBubbleType.Prefab;
-	        msg.content = string.Empty;
 	        msg.fileBubbleName = file.fileBubble;
 	        msg.fileContentName = file.fileContent;
-	        msg.shootTime = shootTime + TimeSpan.FromSeconds(1);
+	        msg.shootTime = shootTime;
 	        _currentDialogueMessages.Add(msg);
 		
-	        _AddMessageBox(msg);
+	        var bubblePrefab = Resources.Load<GameObject>("Prefabs/FileBubble/" + file.fileBubble);
+		
+	        Services.textSequenceTaskRunner.AddTask(delegate
+	        {
+		        var bubble = GameObject.Instantiate(bubblePrefab, content.transform);
+		        bubble.GetComponentInChildren<OpenFileButton>().fileContentName = file.fileContent;
+	        },shootTime + TimeSpan.FromSeconds(1));
         }
     }
 
-	/// <summary>
-	/// Create message boxes according to msg data
-	/// </summary>
-	/// <param name="msg"></param>
-	/// <param name="shootTime"></param>
-	/// <param name="isAddedToTop"></param>
-	private void _AddMessageBox(MessageContent msg, bool isAddedToTop = false)
+	private void _AddNewMessageBox()
 	{
-		string boxPrefab = string.Empty;
-		if (msg.messageType == MessageBubbleType.Player) boxPrefab = _playerTextBox;
-		if (msg.messageType == MessageBubbleType.Demon) boxPrefab = _demonTextBox;
-		if (msg.messageType == MessageBubbleType.TimeStamp) boxPrefab = _timeStampBubble;
-		if (msg.messageType == MessageBubbleType.End) boxPrefab = _endChatBubble;
-		if (msg.messageType == MessageBubbleType.Prefab) boxPrefab = "Prefabs/FileBubble/" + msg.fileBubbleName;
+		
+	}
 
-		string textContent = String.Empty;
-		if (msg.messageType == MessageBubbleType.TimeStamp) textContent = TimeStamp.GetTimeStamp(msg.shootTime);
-		if (msg.messageType == MessageBubbleType.End) textContent = "This is the end of the chat";
-		else textContent = msg.content;
-
+	private void _CreateNewTimeStamp(DateTime time)
+	{
+		MessageContent msg= new MessageContent();
+		msg.messageType = MessageBubbleType.TimeStamp;
+		msg.content=String.Empty;
+		msg.shootTime = time;
+		_currentDialogueMessages.Add(msg);
+        
 		Services.textSequenceTaskRunner.AddTask(delegate
 		{
-			GameObject newBox = GameObject.Instantiate(Resources.Load<GameObject>(boxPrefab), content.transform);
-			
-			newBox.GetComponentInChildren<TextMeshProUGUI>().text = textContent;
-			newBox.GetComponentInChildren<OpenFileButton>().fileContentName = msg.fileContentName;
-			
-			if(isAddedToTop) newBox.transform.SetSiblingIndex(0);
-			if(msg.messageType == MessageBubbleType.TimeStamp) _timeStampBoxes.Add(newBox,msg.shootTime);
-		},msg.shootTime);
-		
+			GameObject newTimeBox = GameObject.Instantiate(Resources.Load<GameObject>(_timeStampBubble), content.transform);
+			newTimeBox.GetComponentInChildren<TextMeshProUGUI>().text = TimeStamp.GetTimeStamp(time);
+		},time);
 	}
-
-	private void _UpdateTimeStamp()
+	
+	private enum TypingBehavior
 	{
-		foreach (var timeStamp in _timeStampBoxes)
-			timeStamp.Key.GetComponent<TextMeshProUGUI>().text = TimeStamp.GetTimeStamp(timeStamp.Value);
+		Default,
+		Hesitate,
+		Delay,
 	}
 
-	private DateTime _AddTypingBehaviorBox(string finalText, List<Tag> tags,DateTime rawShootTime)
+	private TypingBehavior CheckTypingBehavior(List<string> tagList)
 	{
-		float basicTypingTime = finalText.Length * _typingSpeed;
-		float delaySec = 0f;
-		List<TypingBehavior> typeTags = tags.Where(t => t is TypingBehavior) as List<TypingBehavior>;
-		
-		foreach (var t in typeTags.Where(t => t is delay))
-			delaySec += t.length;
-		rawShootTime += TimeSpan.FromSeconds(delaySec);
-		
-		fast fast = typeTags.Find(t => t is fast) as fast;
-		slow slow = typeTags.Find(t => t is slow) as slow;
-		doubt doubt = typeTags.Find(t => t is doubt) as doubt;
-		if (!ReferenceEquals(fast, null)) basicTypingTime *= fast.length;
-		if (!ReferenceEquals(slow, null)) basicTypingTime *= slow.length;
-		
-		if (!ReferenceEquals(doubt, null))
+		foreach (var tag in tagList)
 		{
-			//if final bubble shoot time is before DateTime.Now
-			//no effects would be shown
-			if(rawShootTime + TimeSpan.FromSeconds(basicTypingTime+doubt.length)< DateTime.Now)
-				return rawShootTime + TimeSpan.FromSeconds(basicTypingTime+doubt.length);
-			
-			float doubtTime = 0f;
-			float dotExistLength = 0f;
-			while (doubtTime< doubt.length)
-			{
-				Services.textSequenceTaskRunner.AddTask(DeleteDot,rawShootTime+ TimeSpan.FromSeconds(doubtTime));
-				doubtTime += UnityEngine.Random.Range(0f, 2f);
-				Services.textSequenceTaskRunner.AddTask(AddDot,rawShootTime+ TimeSpan.FromSeconds(doubtTime));
-				dotExistLength = UnityEngine.Random.Range(0f, 4f);
-				doubtTime += dotExistLength;
-			}
-			Services.textSequenceTaskRunner.AddTask(DeleteDot,rawShootTime+ TimeSpan.FromSeconds(doubtTime-dotExistLength+basicTypingTime));
-			return rawShootTime + TimeSpan.FromSeconds(doubtTime-dotExistLength+basicTypingTime);
+			if (string.Compare(tag, "Hesitate") == 0 || string.Compare(tag, "hesitate") == 0)
+				return TypingBehavior.Hesitate;
+			if (string.Compare(tag, "Delay") == 0 || string.Compare(tag, "delay") == 0)
+				return TypingBehavior.Delay;
 		}
-		else
-		{
-			//if final bubble shoot time is before DateTime.Now
-			//no effects would be shown
-			if(rawShootTime + TimeSpan.FromSeconds(basicTypingTime)< DateTime.Now)
-				return rawShootTime + TimeSpan.FromSeconds(basicTypingTime);
-			
-			Services.textSequenceTaskRunner.AddTask(AddDot,rawShootTime);
-			Services.textSequenceTaskRunner.AddTask(DeleteDot,rawShootTime+ TimeSpan.FromSeconds(basicTypingTime));
-			return rawShootTime + TimeSpan.FromSeconds(basicTypingTime);
-		}
-		
+		return TypingBehavior.Default;
 	}
 
+	private bool isSentenceFileType(List<string> tagList)
+	{
+		foreach (var tag in tagList)
+		{
+			if (string.Compare(tag, "File") == 0 || string.Compare(tag, "file") == 0) return true;
+		}
+
+		return false;
+	}
+
+	private TimeSpan AddTypingBehaviorAndReturnTotalSpan(TypingBehavior behavior)
+	{
+		switch (behavior)
+		{
+			case TypingBehavior.Default:
+				Services.textSequenceTaskRunner.AddTask(delegate { AddDot(); }, DateTime.Now );
+				Services.textSequenceTaskRunner.AddTask(delegate { DeleteDot(); }, DateTime.Now + TimeSpan.FromSeconds(3f));
+				return TimeSpan.FromSeconds(3f);
+			case TypingBehavior.Hesitate:
+				Services.textSequenceTaskRunner.AddTask(delegate { AddDot(); }, DateTime.Now );
+				Services.textSequenceTaskRunner.AddTask(delegate { DeleteDot(); }, DateTime.Now + TimeSpan.FromSeconds(3f) );
+				Services.textSequenceTaskRunner.AddTask(delegate { AddDot(); }, DateTime.Now + TimeSpan.FromSeconds(5f));
+				Services.textSequenceTaskRunner.AddTask(delegate { DeleteDot(); }, DateTime.Now + TimeSpan.FromSeconds(8f) );
+				return TimeSpan.FromSeconds(8f);
+			case TypingBehavior.Delay:
+				Services.textSequenceTaskRunner.AddTask(delegate { AddDot(); }, DateTime.Now + TimeSpan.FromSeconds(20f));
+				return TimeSpan.FromSeconds(20f);
+		}
+		return TimeSpan.FromSeconds(0f);
+	}
+
+	private TimeSpan ReturnTypingBehaviorTotalSpan(TypingBehavior behavior)
+	{
+		switch (behavior)
+		{
+			case TypingBehavior.Default:
+				return TimeSpan.FromSeconds(3f);
+			case TypingBehavior.Hesitate:
+				return TimeSpan.FromSeconds(8f);
+			case TypingBehavior.Delay:
+				return TimeSpan.FromSeconds(20f);
+		}
+		return TimeSpan.FromSeconds(0f);
+	}
 	private void AddDot()
 	{
 		GameObject newBox = GameObject.Instantiate(Resources.Load<GameObject>(_typingDotBubble), content.transform);
@@ -373,8 +370,7 @@ public class TextManager
 		Demon,
 		Player,
 		TimeStamp,
-		Prefab,
-		End
+		Prefab
 	}
 	
 	[Serializable]
@@ -478,8 +474,6 @@ public class TextManager
 	    }
 	    if(textJsonObj["lastTimeStamp"]!= null)
 		    _lastTimeStamp = new SerializeManager.JsonDateTime(Convert.ToInt64((string)textJsonObj["lastTimeStamp"]));
-	    
-	    //recreate dialogues
 	    _LoadInitialDialogue();
 	    _LoadMoreDialogue();
 	    _LoadCurrentPlotMessageDuringPlayerOffTime();
@@ -495,29 +489,40 @@ public class TextManager
 	    //protect when currentStory doesnt exist
 	    if(currentText== null) return;
 	    
-	    var rawShootTime = originalStartTime;
+	    var startTime = originalStartTime;
 	    while (currentStory.canContinue)
 	    {
 		    var text = currentStory.Continue();
 		    text = text.Trim();
-		    
-		    _AddNewDemonMessageBox(MessageBubbleType.Demon,text,rawShootTime, out DateTime finalShootTime);
-		    rawShootTime = finalShootTime;
-		    if (finalShootTime > DateTime.Now)
+		    var behaviorType = CheckTypingBehavior(currentStory.currentTags);
+		    var dotSpan = ReturnTypingBehaviorTotalSpan(behaviorType);
+		    var shootTime = startTime + dotSpan;
+		    if (shootTime > DateTime.Now)
 		    {
+			    dotSpan = AddTypingBehaviorAndReturnTotalSpan(behaviorType);
+			    _AddNewMessageBox(MessageBubbleType.Demon,text,shootTime);
 			    Services.textSequenceTaskRunner.AddTask(delegate
 			    {
 				    _RefreshView();
-			    },finalShootTime);
+			    },shootTime);
 			    return;
 		    }
+		    
+		    _AddNewMessageBox(MessageBubbleType.Demon,text,shootTime);
+		    startTime += dotSpan;
 	    }
-
+	    
+	    
+	    
 	    if (currentStory.currentChoices.Count > 0)
 	    {
-		    _CreateChoices(rawShootTime);
-		    if (currentText.CheckAndBreakIfItsBreakTime())
-			    CleanChoices();
+		    if(currentText.CheckAndBreakIfItsBreakTime()) return;
+		    
+		    for (int i = 0; i < currentStory.currentChoices.Count; i++)
+		    {
+			    Choice choice = currentStory.currentChoices[i];
+			    _CreateChoiceView(choice);
+		    }
 	    }
 	    else
 	    {
@@ -532,8 +537,45 @@ public class TextManager
 	        for (int i = _currentDialogueMessages.Count-1; i>-1; i--)
 			{
 	            var msg = _currentDialogueMessages[i];
-	            //TODO might need some typing behaviors
-	            _AddMessageBox(msg,true);
+	            switch (msg.messageType)
+	            {
+	                case MessageBubbleType.Demon:
+	                    Services.textSequenceTaskRunner.AddTask(delegate
+	                     {
+	                         GameObject newTimeBox = GameObject.Instantiate(Resources.Load<GameObject>(_demonTextBox), content.transform);
+	                         newTimeBox.GetComponentInChildren<TextMeshProUGUI>().text = msg.content;
+	                         newTimeBox.transform.SetSiblingIndex(0);
+	                     }, msg.shootTime);
+	                    break;
+	                case MessageBubbleType.Player:
+	                    Services.textSequenceTaskRunner.AddTask(delegate
+	                    {
+	                        GameObject newTimeBox = GameObject.Instantiate(Resources.Load<GameObject>(_playerTextBox), content.transform);
+	                        newTimeBox.GetComponentInChildren<TextMeshProUGUI>().text = msg.content;
+	                        newTimeBox.transform.SetSiblingIndex(0);
+	                    },msg.shootTime);
+	                    break;
+	                case MessageBubbleType.TimeStamp:
+	                    Services.textSequenceTaskRunner.AddTask(delegate
+	                    {
+	                        GameObject newTimeBox = GameObject.Instantiate(Resources.Load<GameObject>(_timeStampBubble), content.transform);
+	                        newTimeBox.GetComponentInChildren<TextMeshProUGUI>().text = TimeStamp.GetTimeStamp(msg.shootTime);
+	                        newTimeBox.transform.SetSiblingIndex(0);
+	                    },msg.shootTime);
+	                    break;
+	                case MessageBubbleType.Prefab:
+		                Services.textSequenceTaskRunner.AddTask(delegate
+		                {
+			                var bubblePrefab = Resources.Load<GameObject>("Prefabs/FileBubble/" + msg.fileBubbleName);
+			                
+			                var bubble = GameObject.Instantiate(bubblePrefab, content.transform);
+			                if(bubble.GetComponentInChildren<OpenFileButton>())
+				                bubble.GetComponentInChildren<OpenFileButton>().fileContentName = msg.fileContentName;
+
+		                },msg.shootTime);
+
+		                break;
+	            }
 			}
 
         _dialogueLabel --;
@@ -545,12 +587,12 @@ public class TextManager
         {
             if (!_isEndChatShow)
             {
-	            MessageContent msg= new MessageContent();
-	            msg.messageType = MessageBubbleType.End;
-	            msg.content = String.Empty;
-	            msg.shootTime = DateTime.Now;
-	            
-	            _AddMessageBox(msg,true);
+                Services.textSequenceTaskRunner.AddSideTask(delegate
+                {
+                    GameObject newTimeBox =
+                        GameObject.Instantiate(Resources.Load<GameObject>(_endChatBubble), content.transform);
+                    newTimeBox.transform.SetSiblingIndex(0);
+                },DateTime.Now);
                 _isEndChatShow = true;
             }
 
@@ -561,7 +603,45 @@ public class TextManager
         for (int i = dialogueArray.Length-1; i>-1; i--)
         {
             var msg = dialogueArray[i];
-            _AddMessageBox(msg,true);
+            switch (msg.messageType)
+            {
+                case MessageBubbleType.Demon:
+                    Services.textSequenceTaskRunner.AddTask(delegate
+                    {
+                        GameObject newTimeBox = GameObject.Instantiate(Resources.Load<GameObject>(_demonTextBox), content.transform);
+                        newTimeBox.GetComponentInChildren<TextMeshProUGUI>().text = msg.content;
+                        newTimeBox.transform.SetSiblingIndex(0);
+                    },msg.shootTime);
+                    break;
+                case MessageBubbleType.Player:
+                    Services.textSequenceTaskRunner.AddTask(delegate
+                    {
+                        GameObject newTimeBox = GameObject.Instantiate(Resources.Load<GameObject>(_playerTextBox), content.transform);
+                        newTimeBox.GetComponentInChildren<TextMeshProUGUI>().text = msg.content;
+                        newTimeBox.transform.SetSiblingIndex(0);
+                    },msg.shootTime);
+                    break;
+                case MessageBubbleType.TimeStamp:
+                    Services.textSequenceTaskRunner.AddTask(delegate
+                    {
+                        GameObject newTimeBox = GameObject.Instantiate(Resources.Load<GameObject>(_timeStampBubble), content.transform);
+                        newTimeBox.GetComponentInChildren<TextMeshProUGUI>().text = TimeStamp.GetTimeStamp(msg.shootTime);
+                        newTimeBox.transform.SetSiblingIndex(0);
+                    },msg.shootTime);
+                    break;
+                case MessageBubbleType.Prefab:
+	                Services.textSequenceTaskRunner.AddTask(delegate
+	                {
+		                var bubblePrefab = Resources.Load<GameObject>("Prefabs/FileBubble/" + msg.fileBubbleName);
+			                
+		                var bubble = GameObject.Instantiate(bubblePrefab, content.transform);
+		                if(bubble.GetComponentInChildren<OpenFileButton>())
+			                bubble.GetComponentInChildren<OpenFileButton>().fileContentName = msg.fileContentName;
+
+	                },msg.shootTime);
+	                break;
+            }
+            
         }
         _dialogueLabel--;
     }
@@ -572,29 +652,39 @@ public class TextManager
 	    if(currentText== null) return;
 	    
 	    var lastMsg = FindTheLastMessage();
-	    var rawShootTime = lastMsg.shootTime;
+	    var startTime = lastMsg.shootTime;
 	    while (currentStory.canContinue)
 	    {
 		    var text = currentStory.Continue();
 		    text = text.Trim();
-		    _AddNewDemonMessageBox(MessageBubbleType.Demon,text,rawShootTime, out DateTime finalShootTime);
-		    rawShootTime = finalShootTime;
-		    if (finalShootTime > DateTime.Now)
+		    var behaviorType = CheckTypingBehavior(currentStory.currentTags);
+		    var dotSpan = ReturnTypingBehaviorTotalSpan(behaviorType);
+		    var shootTime = startTime + dotSpan;
+		    if (shootTime > DateTime.Now)
 		    {
+			    dotSpan = AddTypingBehaviorAndReturnTotalSpan(behaviorType);
+			    _AddNewMessageBox(MessageBubbleType.Demon,text,shootTime);
 			    Services.textSequenceTaskRunner.AddTask(delegate
 			    {
 				    _RefreshView();
-			    },finalShootTime);
+			    },shootTime);
 			    return;
 		    }
+		    
+		    _AddNewMessageBox(MessageBubbleType.Demon,text,shootTime);
+		    startTime += dotSpan;
 	    }
 
 	    //the story is not end yet
 	    if (currentStory.currentChoices.Count > 0)
 	    {
-		    _CreateChoices(rawShootTime);
-		    if (currentText.CheckAndBreakIfItsBreakTime())
-			    CleanChoices();
+		    if(currentText.CheckAndBreakIfItsBreakTime()) return;
+		    
+		    for (int i = 0; i < currentStory.currentChoices.Count; i++)
+		    {
+			    Choice choice = currentStory.currentChoices[i];
+			    _CreateChoiceView(choice);
+		    }
 	    }
 	    //story ends
 	    else
