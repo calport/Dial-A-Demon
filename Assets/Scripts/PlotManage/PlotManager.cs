@@ -603,7 +603,8 @@ public class PlotManager
 
         public override void CheckStartQualification()
         {
-            foreach (var playingPlot in parent.playingPlot)
+            var copyPlayingPlot = parent.playingPlot; 
+            foreach (var playingPlot in copyPlayingPlot)
             {
                 if (playingPlot is Text)
                 {

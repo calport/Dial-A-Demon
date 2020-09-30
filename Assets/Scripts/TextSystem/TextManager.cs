@@ -308,10 +308,15 @@ public class TextManager
 		float delaySec = 0f;
 		List<TypingBehavior> typeTags = tags.Where(t => t is TypingBehavior) as List<TypingBehavior>;
 		
-		foreach (var t in typeTags.Where(t => t is delay))
-			delaySec += t.length;
-		rawShootTime += TimeSpan.FromSeconds(delaySec);
-		
+		var delayList = typeTags.Where(t => t is delay);
+        if (!ReferenceEquals(delayList, null))
+        {
+
+			foreach (var t in typeTags.Where(t => t is delay))
+				delaySec += t.length;
+			rawShootTime += TimeSpan.FromSeconds(delaySec);
+		}
+
 		fast fast = typeTags.Find(t => t is fast) as fast;
 		slow slow = typeTags.Find(t => t is slow) as slow;
 		doubt doubt = typeTags.Find(t => t is doubt) as doubt;
