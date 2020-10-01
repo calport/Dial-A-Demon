@@ -26,7 +26,7 @@ public class doubt :TypingBehavior,IGameContributeTag
     {
         length = 2f;
         if(attribute.ContainsKey("length")) 
-            length = Convert.ToSingle(attribute["length"]);
+            length = float.Parse(attribute["length"]);
     }
 }
 
@@ -36,7 +36,7 @@ public class fast : TypingBehavior, IGameContributeTag
     {
         length = 0.5f;
         if(attribute.ContainsKey("length")) 
-            length = Convert.ToSingle(attribute["length"]);
+            length = float.Parse(attribute["length"]);
     }
 }
 
@@ -46,7 +46,7 @@ public class slow : TypingBehavior, IGameContributeTag
     {
         length = 1.5f;
         if(attribute.ContainsKey("length")) 
-            length = Convert.ToSingle(attribute["length"]);
+            length = float.Parse(attribute["length"]);
     }
 }
 
@@ -57,6 +57,6 @@ public class delay : TypingBehavior, IGameContributeTag
     {
         length = 1f;
         if(attribute.ContainsKey("length")) 
-            length = Convert.ToSingle(attribute["length"]);
+            length = float.Parse(attribute["length"]);
     }
 }

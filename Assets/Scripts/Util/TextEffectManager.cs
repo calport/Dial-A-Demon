@@ -67,8 +67,8 @@ public class TextEffectManager
         var splitSentenceList = Regex.Split(sentence, @"(?=[[])|(?<=[]])").ToList();
         while (_GetPairTag(splitSentenceList,out KeyValuePair<Tag,string> startTag, out KeyValuePair<Tag,string> endTag, out Dictionary<string,string> attribute))
         { 
-            splitSentenceList = _DoTagBehaviorAndCleanTag(startTag, endTag, splitSentenceList, out string operateString, out gameRelatedTags);
-
+            splitSentenceList = _DoTagBehaviorAndCleanTag(startTag, endTag, splitSentenceList, out string operateString, out List<Tag> relatedTags);
+            gameRelatedTags.AddRange(relatedTags);
             if (startTag.Key == null)
             {
                 
@@ -126,12 +126,15 @@ public class TextEffectManager
         
         tagName = tagElement[0].Trim();
         tagElement.Remove(tagElement[0]);
-        
-        string elementString = String.Empty;
-        foreach (var element in tagElement)
-            elementString += element;
-        tagElement = tagStr.Split(',').ToList();
-        
+
+        if (tagElement.Count != 0)
+        {
+                string elementString = String.Empty;
+                foreach (var element in tagElement)
+                    elementString += element;
+                tagElement = elementString.Split(',').ToList();
+        }
+
         if (tagName.StartsWith("'"))
         {
             tagName = tagName.Substring(1);
@@ -179,7 +182,8 @@ public class TextEffectManager
             if (startTag.Key.GetType().GetInterfaces().Contains(typeof(ITextEffectTag)))
             {
                 var textEffectTag = (ITextEffectTag) startTag.Key;
-                operateString[startPos + 1] = textEffectTag.DoTextEffect(operateTarget);
+                //operateString[startPos + 1] = textEffectTag.DoTextEffect(operateTarget);
+                operateTarget = textEffectTag.DoTextEffect(operateTarget);
             }
 
             if (startTag.Key.GetType().GetInterfaces().Contains(typeof(IGameEffectTag)))
@@ -196,8 +200,10 @@ public class TextEffectManager
             }
         }
 
+        operateString[startPos + 1] = operateTarget;
         operateString.Remove(startTag.Value);
         operateString.Remove(endTag.Value);
+        
         
         return operateString;
     }

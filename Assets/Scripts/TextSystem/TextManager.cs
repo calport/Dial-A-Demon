@@ -287,8 +287,10 @@ public class TextManager
 		{
 			GameObject newBox = GameObject.Instantiate(Resources.Load<GameObject>(boxPrefab), content.transform);
 			
-			newBox.GetComponentInChildren<TextMeshProUGUI>().text = textContent;
-			newBox.GetComponentInChildren<OpenFileButton>().fileContentName = msg.fileContentName;
+			if(!ReferenceEquals(newBox.GetComponentInChildren<TextMeshProUGUI>(),null))
+				newBox.GetComponentInChildren<TextMeshProUGUI>().text = textContent;
+			if(!ReferenceEquals(newBox.GetComponentInChildren<OpenFileButton>(),null))
+				newBox.GetComponentInChildren<OpenFileButton>().fileContentName = msg.fileContentName;
 			
 			if(isAddedToTop) newBox.transform.SetSiblingIndex(0);
 			if(msg.messageType == MessageBubbleType.TimeStamp) _timeStampBoxes.Add(newBox,msg.shootTime);
@@ -306,16 +308,16 @@ public class TextManager
 	{
 		float basicTypingTime = finalText.Length * _typingSpeed;
 		float delaySec = 0f;
-		List<TypingBehavior> typeTags = tags.Where(t => t is TypingBehavior) as List<TypingBehavior>;
 		
+		var typeTags =tags.FindAll(t => t is TypingBehavior);
+		Debug.Log(typeTags.Count);
 		var delayList = typeTags.Where(t => t is delay);
-        if (!ReferenceEquals(delayList, null))
-        {
-
-			foreach (var t in typeTags.Where(t => t is delay))
-				delaySec += t.length;
-			rawShootTime += TimeSpan.FromSeconds(delaySec);
+		foreach (var t in typeTags.Where(t => t is delay))
+		{
+			delay d = t as delay;
+			delaySec += d.length; 
 		}
+		rawShootTime += TimeSpan.FromSeconds(delaySec);
 
 		fast fast = typeTags.Find(t => t is fast) as fast;
 		slow slow = typeTags.Find(t => t is slow) as slow;

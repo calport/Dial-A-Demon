@@ -25,7 +25,10 @@ public class PlotManager
         public DateTime startTime;
         public DateTime potentialBreakTime;
     }
-    //Calendar contains all the information about the plots which is ready, preparing and finished with certain trigger time
+    //Calendar contains all the information about the plots and plots history that has there certain trigger time set already
+    //Plots on Calendar can bew ready, preparing, finished, abandon, break, as long as there functioning time is set.
+    //Plots can have no trigger and break time set yet and they will be waiting outside of the calender and being checked every frame to see if they met the
+    //requirements and so can be put on calendar
     public Dictionary<Plot, CalendarPlotTimeSpan> Calendar = new Dictionary<Plot, CalendarPlotTimeSpan>();
     public List<Plot> playingPlot = new List<Plot>();
     public bool isSpeedMode = false;
