@@ -25,7 +25,10 @@ public class PlotManager
         public DateTime startTime;
         public DateTime potentialBreakTime;
     }
-    //Calendar contains all the information about the plots which is ready, preparing and finished with certain trigger time
+    //Calendar contains all the information about the plots and plots history that has there certain trigger time set already
+    //Plots on Calendar can bew ready, preparing, finished, abandon, break, as long as there functioning time is set.
+    //Plots can have no trigger and break time set yet and they will be waiting outside of the calender and being checked every frame to see if they met the
+    //requirements and so can be put on calendar
     public Dictionary<Plot, CalendarPlotTimeSpan> Calendar = new Dictionary<Plot, CalendarPlotTimeSpan>();
     public List<Plot> playingPlot = new List<Plot>();
     public bool isSpeedMode = false;
@@ -450,7 +453,7 @@ public class PlotManager
             ChangePlotState(PlotState.ReadyToPlay,span);
         }
 
-        public bool CheckAndBreakIfItsBreakTime()
+        public virtual bool CheckAndBreakIfItsBreakTime()
         {
             if (_currentCalendarTimeSpan?.potentialBreakTime < DateTime.Now && plotState == PlotState.Playing)
             {
@@ -580,13 +583,13 @@ public class PlotManager
 
         public override void OnAbandon(){}
 
-        public void OnSendText()
+        public void UpdateBreakTime(DateTime chooseTime)
         {
             var span = new CalendarPlotTimeSpan();
             if (!ReferenceEquals(_currentCalendarTimeSpan, null))
             {
                 span = _currentCalendarTimeSpan.Value;
-                span.potentialBreakTime = DateTime.Now + waitTimeBeforeBreak;
+                span.potentialBreakTime = chooseTime + waitTimeBeforeBreak;
                 parent.Calendar[this] = span;
             }
         }
@@ -603,7 +606,8 @@ public class PlotManager
 
         public override void CheckStartQualification()
         {
-            foreach (var playingPlot in parent.playingPlot)
+            var copyPlayingPlot = parent.playingPlot; 
+            foreach (var playingPlot in copyPlayingPlot)
             {
                 if (playingPlot is Text)
                 {
@@ -629,6 +633,16 @@ public class PlotManager
                     parent.Calendar[this] = span;
                 }
             }
+        }
+        
+        public override bool CheckAndBreakIfItsBreakTime()
+        {
+            if (_currentCalendarTimeSpan?.potentialBreakTime < DateTime.Now && _tm.isChoosing && plotState == PlotState.Playing)
+            {
+                ChangePlotState(PlotState.Broke);
+                return true;
+            }
+            return false;
         }
     }
 

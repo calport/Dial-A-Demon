@@ -67,8 +67,8 @@ public class TextEffectManager
         var splitSentenceList = Regex.Split(sentence, @"(?=[[])|(?<=[]])").ToList();
         while (_GetPairTag(splitSentenceList,out KeyValuePair<Tag,string> startTag, out KeyValuePair<Tag,string> endTag, out Dictionary<string,string> attribute))
         { 
-            splitSentenceList = _DoTagBehaviorAndCleanTag(startTag, endTag, splitSentenceList, out string operateString, out gameRelatedTags);
-
+            splitSentenceList = _DoTagBehaviorAndCleanTag(startTag, endTag, splitSentenceList, out string operateString, out List<Tag> relatedTags);
+            gameRelatedTags.AddRange(relatedTags);
             if (startTag.Key == null)
             {
                 
@@ -121,11 +121,20 @@ public class TextEffectManager
         if (!testString.StartsWith("[") || !testString.EndsWith("]")) return false;
         
         var tagStr = testString.Substring(1, testString.Length - 2).Trim();
-        var tagElement = tagStr.Split(" "[0],',').ToList();
+        //var tagElement = tagStr.Split(" "[0],',').ToList();
+        var tagElement = tagStr.Split(" "[0]).ToList();
         
         tagName = tagElement[0].Trim();
         tagElement.Remove(tagElement[0]);
-        
+
+        if (tagElement.Count != 0)
+        {
+                string elementString = String.Empty;
+                foreach (var element in tagElement)
+                    elementString += element;
+                tagElement = elementString.Split(',').ToList();
+        }
+
         if (tagName.StartsWith("'"))
         {
             tagName = tagName.Substring(1);
@@ -141,8 +150,9 @@ public class TextEffectManager
                 element.Trim();
                 var pair = element.Split("="[0]);
                 Debug.Assert(pair[1].Trim().StartsWith("\"") && pair[1].Trim().EndsWith("\""),pair[1] + " is not a correct input parameter");
+                //delete the "" around parameter
                 var parameter = pair[1].Trim().Substring(1, pair[1].Trim().Length - 2).Trim();
-                if (attribute.ContainsKey(pair[0])) attribute[pair[0]] = parameter;
+                if (attribute.ContainsKey(pair[0].Trim())) attribute[pair[0].Trim()] = parameter;
                 else attribute.Add(pair[0].Trim(),parameter);
             }
             //Type type = Type.GetType(tagName);
@@ -172,7 +182,8 @@ public class TextEffectManager
             if (startTag.Key.GetType().GetInterfaces().Contains(typeof(ITextEffectTag)))
             {
                 var textEffectTag = (ITextEffectTag) startTag.Key;
-                operateString[startPos + 1] = textEffectTag.DoTextEffect(operateTarget);
+                //operateString[startPos + 1] = textEffectTag.DoTextEffect(operateTarget);
+                operateTarget = textEffectTag.DoTextEffect(operateTarget);
             }
 
             if (startTag.Key.GetType().GetInterfaces().Contains(typeof(IGameEffectTag)))
@@ -189,8 +200,10 @@ public class TextEffectManager
             }
         }
 
+        operateString[startPos + 1] = operateTarget;
         operateString.Remove(startTag.Value);
         operateString.Remove(endTag.Value);
+        
         
         return operateString;
     }

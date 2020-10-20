@@ -1,4 +1,9 @@
 PlotName,PlotType,InitType,Priority,SendTime,RelaSendTime,WaitTimeBeforeBreak,AnchorPrePlot,PrePlot1,PrePlot2
-Day1_1Contract,Text,PlotBased,1,,d0h0m1,d0h1m0,,,
+TestingBubble,Text,PlotBased,1,,d0h0m0,d0h1m0,,,
+Day1_Contract,Text,PlotBased,1,,d0h0m1,d0h1m0,TestingBubble,TestingBubble,
 Day1_0DemonCall,PlayerCall,PlotBased,1,,d0h0m0,d0h0m1,,,
-Day1_2PhoneCall,DemonCall,PlotBased,1,,d0h0m2,d0h1m0,Day1_1Contract,Day1_1Contract,
+Day1_2PhoneCall,DemonCall,PlotBased,1,,d0h0m1,d0h1m0,Day1_Contract,Day1_Contract,
+Day1_GetToKnow,Text,PlotBased,1,,d0h0m1,d0h2m0,Day1_Contract,Day1_Contract,
+Day1_LustDemons,Text,PlotBased,2,,d0h0m1,d0h4m0,Day1_GetToKnow,Day1_GetToKnow,
+Day2_Morning,Text,PlotBased,1,,d0h0m1,d0h4m1,Day1_LustDemons,Day1_LustDemons,
+Day2_Reward,Text,PlotBased,1,,d0h0m1,d0h4m2,Day2_Morning,Day2_Reward,

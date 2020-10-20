@@ -120,9 +120,8 @@ public class Keyboard : MonoBehaviour
     {   
         //choice idex goes first
         tm.currentStory?.ChooseChoiceIndex(choiceIdex);
-        tm.currentText?.OnSendText();
         tm.CreatePlayerBubble();
-
+        tm.CleanChoices();
         _sendButton.onClick.RemoveListener(SendChoice);
     }
     
