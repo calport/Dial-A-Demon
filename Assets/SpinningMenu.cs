@@ -15,7 +15,6 @@ public class SpinningMenu : MonoBehaviour, IPointerEnterHandler, IPointerExitHan
     void ChangePosWithTouch(Touch touch)
     {
         Vector3 posChange = touch.position;
-        Debug.Log(posChange);
         var posLength = posChange.magnitude;
         var plantPos = new Vector3(posChange.x, posChange.y, -1)    ;
         var plantLength = plantPos.magnitude;
@@ -41,12 +40,11 @@ public class SpinningMenu : MonoBehaviour, IPointerEnterHandler, IPointerExitHan
         
         if ( Input.GetMouseButtonDown(0) )
         {
-            Debug.Log("true");
             lastPos = Input.mousePosition;
         }
         else if ( Input.GetMouseButton(0) )
         {
-            delta = (Input.mousePosition - lastPos)/2;
+            delta = (Input.mousePosition - lastPos)/8;
 
             if (mouseDrag.x >= 0 && mouseDrag.y >= 0)
             {
